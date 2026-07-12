@@ -46,7 +46,7 @@ const handleRegister = async (e) => {
     setLoading(true);
 
     const response = await axios.post(
-      "http://localhost:4000/api/users/register",
+      "https://fixer-backend-7mng.onrender.com/api/users/register",
       {
         first_name: formData.first_name,
         last_name: formData.last_name,
