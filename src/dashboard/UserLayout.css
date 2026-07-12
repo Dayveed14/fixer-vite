@@ -1,0 +1,354 @@
+/* ===================================
+   USER LAYOUT
+=================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f5f7fb;
+    font-family: "Poppins", sans-serif;
+}
+
+/* ===================================
+   SIDEBAR
+=================================== */
+
+.sidebar {
+    width: 270px;
+    background: #0b63ce;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 25px 20px;
+    transition: .3s ease;
+}
+
+.logo {
+    margin-bottom: 40px;
+}
+
+.logo img {
+    margin: unset;
+}
+
+.logo h2 {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.close-btn {
+    display: none;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 22px;
+}
+
+/* ===================================
+   NAVIGATION
+=================================== */
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 10px;
+    transition: .3s;
+    font-size: 15px;
+}
+
+.nav-link svg {
+    font-size: 18px;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, .18);
+}
+
+.active-link {
+    background: white;
+    color: #0b63ce;
+    font-weight: 600;
+}
+
+/* ===================================
+   LOGOUT
+=================================== */
+
+.logout-btn {
+    border: none;
+    background: rgba(255, 255, 255, .15);
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: .3s;
+}
+
+.logout-btn:hover {
+    background: #ef4444;
+}
+
+/* ===================================
+   MAIN
+=================================== */
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===================================
+   TOPBAR
+=================================== */
+
+.topbar {
+    background: white;
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, .05);
+}
+
+.menu-btn {
+    display: none;
+    border: none;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* ===================================
+   SEARCH
+=================================== */
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #f3f5f8;
+    padding: 12px 18px;
+    border-radius: 10px;
+    width: 350px;
+}
+
+.search-box svg {
+    color: #888;
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    outline: none;
+    margin-left: 10px;
+    width: 100%;
+    font-size: 15px;
+}
+
+/* ===================================
+   TOP RIGHT
+=================================== */
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.icon-btn {
+    background: #f3f5f8;
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    font-size: 18px;
+    transition: .3s;
+}
+
+.icon-btn:hover {
+    background: #e5ecf8;
+}
+
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -2px;
+    background: red;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ===================================
+   PROFILE
+=================================== */
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    position: relative;
+}
+
+.avatar {
+    font-size: 42px;
+    color: #0b63ce;
+}
+
+.profile-info h4 {
+    font-size: 15px;
+}
+
+.profile-info p {
+    color: #777;
+    font-size: 13px;
+}
+
+.profile svg:last-child {
+    color: #666;
+    font-size: 14px;
+}
+
+/* ===================================
+   DROPDOWN
+=================================== */
+
+.dropdown {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 190px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, .12);
+    overflow: hidden;
+    z-index: 999;
+}
+
+.dropdown a,
+.dropdown button {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    text-decoration: none;
+    color: #444;
+    background: white;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: .3s;
+    font-size: 14px;
+}
+
+.dropdown a:hover,
+.dropdown button:hover {
+    background: #f4f7fc;
+}
+
+/* ===================================
+   PAGE CONTENT
+=================================== */
+
+.page-content {
+    flex: 1;
+    padding: 30px;
+}
+
+/* ===================================
+   MOBILE
+=================================== */
+
+@media (max-width: 992px) {
+
+    .sidebar {
+        position: fixed;
+        left: -270px;
+        top: 0;
+        height: 100%;
+        z-index: 9999;
+    }
+
+    .show-sidebar {
+        left: 0;
+    }
+
+    .close-btn {
+        display: block;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .search-box {
+        width: 220px;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .topbar {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .search-box {
+        display: none;
+    }
+
+    .profile-info {
+        display: none;
+    }
+
+    .page-content {
+        padding: 20px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .top-right {
+        gap: 15px;
+    }
+
+    .avatar {
+        font-size: 36px;
+    }
+
+    .dropdown {
+        width: 170px;
+    }
+
+}

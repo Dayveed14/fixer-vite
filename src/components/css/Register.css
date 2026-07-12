@@ -1,0 +1,511 @@
+/* ==========================================
+   REGISTER PAGE
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.register-page {
+    display: flex;
+    min-height: 100vh;
+    background: #f4f7fc;
+    font-family: "Poppins", sans-serif;
+}
+
+/* ==========================================
+   LEFT SECTION
+========================================== */
+
+.register-left {
+    flex: 1;
+    background: linear-gradient(135deg, #0b63ce, #003b80);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    color: #fff;
+}
+
+.overlay {
+    width: 100%;
+    max-width: 520px;
+}
+
+.back-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    text-decoration: none;
+    margin-bottom: 50px;
+    transition: .3s;
+}
+
+.back-home:hover {
+    color: #ffd54f;
+}
+
+
+
+.brand h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.brand p {
+    line-height: 1.8;
+    margin-bottom: 40px;
+    opacity: .9;
+}
+.logo {
+    background: white;
+
+}
+/* ==========================================
+   FEATURE CARDS
+========================================== */
+
+.features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, .08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 15px;
+    padding: 20px;
+    transition: .3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, .15);
+}
+
+.feature-card span {
+    font-size: 30px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.feature-card h4 {
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ==========================================
+   RIGHT PANEL
+========================================== */
+
+.register-right {
+    flex: 1;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 40px;
+}
+
+.register-container {
+    width: 100%;
+    max-width: 520px;
+}
+
+.register-container h2 {
+    color: #0b63ce;
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.register-container>p {
+    color: #666;
+    margin-bottom: 35px;
+}
+
+/* ==========================================
+   FORM
+========================================== */
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.row {
+    display: flex;
+    gap: 20px;
+}
+
+.row .input-group {
+    flex: 1;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #d7dce5;
+    border-radius: 10px;
+    outline: none;
+    transition: .3s;
+    font-size: 15px;
+}
+
+.input-group input:focus {
+    border-color: #0b63ce;
+    box-shadow: 0 0 0 4px rgba(11, 99, 206, .15);
+}
+
+/* ==========================================
+   PASSWORD
+========================================== */
+
+.password-input {
+    position: relative;
+}
+
+.password-input input {
+    padding-right: 55px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+}
+
+/* ==========================================
+   TERMS
+========================================== */
+
+.terms {
+    margin: 10px 0 25px;
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+}
+
+.terms label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.terms input {
+    margin-top: 4px;
+}
+
+.terms a {
+    color: #0b63ce;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.terms a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================================
+   BUTTON
+========================================== */
+
+.register-btn {
+    width: 100%;
+    border: none;
+    padding: 16px;
+    border-radius: 10px;
+    background: #0b63ce;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.register-btn:hover {
+    background: #004ca5;
+    transform: translateY(-2px);
+}
+
+/* ==========================================
+   DIVIDER
+========================================== */
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 35px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+
+.divider span {
+    margin: 0 15px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* ==========================================
+   SOCIAL BUTTONS
+========================================== */
+
+.social-register {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.social-register button {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #d7dce5;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    transition: .3s;
+    font-size: 15px;
+}
+
+.social-register button:hover {
+    border-color: #0b63ce;
+    background: #f8fbff;
+}
+
+.google-btn svg {
+    color: #ea4335;
+}
+
+.microsoft-btn svg {
+    color: #0078d4;
+}
+
+/* ==========================================
+   LOGIN LINK
+========================================== */
+
+.login-link {
+    margin-top: 35px;
+    text-align: center;
+    color: #666;
+}
+
+.login-link a {
+    color: #0b63ce;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* ==========================
+LOGIN REQUIRED MODAL
+========================== */
+
+.login-required-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.login-required-modal {
+    width: 430px;
+    max-width: 92%;
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    animation: popup .35s ease;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+}
+
+.login-required-icon {
+    width: 80px;
+    height: 80px;
+    margin: auto;
+    border-radius: 50%;
+    background: #EDF5FF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    margin-bottom: 20px;
+}
+
+.login-required-modal h2 {
+    margin-bottom: 15px;
+    color: #222;
+}
+
+.login-required-modal p {
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 30px;
+}
+
+.login-required-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.login-btn-modal,
+.register-btn-modal {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.login-btn-modal {
+    background: #0B63CE;
+    color: white;
+}
+
+.login-btn-modal:hover {
+    background: #094fa7;
+}
+
+.register-btn-modal {
+    background: #f4f4f4;
+}
+
+.register-btn-modal:hover {
+    background: #e8e8e8;
+}
+
+.later-btn {
+    margin-top: 20px;
+    background: none;
+    border: none;
+    color: #777;
+    cursor: pointer;
+}
+
+@keyframes popup {
+
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 992px) {
+
+    .register-page {
+        flex-direction: column;
+    }
+
+    .register-left,
+    .register-right {
+        padding: 40px 25px;
+    }
+
+    .brand h1 {
+        font-size: 2.4rem;
+    }
+
+    .features {
+        margin-top: 30px;
+    }
+
+    .register-container {
+        max-width: 100%;
+    }
+
+}
+
+@media (max-width: 768px) {
+
+    .row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .register-container h2 {
+        font-size: 30px;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .register-left {
+        padding: 30px 20px;
+    }
+
+    .register-right {
+        padding: 30px 20px;
+    }
+
+    .brand h1 {
+        font-size: 2rem;
+    }
+
+    .feature-card {
+        padding: 18px;
+    }
+
+    .register-btn,
+    .social-register button {
+        padding: 14px;
+    }
+
+}

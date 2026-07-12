@@ -1,0 +1,583 @@
+.bookcall {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0px 48px 80px;
+}
+
+/* Header */
+.bookcall__badge {
+  display: inline-block;
+  background: var(--dark);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.bookcall__title {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+
+.bookcall__sub {
+  font-size: 0.97rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 36px;
+}
+
+/* Step indicator */
+.bookcall__steps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.bookcall__step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+.bookcall__step.active { opacity: 1; }
+
+.bookcall__step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bookcall__step:not(.active) .bookcall__step-num {
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+.bookcall__step-label {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bookcall__step-line {
+  flex: 1;
+  max-width: 80px;
+  height: 1.5px;
+  background: var(--border);
+}
+
+/* Body */
+.bookcall__body {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Calendar */
+.bookcall__calendar-wrap {
+  background: var(--bg-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.bookcall__cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bookcall__cal-month {
+  font-family: 'Sora', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.bookcall__cal-arrow {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.bookcall__cal-arrow:hover { border-color: var(--blue); color: var(--blue); }
+
+.bookcall__cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.bookcall__cal-dayname {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 6px 0;
+}
+
+.bookcall__cal-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bookcall__cal-day:hover:not(.past):not(.selected) {
+  background: rgba(79,106,240,0.1);
+  color: var(--blue);
+}
+.bookcall__cal-day.selected {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 600;
+}
+.bookcall__cal-day.past {
+  color: var(--border);
+  cursor: not-allowed;
+}
+
+/* Time slots */
+.bookcall__time-wrap {
+  background: var(--bg-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.bookcall__time-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+
+.bookcall__time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.bookcall__time-slot {
+  padding: 11px 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.87rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.bookcall__time-slot:hover { border-color: var(--blue); color: var(--blue); }
+.bookcall__time-slot.selected {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Footer / actions */
+.bookcall__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bookcall__selection {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-right: auto;
+}
+
+/* Buttons */
+.bookcall__btn {
+  font-family: 'Sora', sans-serif;
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 13px 26px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+.bookcall__btn--primary {
+  background: var(--blue);
+  color: #fff;
+}
+.bookcall__btn--primary:hover:not(.disabled) {
+  background: var(--blue-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(79,106,240,0.3);
+}
+.bookcall__btn--primary.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.bookcall__btn--ghost {
+  background: var(--bg-soft);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+.bookcall__btn--ghost:hover { border-color: var(--text-muted); }
+
+/* Confirm banner (step 2) */
+.bookcall__confirm-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(79,106,240,0.07);
+  border: 1.5px solid rgba(79,106,240,0.2);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 0.9rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.bookcall__change {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Form (step 2) */
+.bookcall__body--form { gap: 20px; }
+
+.bookcall__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.bookcall__form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.bookcall__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bookcall__label {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.bookcall__input,
+.bookcall__textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-soft);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bookcall__input::placeholder,
+.bookcall__textarea::placeholder { color: #b0b5c8; }
+.bookcall__input:focus,
+.bookcall__textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(79,106,240,0.1);
+  background: #fff;
+}
+.bookcall__textarea { resize: vertical; min-height: 110px; line-height: 1.65; }
+
+/* Select */
+.bookcall__select-wrap { position: relative; }
+.bookcall__select {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-soft);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.bookcall__select:hover { border-color: var(--blue); }
+.bookcall__select .placeholder { color: #b0b5c8; }
+
+.bookcall__dropdown {
+  position: absolute;
+  top: calc(100% + 6px); left: 0; right: 0;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.1);
+  list-style: none;
+  z-index: 50;
+  overflow: hidden;
+}
+.bookcall__dropdown-item {
+  padding: 11px 16px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.bookcall__dropdown-item:hover { background: var(--bg-soft); color: var(--text); }
+.bookcall__dropdown-item.selected { color: var(--blue); font-weight: 600; background: rgba(79,106,240,0.06); }
+
+.bookcall__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+/* Success */
+.bookcall__success {
+  max-width: 480px;
+  margin: 120px auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.bookcall__success-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.bookcall__success h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+.bookcall__success p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.65; }
+
+/* ==========================================================================
+   NEW WORKFLOW ADDITIONS (Steps 3, 4, 5 & Success Addons)
+   ========================================================================== */
+
+/* Universal Banner Adjustment */
+.bookcall__confirm-banner {
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+.banner-item {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+/* Step 3: Support Type Option Cards */
+.bookcall__support-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bookcall__support-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: var(--bg-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bookcall__support-card:hover {
+  border-color: var(--blue);
+  background: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.bookcall__support-card.selected {
+  background: rgba(79, 106, 240, 0.04);
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+
+.support-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.support-card__info h4 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.support-card__info p {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.support-card__cost {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+/* Step 4: Payment Layout Elements */
+.payment-total {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem;
+  color: var(--text-muted);
+  background: var(--bg-soft);
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 4px solid var(--blue);
+  margin-bottom: 8px;
+}
+
+.payment-total strong {
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+/* Step 5: Final Review Panel */
+.bookcall__review-panel {
+  background: var(--bg-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.review-item {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border);
+}
+.review-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.review-item strong {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: inline-block;
+  width: 120px;
+}
+
+/* Success Flow Action UI (Phone numbers, Google Meet Info, API Info) */
+.bookcall__action-box {
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: left;
+  margin: 16px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.bookcall__action-box h4 {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 8px 0;
+}
+
+.bookcall__action-box p {
+  margin: 0;
+  font-size: 0.9rem !important;
+  color: var(--text-muted);
+}
+
+.bookcall__action-box a {
+  color: var(--blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+.bookcall__action-box a:hover {
+  text-decoration: underline;
+}
+
+/* Custom Headline Fixes for dynamic wrapper subheadings */
+.bookcall__body h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px 0;
+}

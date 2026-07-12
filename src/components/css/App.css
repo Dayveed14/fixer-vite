@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue:      #4F6AF0;
+  --blue-dark: #3451d1;
+  --dark:      #0f1117;
+  --text:      #1a1d2e;
+  --text-muted:#5a5f7a;
+  --bg:        #ffffff;
+  --bg-soft:   #f5f6fa;
+  --border:    #e5e7f0;
+  --radius:    14px;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+h1,h2,h3,h4,h5 { font-family: 'Sora', sans-serif; }
+button { cursor: pointer; font-family: inherit; border: none; outline: none; }
+a { text-decoration: none; color: inherit; }
+.app { min-height: 100vh; }

@@ -1,0 +1,111 @@
+.about {
+  background: var(--bg);
+  padding: 100px 64px;
+}
+
+.about__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  /* align-items: center; */
+}
+
+.about__eyebrow {
+  font-family: 'Sora', sans-serif;
+  font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--blue);
+  margin-bottom: 16px;
+}
+
+.about__title {
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin-bottom: 20px;
+}
+
+.about__body {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+}
+.about__body strong { color: var(--text); }
+
+/* Cards grid */
+.about__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px;
+}
+
+.about__card {
+  background: #111;
+  /* Black for all cards by default */
+  border-radius: 16px;
+  padding: 28px 24px;
+  color: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.about__card:first-child {
+  background: var(--blue);
+  transform: rotate(-4deg);
+  /* Slightly rotated to the left */
+}
+
+.about__card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(79, 106, 240, 0.25);
+}
+
+/* Keep the rotation even when hovering the first card */
+.about__card:first-child:hover {
+  transform: rotate(-4deg) translateY(-4px);
+}
+.about__card-icon {
+  font-size: 1.6rem;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+
+.about__card-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 100px;
+  line-height: 1.3;
+}
+
+.about__card-desc {
+  font-size: 0.84rem;
+  line-height: 1.65;
+  opacity: 0.88;
+}
+
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+.about {
+  padding: 20px 24px;
+}
+
+.about__inner {
+    display: unset;
+}
+
+.about__left {
+    margin: 20px 0;
+}
+
+.about__grid {
+    display: unset;
+}
+.about__card {
+  margin: 50px 0;
+}
+}
