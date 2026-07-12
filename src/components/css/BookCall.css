@@ -581,3 +581,161 @@
   color: var(--text);
   margin: 0 0 4px 0;
 }
+/* ==========================================
+   Responsive
+========================================== */
+
+@media (max-width: 992px) {
+  .bookcall {
+    padding: 0 24px 60px;
+  }
+
+  .bookcall__time-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .bookcall__steps {
+    gap: 8px;
+  }
+
+  .bookcall__step-label {
+    font-size: 0.78rem;
+  }
+
+  .bookcall__step-line {
+    max-width: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bookcall {
+    padding: 0 16px 50px;
+  }
+
+  .bookcall__calendar-wrap,
+  .bookcall__time-wrap,
+  .bookcall__review-panel,
+  .bookcall__action-box {
+    padding: 20px;
+  }
+
+  .bookcall__steps {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+
+  .bookcall__steps::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bookcall__step {
+    flex-shrink: 0;
+  }
+
+  .bookcall__step-line {
+    min-width: 30px;
+  }
+
+  .bookcall__form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .bookcall__time-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bookcall__support-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .support-card__cost {
+    align-self: flex-end;
+  }
+
+  .bookcall__form-actions,
+  .bookcall__footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .bookcall__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bookcall__confirm-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bookcall__change {
+    margin-left: 0;
+  }
+
+  .review-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .review-item strong {
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .bookcall {
+    padding: 0 12px 40px;
+  }
+
+  .bookcall__title {
+    font-size: 1.7rem;
+  }
+
+  .bookcall__calendar-wrap,
+  .bookcall__time-wrap {
+    padding: 16px;
+  }
+
+  .bookcall__cal-dayname {
+    font-size: 0.65rem;
+  }
+
+  .bookcall__cal-day {
+    font-size: 0.8rem;
+  }
+
+  .bookcall__time-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bookcall__time-slot {
+    padding: 13px;
+  }
+
+  .bookcall__step-label {
+    display: none;
+  }
+
+  .bookcall__step-line {
+    min-width: 20px;
+  }
+
+  .payment-total,
+  .bookcall__confirm-banner {
+    font-size: 0.85rem;
+  }
+
+  .bookcall__success {
+    margin: 60px auto;
+    padding: 0 10px;
+  }
+
+  .bookcall__action-box {
+    padding: 16px;
+  }
+}

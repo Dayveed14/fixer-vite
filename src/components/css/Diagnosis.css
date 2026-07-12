@@ -589,3 +589,132 @@
   color: var(--text-muted);
   line-height: 1.6;
 }
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════ */
+
+/* Tablet / small laptop */
+@media (max-width: 1024px) {
+  .diag {
+    grid-template-columns: 1fr;
+    padding: 48px 40px;
+    gap: 40px;
+  }
+
+  .diag__body {
+    max-width: 100%;
+  }
+
+  .diag-modal {
+    width: 560px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .diag {
+    padding: 32px 20px;
+    gap: 32px;
+  }
+
+  .diag__title {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+  }
+
+  .diag__row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .diag__chips {
+    gap: 8px;
+  }
+
+  .diag__chip {
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+
+  .diag__actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .diag__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .diag-modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .diag-modal {
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 18px 18px 0 0;
+    padding: 24px 20px;
+  }
+
+  .diag-modal-header {
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .diag-modal-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .diag-modal h2 {
+    font-size: 1.1rem;
+  }
+
+  .diag-result-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .diag-stat-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .diag-modal-actions {
+    flex-direction: column;
+  }
+
+  .diag-action-btn {
+    width: 100%;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 420px) {
+  .diag {
+    padding: 24px 16px;
+  }
+
+  .diag__prompt {
+    font-size: 1rem;
+  }
+
+  .diag__input,
+  .diag__select,
+  .diag__textarea {
+    padding: 11px 14px;
+    font-size: 0.88rem;
+  }
+
+  .diag-modal {
+    padding: 20px 16px;
+  }
+
+  .diag-close {
+    top: 12px;
+    right: 12px;
+  }
+}
