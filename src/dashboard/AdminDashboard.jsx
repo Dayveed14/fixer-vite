@@ -1,93 +1,114 @@
-// AdminDashboard.jsx
-
 import {
-  FaUsers,
-  FaUserTie,
-  FaTicketAlt,
-  FaMoneyBillWave,
-  FaLaptop,
-  FaTools,
-  FaArrowRight,
-  FaExclamationTriangle,
-} from "react-icons/fa";
+  FaUsers,FaUserTie,FaTicketAlt,FaMoneyBillWave,FaLaptop,FaTools,FaArrowRight,FaExclamationTriangle } from "react-icons/fa";
 import "./AdminDashboard.css";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const [statsData, setStatsData] = useState(null);
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [technicians, setTechnicians] = useState([]);
+
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch {
+    user = null;
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchDashboard = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [statsRes, ticketsRes, techniciansRes, deviceRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/stats/dashboard`),
+          axios.get(`${API_BASE_URL}/api/tickets`, { params: { limit: 4 } }),
+          axios.get(`${API_BASE_URL}/api/users/technicians`),
+        ]);
+
+        if (!cancelled) {
+          setStatsData(statsRes.data);
+          setTickets(ticketsRes.data);
+          setTechnicians(techniciansRes.data);
+        }
+      } catch (err) {
+        console.error(err);
+
+        if (!cancelled) {
+          setError("Failed to load dashboard data. Please try again.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="admin-dashboard">
+        <p className="admin-loading">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admin-dashboard">
+        <p className="admin-error">{error}</p>
+      </div>
+    );
+  }
+
   const stats = [
     {
       title: "Total Users",
-      value: 1248,
+      value: statsData.totalUsers,
       icon: <FaUsers />,
       color: "#2563EB",
     },
     {
       title: "Technicians",
-      value: 36,
+      value: statsData.totalTechnicians,
       icon: <FaUserTie />,
       color: "#16A34A",
     },
     {
       title: "Open Tickets",
-      value: 87,
+      value: statsData.openTickets,
       icon: <FaTicketAlt />,
       color: "#F59E0B",
     },
     {
       title: "Revenue",
-      value: "₦3.4M",
+      value: `₦${Number(statsData.revenue).toLocaleString()}`,
       icon: <FaMoneyBillWave />,
       color: "#9333EA",
     },
   ];
 
-  const tickets = [
-    {
-      id: "#TK1042",
-      customer: "David A.",
-      issue: "Laptop won't boot",
-      technician: "John",
-      status: "Open",
-    },
-    {
-      id: "#TK1043",
-      customer: "Mary O.",
-      issue: "Blue Screen",
-      technician: "Sarah",
-      status: "In Progress",
-    },
-    {
-      id: "#TK1044",
-      customer: "Daniel C.",
-      issue: "Slow PC",
-      technician: "James",
-      status: "Completed",
-    },
-    {
-      id: "#TK1045",
-      customer: "Sandra U.",
-      issue: "Virus Removal",
-      technician: "Pending",
-      status: "Pending",
-    },
-  ];
-
-  const technicians = [
-    {
-      name: "John Adams",
-      jobs: 25,
-      rating: "⭐⭐⭐⭐⭐",
-    },
-    {
-      name: "Sarah James",
-      jobs: 18,
-      rating: "⭐⭐⭐⭐",
-    },
-    {
-      name: "Mike Peter",
-      jobs: 12,
-      rating: "⭐⭐⭐⭐⭐",
-    },
-  ];
+  const revenueChangeLabel =
+    statsData.revenueChangePercent === null ||
+    statsData.revenueChangePercent === undefined
+      ? "No data for last month"
+      : `${statsData.revenueChangePercent >= 0 ? "+" : ""}${statsData.revenueChangePercent.toFixed(1)}% compared to last month`;
 
   return (
     <div className="admin-dashboard">
@@ -97,7 +118,7 @@ const AdminDashboard = () => {
       <section className="admin-banner">
 
         <div>
-          <h1>Admin Dashboard</h1>
+          <h1>Admin Dashboard{user?.first_name ? `, ${user.first_name}` : ""}</h1>
 
           <p>
             Monitor users, technicians, repairs,
@@ -105,7 +126,7 @@ const AdminDashboard = () => {
           </p>
         </div>
 
-        <button>Add Technician</button>
+        <button onClick={() => navigate("/admin/users/new")}>Add Technician</button>
 
       </section>
 
@@ -158,53 +179,61 @@ const AdminDashboard = () => {
 
             </div>
 
-            <table>
+            {tickets.length === 0 ? (
 
-              <thead>
+              <p className="admin-empty">No tickets yet.</p>
 
-                <tr>
-                  <th>ID</th>
-                  <th>Customer</th>
-                  <th>Issue</th>
-                  <th>Technician</th>
-                  <th>Status</th>
-                </tr>
+            ) : (
 
-              </thead>
+              <table>
 
-              <tbody>
+                <thead>
 
-                {tickets.map((ticket) => (
-
-                  <tr key={ticket.id}>
-
-                    <td>{ticket.id}</td>
-
-                    <td>{ticket.customer}</td>
-
-                    <td>{ticket.issue}</td>
-
-                    <td>{ticket.technician}</td>
-
-                    <td>
-
-                      <span
-                        className={`status ${ticket.status
-                          .replace(/\s+/g, "")
-                          .toLowerCase()}`}
-                      >
-                        {ticket.status}
-                      </span>
-
-                    </td>
-
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Issue</th>
+                    <th>Technician</th>
+                    <th>Status</th>
                   </tr>
 
-                ))}
+                </thead>
 
-              </tbody>
+                <tbody>
 
-            </table>
+                  {tickets.map((ticket) => (
+
+                    <tr key={ticket.id}>
+
+                      <td>{ticket.ticket_code}</td>
+
+                      <td>{ticket.customer_name}</td>
+
+                      <td>{ticket.issue}</td>
+
+                      <td>{ticket.technician_name || "Pending"}</td>
+
+                      <td>
+
+                        <span
+                          className={`status ${ticket.status
+                            .replace(/\s+/g, "")
+                            .toLowerCase()}`}
+                        >
+                          {ticket.status}
+                        </span>
+
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            )}
 
           </div>
 
@@ -217,7 +246,7 @@ const AdminDashboard = () => {
             <div className="health-item">
               <FaLaptop />
               <span>Registered Devices</span>
-              <strong>2,843</strong>
+              <strong>{statsData.totalDevices}</strong>
             </div>
 
             <div className="health-item">
@@ -229,7 +258,7 @@ const AdminDashboard = () => {
             <div className="health-item">
               <FaExclamationTriangle />
               <span>Pending Approvals</span>
-              <strong>11</strong>
+              <strong>{statsData.unassignedCalls}</strong>
             </div>
 
           </div>
@@ -244,7 +273,7 @@ const AdminDashboard = () => {
 
           <div className="admin-card">
 
-            <h2>Top Technicians</h2>
+            <h2>Technicians</h2>
 
             {technicians.map((tech, index) => (
 
@@ -252,15 +281,9 @@ const AdminDashboard = () => {
 
                 <div>
 
-                  <h4>{tech.name}</h4>
-
-                  <small>
-                    {tech.jobs} Jobs Completed
-                  </small>
-
+                  <h4>{tech.first_name} {tech.last_name}</h4>
                 </div>
 
-                <span>{tech.rating}</span>
 
               </div>
 
@@ -274,11 +297,15 @@ const AdminDashboard = () => {
 
             <h2>Quick Actions</h2>
 
-            <button className="admin-btn">
+            <button className="admin-btn" onClick={() => navigate("/admin/bookings")}>
+              Pending Bookings
+            </button>
+
+            <button className="admin-btn" onClick={() => navigate("/admin/users")}>
               Manage Users
             </button>
 
-            <button className="admin-btn">
+            <button className="admin-btn" onClick={() => navigate("/admin/technicians")}>
               Manage Technicians
             </button>
 
@@ -304,9 +331,9 @@ const AdminDashboard = () => {
 
             <div className="revenue-box">
 
-              <h1>₦3,400,000</h1>
+              <h1>₦{Number(statsData.revenue).toLocaleString()}</h1>
 
-              <p>+18% compared to last month</p>
+              <p>{revenueChangeLabel}</p>
 
             </div>
 

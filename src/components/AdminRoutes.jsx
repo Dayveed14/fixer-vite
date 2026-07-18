@@ -1,17 +1,17 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-const UserPrivateRoutes = () => {
+const AdminRoutes = () => {
   let user = null;
 
-    try {
+  try {
     user = JSON.parse(localStorage.getItem("user"));
   } catch {
     user = null;
-  };
-  
-const role = user?.role;
+  }
 
-  if (role === "user") {
+  const role = user?.role;
+
+  if (role === "admin") {
     return <Outlet />;
   }
 
@@ -19,11 +19,11 @@ const role = user?.role;
     return <Navigate to="/techniciandashboard" replace />;
   }
 
-  if (role === "admin") {
-    return <Navigate to="/admindashboard" replace />;
+  if (role === "user") {
+    return <Navigate to="/userdashboard" replace />;
   }
 
   return <Navigate to="/" replace />;
 };
 
-export default UserPrivateRoutes;
+export default AdminRoutes;

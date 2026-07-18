@@ -11,61 +11,130 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import "./TechnicianDashboard.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
+const SUPPORT_TYPE_LABELS = {
+  voice: "Voice Call",
+  video: "Video Call",
+  remote_desktop: "Remote Support",
+};
 
 const TechnicianDashboard = () => {
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch {
+    user = null;
+  }
+
+  const [techStats, setTechStats] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [schedule, setSchedule] = useState([]);
+  const [activeTicket, setActiveTicket] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setError("You need to be logged in to view your dashboard.");
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchDashboard = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [statsRes, jobsRes, scheduleRes, activeRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/stats/technician/${user.id}`),
+          axios.get(`${API_BASE_URL}/api/tickets`, {
+            params: { technician_id: user.id, limit: 3 },
+          }),
+          axios.get(`${API_BASE_URL}/api/bookings`, {
+            params: { technician_id: user.id, today: true, status: "confirmed" },
+          }),
+          axios.get(`${API_BASE_URL}/api/tickets/active/${user.id}`),
+        ]);
+
+        if (!cancelled) {
+          setTechStats(statsRes.data);
+          setJobs(jobsRes.data);
+          setSchedule(scheduleRes.data);
+          setActiveTicket(activeRes.data);
+        }
+      } catch (err) {
+        console.error(err);
+
+        if (!cancelled) {
+          setError("Failed to load dashboard data. Please try again.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  if (loading) {
+    return (
+      <div className="technician-dashboard">
+        <p className="dashboard-loading">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="technician-dashboard">
+        <p className="dashboard-error">{error}</p>
+      </div>
+    );
+  }
+
   const stats = [
     {
       title: "Assigned Jobs",
-      value: 18,
+      value: techStats.assignedJobs,
       icon: <FaTicketAlt />,
       color: "#2563EB",
     },
     {
       title: "Completed Today",
-      value: 7,
+      value: techStats.completedToday,
       icon: <FaCheckCircle />,
       color: "#16A34A",
     },
     {
       title: "Pending Repairs",
-      value: 11,
+      value: techStats.pendingRepairs,
       icon: <FaClock />,
       color: "#F59E0B",
     },
     {
       title: "Devices Repaired",
-      value: 364,
+      value: techStats.devicesRepaired,
       icon: <FaLaptop />,
       color: "#9333EA",
     },
   ];
 
-  const jobs = [
-    {
-      id: "#TK2011",
-      customer: "David A.",
-      device: "Dell Latitude 5420",
-      issue: "Laptop won't boot",
-      priority: "High",
-      status: "In Progress",
-    },
-    {
-      id: "#TK2012",
-      customer: "Mary O.",
-      device: "HP EliteBook",
-      issue: "Slow Performance",
-      priority: "Medium",
-      status: "Pending",
-    },
-    {
-      id: "#TK2013",
-      customer: "John C.",
-      device: "MacBook Air",
-      issue: "Battery Replacement",
-      priority: "Low",
-      status: "Completed",
-    },
-  ];
+  const performanceLabel =
+    techStats.performancePercent === null
+      ? "No ratings yet"
+      : "Customer Satisfaction";
 
   return (
     <div className="technician-dashboard">
@@ -75,7 +144,7 @@ const TechnicianDashboard = () => {
       <section className="tech-banner">
 
         <div>
-          <h1>Welcome Back, John 👨‍🔧</h1>
+          <h1>Welcome Back{user?.first_name ? `, ${user.first_name}` : ""} 👨‍🔧</h1>
 
           <p>
             Manage assigned repair requests, update customer
@@ -136,57 +205,65 @@ const TechnicianDashboard = () => {
 
             </div>
 
-            <table>
+            {jobs.length === 0 ? (
 
-              <thead>
+              <p className="dashboard-empty">No jobs assigned yet.</p>
 
-                <tr>
-                  <th>Ticket</th>
-                  <th>Customer</th>
-                  <th>Device</th>
-                  <th>Priority</th>
-                  <th>Status</th>
-                </tr>
+            ) : (
 
-              </thead>
+              <table>
 
-              <tbody>
+                <thead>
 
-                {jobs.map((job) => (
-
-                  <tr key={job.id}>
-
-                    <td>{job.id}</td>
-
-                    <td>{job.customer}</td>
-
-                    <td>{job.device}</td>
-
-                    <td>
-                      <span
-                        className={`priority ${job.priority.toLowerCase()}`}
-                      >
-                        {job.priority}
-                      </span>
-                    </td>
-
-                    <td>
-                      <span
-                        className={`status ${job.status
-                          .replace(/\s+/g, "")
-                          .toLowerCase()}`}
-                      >
-                        {job.status}
-                      </span>
-                    </td>
-
+                  <tr>
+                    <th>Ticket</th>
+                    <th>Customer</th>
+                    <th>Device</th>
+                    <th>Priority</th>
+                    <th>Status</th>
                   </tr>
 
-                ))}
+                </thead>
 
-              </tbody>
+                <tbody>
 
-            </table>
+                  {jobs.map((job) => (
+
+                    <tr key={job.id}>
+
+                      <td>{job.ticket_code}</td>
+
+                      <td>{job.customer_name}</td>
+
+                      <td>{job.device || "—"}</td>
+
+                      <td>
+                        <span
+                          className={`priority ${job.priority.toLowerCase()}`}
+                        >
+                          {job.priority}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`status ${job.status
+                            .replace(/\s+/g, "")
+                            .toLowerCase()}`}
+                        >
+                          {job.status}
+                        </span>
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            )}
 
           </div>
 
@@ -196,29 +273,27 @@ const TechnicianDashboard = () => {
 
             <h2>Today's Schedule</h2>
 
-            <div className="schedule-item">
-              <FaCalendarAlt />
-              <div>
-                <h4>Remote Support Session</h4>
-                <p>09:00 AM - David A.</p>
-              </div>
-            </div>
+            {schedule.length === 0 ? (
 
-            <div className="schedule-item">
-              <FaCalendarAlt />
-              <div>
-                <h4>Mail-in Device Inspection</h4>
-                <p>11:30 AM - Mary O.</p>
-              </div>
-            </div>
+              <p className="dashboard-empty">No bookings scheduled for today.</p>
 
-            <div className="schedule-item">
-              <FaCalendarAlt />
-              <div>
-                <h4>Software Installation</h4>
-                <p>03:00 PM - John C.</p>
-              </div>
-            </div>
+            ) : (
+
+              schedule.map((appt) => (
+
+                <div className="schedule-item" key={appt.id}>
+                  <FaCalendarAlt />
+                  <div>
+                    <h4>{SUPPORT_TYPE_LABELS[appt.support_type] || "Support Call"}</h4>
+                    <p>
+                      {appt.booking_time} - {appt.customer_name}
+                    </p>
+                  </div>
+                </div>
+
+              ))
+
+            )}
 
           </div>
 
@@ -234,19 +309,25 @@ const TechnicianDashboard = () => {
 
             <h2>Current Customer</h2>
 
-            <div className="customer-box">
+            {activeTicket ? (
 
-              <FaUser className="customer-icon"/>
+              <div className="customer-box">
 
-              <h3>David A.</h3>
+                <FaUser className="customer-icon"/>
 
-              <p>Dell Latitude 5420</p>
+                <h3>{activeTicket.customer_name}</h3>
 
-              <small>
-                Laptop won't boot after Windows update.
-              </small>
+                <p>{activeTicket.device || "Device not specified"}</p>
 
-            </div>
+                <small>{activeTicket.issue}</small>
+
+              </div>
+
+            ) : (
+
+              <p className="dashboard-empty">No active job right now.</p>
+
+            )}
 
           </div>
 
@@ -284,9 +365,13 @@ const TechnicianDashboard = () => {
 
               <FaTools className="performance-icon"/>
 
-              <h1>97%</h1>
+              <h1>
+                {techStats.performancePercent === null
+                  ? "—"
+                  : `${techStats.performancePercent}%`}
+              </h1>
 
-              <p>Customer Satisfaction</p>
+              <p>{performanceLabel}</p>
 
             </div>
 

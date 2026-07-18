@@ -1,6 +1,6 @@
 import { Outlet, Navigate } from "react-router-dom";
 
-const UserPrivateRoutes = () => {
+const TechnicianPrivateRoutes = () => {
   let user = null;
 
     try {
@@ -8,22 +8,22 @@ const UserPrivateRoutes = () => {
   } catch {
     user = null;
   };
-  
-const role = user?.role;
 
-  if (role === "user") {
-    return <Outlet />;
-  }
+  const role = user?.role;
 
   if (role === "technician") {
-    return <Navigate to="/techniciandashboard" replace />;
+    return <Outlet />;
   }
 
   if (role === "admin") {
     return <Navigate to="/admindashboard" replace />;
   }
 
+  if (role === "user") {
+    return <Navigate to="/userdashboard" replace />;
+  }
+
   return <Navigate to="/" replace />;
 };
 
-export default UserPrivateRoutes;
+export default TechnicianPrivateRoutes;

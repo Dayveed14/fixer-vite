@@ -1,5 +1,8 @@
 import { useState } from "react";
+import axios from "axios";
 import "./css/BookCall.css";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -27,6 +30,17 @@ function getFirstDay(year, month) {
   return new Date(year, month, 1).getDay();
 }
 
+// Convert "8:00 AM" -> "08:00:00" for the backend's TIME column.
+function to24Hour(timeLabel) {
+  const [time, period] = timeLabel.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+
+  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
+}
+
 export default function BookCall() {
   const today = new Date();
   const [step, setStep] = useState(1);
@@ -39,9 +53,12 @@ export default function BookCall() {
   const [form, setForm] = useState({ name: "", email: "", device: "", issue: "" });
   const [supportType, setSupportType] = useState("");
   const [payment, setPayment] = useState({ cardNumber: "", expiry: "", cvc: "" });
-  
+
   const [deviceDropOpen, setDeviceDropOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [bookingReference, setBookingReference] = useState(null);
 
   const prevMonth = () => {
     if (month === 0) { setMonth(11); setYear(y => y - 1); }
@@ -65,7 +82,7 @@ export default function BookCall() {
   };
 
   const selectedLabel = selectedDate
-    ? `${DAYS[new Date(year, month, selectedDate).getDay()], MONTHS[month]} ${selectedDate}, ${year}`
+    ? `${DAYS[new Date(year, month, selectedDate).getDay()]}, ${MONTHS[month]} ${selectedDate}, ${year}`
     : "";
 
   const handleNextStep = () => {
@@ -79,12 +96,46 @@ export default function BookCall() {
     if (step > 1) setStep(prev => prev - 1);
   };
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    let user = null;
+    try {
+      user = JSON.parse(localStorage.getItem("user"));
+    } catch {
+      user = null;
+    }
+
+    if (!user?.id) {
+      setSubmitError("You need to be logged in to book a call.");
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/bookings`, {
+        user_id: user.id,
+        support_type: supportType,
+        booking_date: `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
+        booking_time: to24Hour(selectedTime),
+        duration: 30,
+        issue_summary: form.issue || null,
+        device: form.device || null,
+      });
+
+      setBookingReference(res.data.booking_reference);
+      setSubmitted(true);
+    } catch (err) {
+      console.error(err);
+      setSubmitError("Failed to confirm booking. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const resetForm = () => {
     setSubmitted(false);
+    setBookingReference(null);
     setStep(1);
     setSelectedDate(null);
     setSelectedTime(null);
@@ -95,7 +146,6 @@ export default function BookCall() {
 
   // Helper to generate dynamic Google Calendar invite file
   const downloadCalendarInvite = () => {
-    const timeFormatted = selectedTime.replace(/\s/g, "");
     const eventDetails = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Device Repair Call (${supportType.toUpperCase()})\nDESCRIPTION:Expert troubleshooting appointment.\nDTSTART:${year}${String(month + 1).padStart(2, '0')}${String(selectedDate).padStart(2, '0')}T120000Z\nDURATION:PT30M\nEND:VEVENT\nEND:VCALENDAR`;
     const blob = new Blob([eventDetails], { type: "text/calendar;charset=utf-8;" });
     const link = document.createElement("a");
@@ -111,14 +161,15 @@ export default function BookCall() {
       <div className="bookcall__success">
         <div className="bookcall__success-icon">✓</div>
         <h2>Booking Confirmed!</h2>
+        {bookingReference && <p className="bookcall__reference">Reference: <strong>{bookingReference}</strong></p>}
         <p>Your <strong>{SUPPORT_TYPES.find(t => t.id === supportType)?.title}</strong> is scheduled for <strong>{selectedLabel}</strong> at <strong>{selectedTime}</strong>.</p>
-        <p>A receipt and confirmation link have been sent to <strong>{form.email}</strong>.</p>
-        
+        <p>A receipt and confirmation link have been sent to <strong>{form.email}</strong>. A technician will be assigned to your booking shortly.</p>
+
         <div className="bookcall__action-box">
           {supportType === "voice" && (
             <>
               <h4>📞 Action Required: Call Us at Appointment Time</h4>
-              <p>Please dial our toll-free support number: <strong>1-800-555-REPAIR (737-247)</strong>. Your session pin is your registered phone/email.</p>
+              <p>Please dial our support number: <strong>+2348093625430</strong>. Your session pin is your registered phone/email.</p>
             </>
           )}
           {supportType === "video" && (
@@ -340,6 +391,9 @@ export default function BookCall() {
                     value={payment.cvc} onChange={e => setPayment(p => ({...p, cvc: e.target.value}))} />
                 </div>
               </div>
+              <p className="bookcall__payment-note">
+                Payment is simulated for now — no card details are transmitted or stored.
+              </p>
               <div className="bookcall__form-actions">
                 <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep}>Back</button>
                 <button className={`bookcall__btn bookcall__btn--primary ${(!payment.cardNumber || !payment.expiry || !payment.cvc) ? "disabled" : ""}`}
@@ -361,9 +415,14 @@ export default function BookCall() {
               <div className="review-item"><strong>Date & Time:</strong> {selectedLabel} at {selectedTime}</div>
               {form.issue && <div className="review-item"><strong>Issue:</strong> "{form.issue}"</div>}
             </div>
+
+            {submitError && <p className="bookcall__error">{submitError}</p>}
+
             <div className="bookcall__form-actions" style={{ marginTop: '25px' }}>
-              <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep}>Back</button>
-              <button className="bookcall__btn bookcall__btn--primary" onClick={handleSubmit}>Confirm & Pay</button>
+              <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep} disabled={submitting}>Back</button>
+              <button className="bookcall__btn bookcall__btn--primary" onClick={handleSubmit} disabled={submitting}>
+                {submitting ? "Confirming..." : "Confirm & Pay"}
+              </button>
             </div>
           </div>
         )}

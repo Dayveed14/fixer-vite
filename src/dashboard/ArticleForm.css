@@ -1,0 +1,156 @@
+/* ArticleForm.css */
+
+* {
+    box-sizing: border-box;
+}
+
+.article-form-page {
+    min-height: 100vh;
+    background: #f4f6f9;
+    padding: 40px 20px;
+}
+
+.article-form-card {
+    max-width: 900px;
+    margin: auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 35px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.article-form-card h2 {
+    margin-bottom: 30px;
+    color: #222;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #444;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #d9d9d9;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.25s ease;
+    background: #fff;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 250px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+}
+
+.image-preview {
+    margin: 20px 0;
+}
+
+.image-preview img {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    display: block;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: #0d6efd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: #0b5ed7;
+}
+
+.submit-btn:disabled {
+    background: #8ab4f8;
+    cursor: not-allowed;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.cancel-btn {
+    padding: 14px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #6c757d;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.cancel-btn:hover {
+    background: #5c636a;
+}
+
+@media (max-width: 768px) {
+    .article-form-page {
+        padding: 20px 10px;
+    }
+
+    .article-form-card {
+        padding: 25px;
+    }
+
+    .article-form-card h2 {
+        font-size: 1.6rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group textarea {
+        min-height: 200px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .cancel-btn,
+    .submit-btn {
+        width: 100%;
+    }
+}

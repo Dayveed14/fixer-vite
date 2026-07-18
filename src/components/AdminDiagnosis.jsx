@@ -59,14 +59,6 @@ export default function Diagnosis() {
     );
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const USD_TO_NAIRA = 1600; // example exchange rate
-
-  const estimatedNaira = diagnosis.estimatedRepair
-    ? Number(
-        diagnosis.estimatedRepair.replace(/[^0-9.]/g, "")
-      ) * USD_TO_NAIRA
-    : 0;
-
 
   const handleRun = async () => {
 
@@ -406,7 +398,7 @@ export default function Diagnosis() {
           </span>
 
           <span className="diag-stat-value">
-            ₦{estimatedNaira.toLocaleString()}
+            {diagnosis.estimatedRepair}
           </span>
         </div>
       </div>

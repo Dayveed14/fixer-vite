@@ -1,0 +1,108 @@
+.admin-tickets {
+    padding: 30px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    margin: 0;
+}
+
+.page-header p {
+    color: #666;
+    margin-top: 5px;
+}
+
+.page-header input {
+    width: 280px;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.table-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f8fafc;
+}
+
+th,
+td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+tbody tr:hover {
+    background: #f9fbff;
+}
+
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.status.open {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status.inprogress {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status.completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status.closed {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.action-btn {
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    margin-right: 8px;
+}
+
+.action-btn.view {
+    background: #2563eb;
+    color: white;
+}
+
+.action-btn.edit {
+    background: #f59e0b;
+    color: white;
+}
+
+.action-btn.delete {
+    background: #dc2626;
+    color: white;
+}
+
+.admin-loading {
+    padding: 50px;
+    text-align: center;
+}

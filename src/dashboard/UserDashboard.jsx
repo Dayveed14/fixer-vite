@@ -7,21 +7,181 @@ import {
   FaComments,
   FaArrowRight,
   FaClock,
+  FaStar,
 } from "react-icons/fa";
 import "./UserDashboard.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
+const SUPPORT_TYPE_LABELS = {
+  voice: "Voice Call",
+  video: "Video Call",
+  remote_desktop: "Remote Support",
+};
+
+const StarRating = ({ ticket, onSubmitted }) => {
+  const [hoverValue, setHoverValue] = useState(0);
+  const [selectedValue, setSelectedValue] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+
+  const submitRating = async (value) => {
+    setSelectedValue(value);
+    setSubmitting(true);
+
+    try {
+      await axios.post(`${API_BASE_URL}/api/ratings`, {
+        ticket_id: ticket.id,
+        technician_id: ticket.technician_id,
+        rating: value,
+      });
+
+      onSubmitted(ticket.id, value);
+    } catch (err) {
+      console.error(err);
+      setSelectedValue(0);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <span className="rating-stars">
+      {[1, 2, 3, 4, 5].map((value) => (
+        <FaStar
+          key={value}
+          className={
+            value <= (hoverValue || selectedValue) ? "star filled" : "star"
+          }
+          onMouseEnter={() => !submitting && setHoverValue(value)}
+          onMouseLeave={() => !submitting && setHoverValue(0)}
+          onClick={() => !submitting && submitRating(value)}
+        />
+      ))}
+    </span>
+  );
+};
 
 const UserDashboard = () => {
-  const stats = [
-    { title: "Appointments",      value: 3, icon: <FaTicketAlt />, color: "#0B63CE" },
-    { title: "Repairs in Progress", value: 2, icon: <FaTools />,    color: "#F59E0B" },
-    { title: "Registered Devices", value: 5, icon: <FaLaptop />,   color: "#16A34A" },
-    { title: "AI Diagnoses",       value: 7, icon: <FaRobot />,    color: "#9333EA" },
-  ];
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch {
+    user = null;
+  }
 
-  const tickets = [
-    { id: "#TK1001", issue: "Laptop won't boot",   technician: "John Adams",  status: "In Progress", date: "12 Jul 2026" },
-    { id: "#TK1002", issue: "Wi-Fi not working",   technician: "Pending",     status: "Open",        date: "10 Jul 2026" },
-    { id: "#TK1003", issue: "Broken Screen",       technician: "Sarah James", status: "Completed",   date: "04 Jul 2026" },
+  const [userStats, setUserStats] = useState(null);
+  const [tickets, setTickets] = useState([]);
+  const [nextAppointment, setNextAppointment] = useState(null);
+  const [device, setDevice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!user?.id) {
+      setError("You need to be logged in to view your dashboard.");
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const fetchDashboard = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [statsRes, ticketsRes, appointmentRes, deviceRes] =
+          await Promise.all([
+            axios.get(`${API_BASE_URL}/api/stats/user/${user.id}`),
+            axios.get(`${API_BASE_URL}/api/tickets`, {
+              params: { customer_id: user.id, limit: 3 },
+            }),
+            axios.get(`${API_BASE_URL}/api/bookings`, {
+              params: { user_id: user.id, upcoming: true, limit: 1 },
+            }),
+            axios.get(`${API_BASE_URL}/api/devices`, {
+              params: { customer_id: user.id, limit: 1 },
+            }),
+          ]);
+
+        if (!cancelled) {
+          setUserStats(statsRes.data);
+          setTickets(ticketsRes.data);
+          setNextAppointment(appointmentRes.data[0] || null);
+          setDevice(deviceRes.data[0] || null);
+          console.log(deviceRes.data[0] || null);
+        }
+      } catch (err) {
+        console.error(err);
+
+        if (!cancelled) {
+          setError("Failed to load dashboard data. Please try again.");
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchDashboard();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
+  const handleRatingSubmitted = (ticketId, rating) => {
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId ? { ...t, existing_rating: rating } : t,
+      ),
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="user-dashboard">
+        <p className="dashboard-loading">Loading dashboard...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="user-dashboard">
+        <p className="dashboard-error">{error}</p>
+      </div>
+    );
+  }
+
+  const stats = [
+    {
+      title: "Appointments",
+      value: userStats.appointmentsCount,
+      icon: <FaTicketAlt />,
+      color: "#0B63CE",
+    },
+    {
+      title: "Repairs in Progress",
+      value: userStats.repairsInProgress,
+      icon: <FaTools />,
+      color: "#F59E0B",
+    },
+    {
+      title: "Registered Devices",
+      value: userStats.registeredDevices,
+      icon: <FaLaptop />,
+      color: "#16A34A",
+    },
+    {
+      title: "AI Diagnoses",
+      value: userStats.aiDiagnoses,
+      icon: <FaRobot />,
+      color: "#9333EA",
+    },
   ];
 
   return (
@@ -30,7 +190,7 @@ const UserDashboard = () => {
       {/* Welcome Banner */}
       <section className="welcome-banner">
         <div>
-          <h1>Welcome Back, David 👋</h1>
+          <h1>Welcome Back, {user?.first_name} 👋</h1>
           <p>
             Manage your support tickets, monitor repairs and
             request assistance from our certified technicians.
@@ -69,34 +229,61 @@ const UserDashboard = () => {
 
             {/* Wrapper enables horizontal scroll on small screens */}
             <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Ticket</th>
-                    <th>Issue</th>
-                    <th>Technician</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tickets.map((ticket) => (
-                    <tr key={ticket.id}>
-                      <td>{ticket.id}</td>
-                      <td>{ticket.issue}</td>
-                      <td>{ticket.technician}</td>
-                      <td>
-                        <span
-                          className={`status ${ticket.status
-                            .replace(/\s+/g, "")
-                            .toLowerCase()}`}
-                        >
-                          {ticket.status}
-                        </span>
-                      </td>
+              {tickets.length === 0 ? (
+
+                <p className="dashboard-empty">No support tickets yet.</p>
+
+              ) : (
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ticket</th>
+                      <th>Issue</th>
+                      <th>Technician</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {tickets.map((ticket) => (
+                      <tr key={ticket.id}>
+                        <td>{ticket.ticket_code}</td>
+                        <td>{ticket.issue}</td>
+                        <td>{ticket.technician_name || "Pending"}</td>
+                        <td>
+                          <span
+                            className={`status ${ticket.status
+                              .replace(/\s+/g, "")
+                              .toLowerCase()}`}
+                          >
+                            {ticket.status}
+                          </span>
+
+                          {ticket.status === "Completed" && ticket.technician_id && (
+
+                            ticket.existing_rating ? (
+
+                              <span className="rating-done">
+                                Rated {ticket.existing_rating}/5
+                              </span>
+
+                            ) : (
+
+                              <StarRating
+                                ticket={ticket}
+                                onSubmitted={handleRatingSubmitted}
+                              />
+
+                            )
+
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+              )}
             </div>
           </div>
 
@@ -133,23 +320,47 @@ const UserDashboard = () => {
           {/* Appointment */}
           <div className="dashboard-card">
             <h2>Upcoming Appointment</h2>
-            <div className="appointment">
-              <FaCalendarAlt className="calendar-icon" />
-              <h3>Remote Support Session</h3>
-              <p>Monday, 13 July 2026</p>
-              <span>10:00 AM</span>
-            </div>
+
+            {nextAppointment ? (
+
+              <div className="appointment">
+                <FaCalendarAlt className="calendar-icon" />
+                <h3>{SUPPORT_TYPE_LABELS[nextAppointment.support_type] || "Support Call"}</h3>
+                <p>{nextAppointment.booking_date}</p>
+                <span>{nextAppointment.booking_time}</span>
+              </div>
+
+            ) : (
+
+              <p className="dashboard-empty">No upcoming appointments.</p>
+
+            )}
+
           </div>
 
           {/* Registered Device */}
           <div className="dashboard-card">
             <h2>Registered Device</h2>
-            <div className="device-card">
-              <FaLaptop className="device-icon" />
-              <h3>Dell Latitude 5420</h3>
-              <p>Windows 11 Pro</p>
-              <small>Last Serviced: 22 June 2026</small>
-            </div>
+
+            {device ? (
+
+              <div className="device-card">
+                <FaLaptop className="device-icon" />
+                <h3>{device.device_name}</h3>
+                <p>{device.os || device.brand || "—"}</p>
+                <small>
+                  {device.last_serviced_at
+                    ? `Last Serviced: ${device.last_serviced_at}`
+                    : "Not serviced yet"}
+                </small>
+              </div>
+
+            ) : (
+
+              <p className="dashboard-empty">No devices registered yet.</p>
+
+            )}
+
           </div>
 
         </div>

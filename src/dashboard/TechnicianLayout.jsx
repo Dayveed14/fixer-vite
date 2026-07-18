@@ -20,7 +20,7 @@ import {
 import logo from "../components/img/logo.png";
 import "./UserLayout.css";
 
-const UserLayout = () => {
+const TechnicianLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenu, setProfileMenu] = useState(false);
 const user = JSON.parse(localStorage.getItem("user"));
@@ -35,27 +35,27 @@ const user = JSON.parse(localStorage.getItem("user"));
   const menuItems = [
     {
       name: "Dashboard",
-      path: "/dashboard",
+      path: "/techniciandashboard",
       icon: <FaTachometerAlt />,
     },
     {
-      name: "Book Support",
-      path: "/book",
+      name: "History",
+      path: "/history",
       icon: <FaTicketAlt />,
     },
     {
-      name: "Smart Diagnosis",
-      path: "/diagnosis",
+      name: "Assigned Jobs",
+      path: "/technicianjobs",
       icon: <FaRobot />,
     },
     {
-      name: "Mail-In Repair",
-      path: "/mailin",
+      name: "Appointments",
+      path: "/appointments",
       icon: <FaBoxOpen />,
     },
     {
-      name: "Messages",
-      path: "/messages",
+      name: "Repairs",
+      path: "/repairs",
       icon: <FaComments />,
     },
     {
@@ -205,4 +205,4 @@ const user = JSON.parse(localStorage.getItem("user"));
   );
 };
 
-export default UserLayout;
+export default TechnicianLayout;

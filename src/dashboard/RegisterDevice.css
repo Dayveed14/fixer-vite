@@ -1,0 +1,130 @@
+.register-device-page {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.register-device-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 30px;
+}
+
+.register-device-icon {
+    font-size: 48px;
+    color: #2563eb;
+}
+
+.register-device-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #1f2937;
+}
+
+.register-device-header p {
+    margin-top: 6px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.register-device-form {
+    background: #fff;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.register-device-form label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: -10px;
+}
+
+.register-device-form input,
+.register-device-form select {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: .2s;
+}
+
+.register-device-form input:focus,
+.register-device-form select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+.register-device-error {
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 12px;
+    border-radius: 8px;
+}
+
+.register-device-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.register-device-cancel {
+    background: #f3f4f6;
+    color: #374151;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.register-device-cancel:hover {
+    background: #e5e7eb;
+}
+
+.register-device-submit {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.register-device-submit:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.register-device-submit:disabled,
+.register-device-cancel:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .register-device-form {
+        padding: 20px;
+    }
+
+    .register-device-actions {
+        flex-direction: column;
+    }
+
+    .register-device-actions button {
+        width: 100%;
+    }
+
+    .register-device-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}

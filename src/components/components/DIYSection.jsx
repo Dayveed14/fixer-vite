@@ -1,19 +1,7 @@
-import { useState } from "react";
 import "../css/DIYSection.css";
-
-const ARTICLES = [
-  { id:1, title:"The Mobile Lifeline: Advanced Smartphone Thermal Management", author:"Dave Edwin", date:"Mar 20", readTime:"10 Mins Read", tag:"Phones", image:"https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=700&q=80", avatar:"https://i.pravatar.cc/30?img=33" },
-  { id:2, title:"Complete Guide to PC Repair: Common Issues and Solutions", author:"Dave Edwin", date:"Mar 20", readTime:"10 Mins Read", tag:"PC", image:"https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&q=80", avatar:"https://i.pravatar.cc/26?img=33" },
-  { id:3, title:"Essential Phone Maintenance Tips for Longer Device Life", author:"Dave Edwin", date:"Mar 20", readTime:"10 Mins Read", tag:"Phones", image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&q=80", avatar:"https://i.pravatar.cc/26?img=33" },
-  { id:4, title:"Upgrading RAM and Storage: A Comprehensive Guide", author:"Dave Edwin", date:"Mar 20", readTime:"8 Mins Read", tag:"PC", image:"https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=300&q=80", avatar:"https://i.pravatar.cc/26?img=33" },
-];
-
-const VIDEOS = [
-  { id:1, title:"How to Replace a Laptop Screen in 10 Minutes", author:"Tech with Tunde", date:"Apr 5", readTime:"12:40", tag:"Laptops", image:"https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=700&q=80", avatar:"https://i.pravatar.cc/30?img=11" },
-  { id:2, title:"Fix PS5 Controller Drift — Full Teardown", author:"GadgetGuru", date:"Mar 29", readTime:"8:15", tag:"Gaming", image:"https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=300&q=80", avatar:"https://i.pravatar.cc/26?img=22" },
-  { id:3, title:"iPhone Battery Replacement — Step by Step", author:"Dave Edwin", date:"Mar 18", readTime:"15:00", tag:"Phones", image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&q=80", avatar:"https://i.pravatar.cc/26?img=33" },
-  { id:4, title:"Deep Clean Your PC: Dust, Thermal Paste & More", author:"FixIt Lab", date:"Feb 28", readTime:"20:05", tag:"PC", image:"https://images.unsplash.com/photo-1555617117-08e6e8a7fb43?w=300&q=80", avatar:"https://i.pravatar.cc/26?img=44" },
-];
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 const IconBook = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -28,12 +16,65 @@ const IconVideo = () => (
 const IconPlay = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
 );
+const DEFAULT_AVATAR =
+  "https://i.pravatar.cc/40?img=15";
 
 export default function DIYSection() {
   const [tab, setTab] = useState("articles");
-  const items = tab === "articles" ? ARTICLES : VIDEOS;
+  const [articles, setArticles] = useState([]);
+  const [videos, setVideos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Refetch whenever the active tab changes
+  useEffect(() => {
+    let cancelled = false;
+
+    const getData = async () => {
+      setLoading(true);
+      try {
+        const endpoint =
+          tab === "articles"
+            ? "http://localhost:4000/api/articles/published"
+            : "http://localhost:4000/api/videos/published";
+
+        const response = await axios.get(endpoint);
+
+        if (!cancelled) {
+          if (tab === "articles") {
+            setArticles(response.data);
+          } else {
+            setVideos(response.data);
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    getData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [tab]);
+
+  const items = tab === "articles" ? articles : videos;
   const featured = items[0];
-  const related  = items.slice(1);
+  const related = items.slice(1);
+
+  if (loading) {
+    return <p>Loading resources...</p>;
+  }
+
+  if (items.length === 0) {
+    return (
+      <section className="diy">
+        <h2>No {tab === "articles" ? "Articles" : "Videos"} Yet</h2>
+      </section>
+    );
+  }
 
   return (
     <section className="diy">
@@ -50,36 +91,39 @@ export default function DIYSection() {
         </div>
 
         <div className="diy__layout">
-          <div className="diy__featured">
+          <Link to={`/userarticle/${featured.id}`}className="diy__featured">
             <div className="diy__featured-img-wrap">
-              <img src={featured.image} alt={featured.title} className="diy__featured-img" />
+              <img src={`http://localhost:4000/uploads/articles/${featured.hero_image}`} alt={featured.title} />
               {tab === "videos" && <div className="diy__play-btn"><IconPlay /></div>}
-              <span className="diy__tag">{featured.tag}</span>
+              <span className="diy__tag">{featured.category}</span>
             </div>
             <h3 className="diy__featured-title">{featured.title}</h3>
             <div className="diy__meta">
-              <img src={featured.avatar} alt="" className="diy__avatar" />
-              <span className="diy__author">{featured.author}</span>
+              <img src={DEFAULT_AVATAR} alt={featured.first_name} className="diy__avatar" />
+              <span className="diy__author">{featured.first_name} {featured.last_name}</span>
               <span className="diy__dot">·</span>
-              <span className="diy__date">{featured.date} · {featured.readTime}</span>
+              <span className="diy__date">
+                {new Date(featured.created_at).toLocaleDateString()}
+              </span>
             </div>
-          </div>
-
+          </Link>
           <div className="diy__related">
             <p className="diy__related-label">Related {tab}</p>
             {related.map(item => (
               <div className="diy__related-item" key={item.id}>
                 <div className="diy__related-img-wrap">
-                  <img src={item.image} alt={item.title} className="diy__related-img" />
+                  <img src={`http://localhost:4000/uploads/articles/${item.hero_image}`} alt={item.title} className="diy__related-img" />
                   {tab === "videos" && <div className="diy__play-btn diy__play-btn--sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>}
                 </div>
                 <div>
-                  <h4 className="diy__related-title">{item.title}</h4>
+                  <Link to={`/userarticle/${item.id}`} className="diy__related-title">{item.title}</Link>
                   <div className="diy__meta diy__meta--sm">
                     <img src={item.avatar} alt="" className="diy__avatar diy__avatar--sm" />
-                    <span className="diy__author">{item.author}</span>
+                    <span className="diy__author">{item.first_name + " " + item.last_name}</span>
                     <span className="diy__dot">·</span>
-                    <span className="diy__date">{item.date} · {item.readTime}</span>
+                    <span className="diy__date">
+                      {new Date(item.created_at).toLocaleDateString()} · {item.readTime}
+                    </span>
                   </div>
                 </div>
               </div>

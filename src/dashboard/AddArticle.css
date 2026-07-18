@@ -1,0 +1,202 @@
+/* ===========================
+   Page
+=========================== */
+
+.add-article {
+    padding: 30px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+/* ===========================
+   Header
+=========================== */
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    color: #1f2937;
+}
+
+.page-header p {
+    margin-top: 6px;
+    color: #6b7280;
+    font-size: .95rem;
+}
+
+/* ===========================
+   Form Card
+=========================== */
+
+.article-form {
+    background: #fff;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
+}
+
+/* ===========================
+   Form Groups
+=========================== */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: .95rem;
+    transition: .2s;
+    font-family: inherit;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, .12);
+}
+
+.form-group input[readonly] {
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* ===========================
+   File Upload
+=========================== */
+
+.form-group input[type="file"] {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.form-group input[type="file"]::-webkit-file-upload-button {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 12px;
+    transition: .2s;
+}
+
+.form-group input[type="file"]::-webkit-file-upload-button:hover {
+    background: #1d4ed8;
+}
+
+/* ===========================
+   Buttons
+=========================== */
+
+.article-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.cancel-btn,
+.save-btn {
+    border: none;
+    padding: 13px 26px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: .95rem;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.cancel-btn {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.cancel-btn:hover {
+    background: #e5e7eb;
+}
+
+.save-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.save-btn:hover:not(:disabled) {
+    background: #1d4ed8;
+}
+
+.save-btn:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+/* ===========================
+   Image Preview
+=========================== */
+
+.image-preview {
+    margin-top: 15px;
+}
+
+.image-preview img {
+    width: 220px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    object-fit: cover;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width: 768px) {
+
+    .add-article {
+        padding: 20px;
+    }
+
+    .article-form {
+        padding: 25px;
+    }
+
+    .article-buttons {
+        flex-direction: column;
+    }
+
+    .article-buttons button {
+        width: 100%;
+    }
+
+    .page-header h1 {
+        font-size: 1.6rem;
+    }
+
+}

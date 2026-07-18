@@ -27,6 +27,11 @@
     flex-direction: column;
     padding: 25px 20px;
     transition: .3s ease;
+    position:fixed;
+    overflow: hidden; 
+    top: 0;
+    left: 0;
+    height: 100vh;
 }
 
 .logo {
@@ -152,6 +157,7 @@
     padding: 12px 18px;
     border-radius: 10px;
     width: 350px;
+    margin-left: 270px;
 }
 
 .search-box svg {
@@ -282,6 +288,7 @@
 .page-content {
     flex: 1;
     padding: 30px;
+    margin-left: 270px;
 }
 
 /* ===================================
@@ -289,6 +296,14 @@
 =================================== */
 
 @media (max-width: 992px) {
+.layout,
+    .admin-grid {
+        display: unset;
+    }
+
+    .page-content, .search-box {
+            margin-left: unset;
+        }
 
     .sidebar {
         position: fixed;
@@ -317,6 +332,13 @@
 }
 
 @media (max-width: 768px) {
+.layout,
+    .admin-grid {
+     display: unset;
+    }
+    .page-content, .search-box {
+            margin-left: unset;
+        }
 
     .topbar {
         padding: 15px;
@@ -338,6 +360,13 @@
 }
 
 @media (max-width: 480px) {
+.layout,
+    .admin-grid {
+        display: unset;
+    }
+    .page-content, .search-box {
+            margin-left: unset;
+        }
 
     .top-right {
         gap: 15px;
