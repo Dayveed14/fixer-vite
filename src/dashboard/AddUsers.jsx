@@ -30,7 +30,7 @@ const AddUsers = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:4000/api/users/create",
+        "https://fixer-backend-7mng.onrender.com/api/users/create",
         formData
       );
 

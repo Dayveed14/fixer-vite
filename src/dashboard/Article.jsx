@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "./Article.css";
 
-const API = "http://localhost:4000/api/articles";
+const API = "https://fixer-backend-7mng.onrender.com/api/articles";
 
 export default function Article() {
   const { id } = useParams();
@@ -52,7 +52,7 @@ export default function Article() {
       <div className="article-container">
 
         <img
-          src={`http://localhost:4000/uploads/articles/${article.hero_image}`}
+          src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${article.hero_image}`}
           alt={article.title}
           className="hero-image"
         />
