@@ -61,11 +61,7 @@ export default function Diagnosis() {
   const [showModal, setShowModal] = useState(false);
   const USD_TO_NAIRA = 1600; // example exchange rate
 
-  const estimatedNaira = diagnosis.estimatedRepair
-    ? Number(
-        diagnosis.estimatedRepair.replace(/[^0-9.]/g, "")
-      ) * USD_TO_NAIRA
-    : 0;
+
 
 
   const handleRun = async () => {
@@ -245,7 +241,16 @@ export default function Diagnosis() {
                 </div>
         </form>
 
-        {showModal && diagnosis && (
+          {showModal && diagnosis && (() => {
+            // Safe to compute here — diagnosis is guaranteed non-null in this scope
+            const estimatedNaira = diagnosis.estimatedRepair
+              ? Number(String(diagnosis.estimatedRepair).replace(/[^0-9.]/g, "")) * USD_TO_NAIRA
+              : 0;
+
+            const aiCauses = safeParse(diagnosis.causes);
+            const aiSteps = safeParse(diagnosis.steps);
+
+            return (
               <div className="diag-modal-overlay" onClick={() => setShowModal(false)}>
                 <div
                   className="diag-modal"
@@ -365,114 +370,99 @@ export default function Diagnosis() {
                       })}
                     </>
                   ) : (
-<div className="diag-ai-result">
+                    <div className="diag-ai-result">
+                      <div className="diag-modal-header">
+                        <div className="diag-modal-icon diag-modal-icon--muted">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.6"/>
+                            <path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <span className="diag-modal-eyebrow">AI Diagnosis</span>
+                          <h2>{diagnosis.likelyProblem}</h2>
+                        </div>
+                      </div>
 
-  <div className="diag-modal-header">
-    <div className="diag-modal-icon diag-modal-icon--muted">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M21 21l-4.3-4.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-      </svg>
-    </div>
+                      <div className="diag-result">
+                        <div className="diag-result-title-row">
+                          <h3>Confidence: {diagnosis.confidence}%</h3>
+                          <span
+                            className="diag-sev-badge"
+                            style={{
+                              color: getSeverity(diagnosis.severity).color,
+                              background: getSeverity(diagnosis.severity).bg
+                            }}
+                          >
+                            {diagnosis.severity} Severity
+                          </span>
+                        </div>
 
-    <div>
-      <span className="diag-modal-eyebrow">AI Diagnosis</span>
-      <h2>{diagnosis.likelyProblem}</h2>
-    </div>
-  </div>
+                        <div className="diag-stat-row">
+                          <div className="diag-stat">
+                            <div>
+                              <span className="diag-stat-label">Estimated Repair</span>
+                              <span className="diag-stat-value">₦{estimatedNaira.toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
 
-  <div className="diag-result">
+                        {aiCauses.length > 0 && (
+                          <div className="diag-section">
+                            <h4>Possible Causes</h4>
+                            <ul className="diag-cause-list">
+                              {aiCauses.map((cause, index) => (
+                                <li key={index}>{cause}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
 
-    <div className="diag-result-title-row">
-      <h3>Confidence: {diagnosis.confidence}%</h3>
+                        {aiSteps.length > 0 && (
+                          <div className="diag-section">
+                            <h4>Recommended Steps</h4>
+                            <ol className="diag-step-list">
+                              {aiSteps.map((step, index) => (
+                                <li key={index}>
+                                  <span className="diag-step-num">{index + 1}</span>
+                                  <span>{step}</span>
+                                </li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
 
-      <span
-        className="diag-sev-badge"
-        style={{
-          color: getSeverity(diagnosis.severity).color,
-          background: getSeverity(diagnosis.severity).bg
-        }}
-      >
-        {diagnosis.severity} Severity
-      </span>
-    </div>
+                        <p className="diag-followup">
+                          This diagnosis was generated using AI based on the symptoms you provided.
+                          If the issue persists, we recommend professional assistance.
+                        </p>
 
-    <div className="diag-stat-row">
+                        <div className="diag-modal-actions">
+                          {diagnosis.bookTechnician && (
+                            <button
+                              className="diag-action-btn diag-action-btn--primary"
+                              onClick={() => navigate("/book")}
+                            >
+                              Book Remote Support
+                            </button>
+                          )}
 
-      <div className="diag-stat">
-        <div>
-          <span className="diag-stat-label">
-            Estimated Repair
-          </span>
-
-          <span className="diag-stat-value">
-            ₦{estimatedNaira.toLocaleString()}
-          </span>
-        </div>
-      </div>
-
-    </div>
-
-    <div className="diag-section">
-      <h4>Possible Causes</h4>
-
-      <ul className="diag-cause-list">
-        {diagnosis.causes.map((cause, index) => (
-          <li key={index}>{cause}</li>
-        ))}
-      </ul>
-    </div>
-
-    <div className="diag-section">
-      <h4>Recommended Steps</h4>
-
-      <ol className="diag-step-list">
-        {diagnosis.steps.map((step, index) => (
-          <li key={index}>
-            <span className="diag-step-num">
-              {index + 1}
-            </span>
-
-            <span>{step}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-
-    <p className="diag-followup">
-      This diagnosis was generated using AI based on the symptoms you provided.
-      If the issue persists, we recommend professional assistance.
-    </p>
-
-    <div className="diag-modal-actions">
-
-      {diagnosis.bookTechnician && (
-        <button
-          className="diag-action-btn diag-action-btn--primary"
-          onClick={() => navigate("/book")}
-        >
-          Book Remote Support
-        </button>
-      )}
-
-      {diagnosis.mailInRepair && (
-        <button
-          className="diag-action-btn diag-action-btn--secondary"
-          onClick={() => navigate("/shipment")}
-        >
-          Mail-in Repair
-        </button>
-      )}
-
-    </div>
-
-  </div>
-
-</div>
+                          {diagnosis.mailInRepair && (
+                            <button
+                              className="diag-action-btn diag-action-btn--secondary"
+                              onClick={() => navigate("/shipment")}
+                            >
+                              Mail-in Repair
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
-        )}
+            );
+          })()}
       </div>
     </div>
   );
