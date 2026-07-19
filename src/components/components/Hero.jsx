@@ -69,7 +69,7 @@ function DiagnosisModal({ onClose }) {
 
     try {
       const response = await fetch(
-        "https://fixer-backend-7mng.onrender.com/api/diagnosis/run",
+        "http://localhost:4000/api/diagnosis/run",
         {
           method: "POST",
           headers: {

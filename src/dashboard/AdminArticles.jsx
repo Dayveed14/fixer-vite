@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import "./AdminArticles.css";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "http://localhost:4000/api/articles";
 
 export default function AdminArticles() {
   const [articles, setArticles] = useState([]);
@@ -105,7 +105,7 @@ export default function AdminArticles() {
             {filtered.map((a) => (
               <tr key={a.id}>
                 <td>
-                 <img className="article-image" src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${a.hero_image}`} alt={a.title}/>
+                 <img className="article-image" src={`http://localhost:4000/uploads/articles/${a.hero_image}`} alt={a.title}/>
                 </td>
 
                 <td><span className="article-title"> {a.title} </span></td>

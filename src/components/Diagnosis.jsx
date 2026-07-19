@@ -61,9 +61,6 @@ export default function Diagnosis() {
   const [showModal, setShowModal] = useState(false);
   const USD_TO_NAIRA = 1600; // example exchange rate
 
-
-
-
   const handleRun = async () => {
 
       try {
@@ -71,7 +68,7 @@ export default function Diagnosis() {
           setLoading(true);
 
           const response = await fetch(
-              "https://fixer-backend-7mng.onrender.com/api/diagnosis/run",
+              "http://localhost:4000/api/diagnosis/run",
               {
                   method: "POST",
                   headers: {

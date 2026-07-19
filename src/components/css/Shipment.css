@@ -263,3 +263,349 @@
   letter-spacing: -0.02em;
 }
 .shipment__success p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.65; }
+
+/* ── COMPLEMENTARY WIZARD STYLING (BEM Standardized) ── */
+
+/* Active State & Connectors for Left Navigation Panel */
+.shipment__step-icon.active {
+  background: var(--blue) !important;
+  color: #fff !important;
+  box-shadow: 0 0 0 4px rgba(79, 106, 240, 0.15);
+  font-weight: 700;
+}
+
+.shipment__step-icon:not(.active) {
+  background: var(--bg-soft);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.shipment__step-connector.active {
+  background: var(--blue);
+}
+
+/* Wizard Alignment Helpers */
+.wizard-split-tray {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.wizard-start-tray {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+/* Summaries & Invoice Layout Cards */
+.shipment__summary-box {
+  background: var(--bg-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shipment__summary-box.highlight {
+  border-color: rgba(79, 106, 240, 0.3);
+  background: rgba(79, 106, 240, 0.02);
+}
+
+.shipment__summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.92rem;
+}
+
+.shipment__summary-label {
+  color: var(--text-muted);
+}
+
+.shipment__summary-val {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+}
+
+.shipment__summary-box.highlight .shipment__summary-val {
+  color: var(--blue);
+}
+
+/* Dynamic Policy Notification & Perk Blocks */
+.shipment__perks-panel,
+.shipment__policy-panel {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shipment__perks-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #10b981;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.shipment__policy-panel p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Native Custom Checkbox Wrapper */
+.shipment__checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.shipment__checkbox-container input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Paystack Payment Framework Embed */
+.shipment__payment-selector {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  background: #fff;
+}
+
+.payment-radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.shipment__paystack-box {
+  background: var(--bg-soft);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.secure-badge-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.shipment__paystack-box p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Modern Secondary Button Alternative styling */
+.shipment__btn--secondary {
+  background: #fff;
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+}
+
+.shipment__btn--secondary:hover {
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+/* Step 5: High Resolution Final Tracking Screen Layout */
+.custom-confirmation-pane {
+  max-width: 620px !important;
+  margin: 60px auto !important;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.04);
+}
+
+.shipment__receipt-grid {
+  width: 100%;
+  background: var(--bg-soft);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.receipt-tile {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 6px;
+}
+
+.receipt-tile:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.receipt-tile strong {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.receipt-tile span {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Interactive Timeline Engine Roadmap */
+.shipment__timeline-tree {
+  width: 100%;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.shipment__timeline-tree h3 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.timeline-nodes-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-node-item {
+  display: flex;
+  gap: 16px;
+  padding-bottom: 16px;
+}
+
+.node-marker-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 14px;
+}
+
+.node-circle-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  z-index: 5;
+}
+
+.timeline-node-item.completed .node-circle-dot {
+  background: var(--blue);
+  box-shadow: 0 0 0 4px rgba(79, 106, 240, 0.2);
+}
+
+.node-connector-line {
+  position: absolute;
+  top: 12px;
+  bottom: -16px;
+  width: 2px;
+  background: var(--border);
+  z-index: 1;
+}
+
+.timeline-node-item.completed .node-connector-line {
+  background: var(--blue);
+}
+
+.node-text-title {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 14px;
+}
+
+.timeline-node-item.completed .node-text-title {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.confirmation-actions-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tracking-action-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+}
+
+/* Clean Form Transition States */
+.slide-direction-next {
+  animation: slideNextIn 0.3s ease-out;
+}
+
+.slide-direction-back {
+  animation: slideBackIn 0.3s ease-out;
+}
+
+@keyframes slideNextIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideBackIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .shipment {
+    display: unset;
+  }
+
+    .shipment__right, .shipment__left {
+      padding: 20px 50px;
+    }
+}

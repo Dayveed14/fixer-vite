@@ -1,13 +1,25 @@
 import { useState } from "react";
 import "../css/Footer.css";
+import { useNavigate, Link } from "react-router-dom";
 
 const FOOTER_LINKS = {
-  Company:  ["About fixer", "Blog", "Contact Us"],
-  Features: ["Community", "Shipment Policy"],
-  Support:  ["Help"],
-  Legal:    ["Privacy Policy", "Cookies"],
+  Company: [
+    { name: "About Fixer", path: "/about" },
+    { name: "Blog", path: "/blog" },
+    { name: "Contact Us", path: "/contact" },
+  ],
+  Features: [
+    { name: "Community", path: "/community" },
+    { name: "Shipment Policy", path: "/shipment-policy" },
+  ],
+  Support: [
+    { name: "Help", path: "/help" },
+  ],
+  Legal: [
+    { name: "Privacy Policy", path: "/privacy" },
+    { name: "Cookies", path: "/cookies" },
+  ],
 };
-
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
@@ -52,8 +64,10 @@ export default function Footer() {
             <div key={col}>
               <p className="footer__col-title">{col}</p>
               <ul className="footer__col-list">
-                {links.map((l) => (
-                  <li key={l}><a href="#">{l}</a></li>
+                {links.map((link) => (
+                  <li key={link.path}>
+                    <Link to={link.path}>{link.name}</Link>
+                  </li>
                 ))}
               </ul>
             </div>

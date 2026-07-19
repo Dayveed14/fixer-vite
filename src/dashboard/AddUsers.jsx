@@ -30,7 +30,7 @@ const AddUsers = () => {
 
     try {
       const res = await axios.post(
-        "https://fixer-backend-7mng.onrender.com/api/users/create",
+        "http://localhost:4000/api/users/create",
         formData
       );
 
@@ -139,7 +139,6 @@ const AddUsers = () => {
                 value={formData.role}
                 onChange={handleChange}
               >
-                <option value="">Select Role</option>
                 <option value="technician">Technician</option>
                 <option value="user">User</option>
               </select>

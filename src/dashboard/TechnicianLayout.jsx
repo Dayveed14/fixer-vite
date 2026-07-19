@@ -77,7 +77,7 @@ const user = JSON.parse(localStorage.getItem("user"));
       >
         <div className="logo">
 
-         <img src={logo} alt="Fixer Logo" className="logo" />
+         <Link to="/" > <img src={logo} alt="Fixer Logo" className="logo" /></Link>
 
         <button
           className="menu-btn"

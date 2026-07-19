@@ -95,7 +95,7 @@ const menuItems = [
       >
         <div className="logo">
 
-         <img src={logo} alt="Fixer Logo" className="logo" />
+         <Link to="/" > <img src={logo} alt="Fixer Logo" className="logo" /></Link>
 
         <button
           className="menu-btn"

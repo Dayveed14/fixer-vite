@@ -29,6 +29,14 @@ import AddArticle from "./dashboard/AddArticle";
 import AddUsers from "./dashboard/AddUsers";
 import Article from "./dashboard/Article";
 import EditArticle from "./dashboard/EditArticle";
+import AboutFixer from "./components/AboutFixer"
+import Blog from "./components/Blog"
+import ContactUs from "./components/ContactUs"
+import Community from "./components/Community"
+import ShipmentPolicy from "./components/ShipmentPolicy"
+import Help from "./components/Help"
+import PrivacyPolicy from "./components/PrivacyPolicy"
+import Cookies from "./components/Cookies"
 function App() {
   return (
     <>
@@ -39,7 +47,14 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userarticle/:id" element={<UserArticle />} />
-
+        <Route path="/about"    element={<AboutFixer />} />
+        <Route path="/blog"     element={<Blog />} />
+        <Route path="/contact"  element={<ContactUs />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/shipment-policy" element={<ShipmentPolicy />} />
+        <Route path="/help"     element={<Help />} />
+        <Route path="/privacy"  element={<PrivacyPolicy />} />
+        <Route path="/cookies"  element={<Cookies />} />
 
         {/* User Layout */}
         <Route element={<UserPrivateRoutes />}>

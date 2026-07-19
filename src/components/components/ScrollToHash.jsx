@@ -2,13 +2,21 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function ScrollToHash() {
-  const { hash } = useLocation();
+  const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    if (!hash) return;
+    // No hash? Scroll to top on every page change.
+    if (!hash) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "instant", // or omit this line
+      });
+      return;
+    }
 
-    // Wait for the page to render
-    setTimeout(() => {
+    // Hash exists - scroll to that section.
+    const timer = setTimeout(() => {
       const element = document.querySelector(hash);
 
       if (element) {
@@ -18,7 +26,9 @@ export default function ScrollToHash() {
         });
       }
     }, 100);
-  }, [hash]);
+
+    return () => clearTimeout(timer);
+  }, [pathname, hash]);
 
   return null;
 }

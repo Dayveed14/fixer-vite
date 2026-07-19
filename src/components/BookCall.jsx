@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import "./css/BookCall.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -18,9 +18,9 @@ const TIME_SLOTS = [
 const DEVICE_TYPES = ["Smartphone","Laptop","Tablet","Desktop PC","Smart Watch","Gaming Console","Other"];
 
 const SUPPORT_TYPES = [
-  { id: "voice", title: "Voice Call", desc: "Speak directly with an expert via phone line.", cost: "$29" },
-  { id: "video", title: "Video Call", desc: "Face-to-face assistance via Google Meet.", cost: "$49" },
-  { id: "remote", title: "Remote Support", desc: "Secure remote desktop access via TeamViewer/AnyDesk.", cost: "$69" }
+  { id: "voice", title: "Voice Call", desc: "Speak directly with an expert via phone line.", cost: "₦5000" },
+  { id: "video", title: "Video Call", desc: "Face-to-face assistance via Google Meet.", cost: "₦7000" },
+  { id: "remote", title: "Remote Support", desc: "Secure remote desktop access via TeamViewer/AnyDesk.", cost: "₦10000" }
 ];
 
 function getDaysInMonth(year, month) {
