@@ -139,6 +139,7 @@ const AddUsers = () => {
                 value={formData.role}
                 onChange={handleChange}
               >
+                <option value="">Select Role</option>
                 <option value="technician">Technician</option>
                 <option value="user">User</option>
               </select>
