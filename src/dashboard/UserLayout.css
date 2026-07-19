@@ -297,7 +297,7 @@
 
 @media (max-width: 992px) {
 .layout,
-    .admin-grid {
+    .admin-grid, .dashboard-grid {
         display: unset;
     }
 
@@ -333,7 +333,7 @@
 
 @media (max-width: 768px) {
 .layout,
-    .admin-grid {
+    .admin-grid, .dashboard-grid {
      display: unset;
     }
     .page-content, .search-box {
@@ -361,7 +361,7 @@
 
 @media (max-width: 480px) {
 .layout,
-    .admin-grid {
+    .admin-grid,.dashboard-grid {
         display: unset;
     }
     .page-content, .search-box {

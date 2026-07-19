@@ -303,4 +303,35 @@
             overflow-x: auto;
         }
 
+        .admin-bookings-table-wrapper{
+            width: 100%;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                min-width: 700px;
+                /* or whatever width your table needs */
+            }
+            
+            thead {
+                background: #F8FAFC;
+            }
+            
+            thead th {
+                text-align: left;
+                padding: 15px;
+                color: #666;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+            
+            tbody td {
+                padding: 16px 15px;
+                border-bottom: 1px solid #ECECEC;
+                white-space: nowrap;
+            }      
+
 }

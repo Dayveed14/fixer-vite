@@ -454,6 +454,37 @@ tbody tr:hover {
     padding: 13px;
     font-size: 14px;
   }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+      /* or whatever width your table needs */
+    }
+  
+    thead {
+      background: #F8FAFC;
+    }
+  
+    thead th {
+      text-align: left;
+      padding: 15px;
+      color: #666;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  
+    tbody td {
+      padding: 16px 15px;
+      border-bottom: 1px solid #ECECEC;
+      white-space: nowrap;
+    }
 }
 
 /* ===========================
@@ -524,15 +555,36 @@ tbody tr:hover {
     gap: 10px;
   }
 
-  thead th {
-    padding: 12px 10px;
-    font-size: 13px;
-  }
+ .table-wrapper {
+   width: 100%;
+   overflow-x: auto;
+   -webkit-overflow-scrolling: touch;
+ }
 
-  tbody td {
-    padding: 14px 10px;
-    font-size: 13px;
-  }
+ table {
+   width: 100%;
+   border-collapse: collapse;
+   min-width: 700px;
+   /* or whatever width your table needs */
+ }
+
+ thead {
+   background: #F8FAFC;
+ }
+
+ thead th {
+   text-align: left;
+   padding: 15px;
+   color: #666;
+   font-size: 14px;
+   white-space: nowrap;
+ }
+
+ tbody td {
+   padding: 16px 15px;
+   border-bottom: 1px solid #ECECEC;
+   white-space: nowrap;
+ }
 
   .calendar-icon,
   .device-icon {
@@ -544,4 +596,7 @@ tbody tr:hover {
   .device-card h3 {
     font-size: 15px;
   }
+
+
+
 }

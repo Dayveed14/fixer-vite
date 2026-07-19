@@ -185,6 +185,7 @@ const AdminDashboard = () => {
 
             ) : (
 
+              <div className="table-container"> 
               <table>
 
                 <thead>
@@ -232,6 +233,7 @@ const AdminDashboard = () => {
                 </tbody>
 
               </table>
+              </div>
 
             )}
 

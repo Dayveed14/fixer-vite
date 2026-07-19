@@ -210,7 +210,8 @@ const TechnicianDashboard = () => {
               <p className="dashboard-empty">No jobs assigned yet.</p>
 
             ) : (
-
+<div className="table-container">
+  
               <table>
 
                 <thead>
@@ -262,6 +263,7 @@ const TechnicianDashboard = () => {
                 </tbody>
 
               </table>
+</div>
 
             )}
 
