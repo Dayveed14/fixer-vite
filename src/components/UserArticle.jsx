@@ -4,7 +4,7 @@ import axios from "axios";
 import "../dashboard/Article.css";
 import Navbar from "./components/Navbar";
 
-const API = "http://localhost:4000/api/articles";
+const API = "https://fixer-backend-7mng.onrender.com/api/articles";
 
 export default function UserArticle() {
   const { id } = useParams();

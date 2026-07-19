@@ -5,7 +5,7 @@ import "./AddArticle.css";
 import { Editor } from "@tinymce/tinymce-react";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem("user"));

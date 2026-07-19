@@ -68,7 +68,7 @@ export default function Diagnosis() {
           setLoading(true);
 
           const response = await fetch(
-              "http://localhost:4000/api/diagnosis/run",
+              "https://fixer-backend-7mng.onrender.com/api/diagnosis/run",
               {
                   method: "POST",
                   headers: {

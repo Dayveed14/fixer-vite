@@ -292,10 +292,10 @@
           </div>
 
           <div className="navbar__drawer-footer">
-            <a href="#">About</a>
-            <a href="#">Articles</a>
-            <a href="#">Community</a>
-            <a href="#">Terms</a>
+             <Link to="/about">About</Link>
+        <Link to="/">Articles</Link>
+        <Link to="/community">Community</Link>
+        <Link to="/privacy">Terms</Link>
           </div>
         </div>
   {showHowModal && (

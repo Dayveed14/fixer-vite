@@ -14,7 +14,7 @@ import "./TechnicianDashboard.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
