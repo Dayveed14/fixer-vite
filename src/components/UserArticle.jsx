@@ -55,7 +55,7 @@ export default function UserArticle() {
       <div className="article-container">
 
         <img
-          src={`http://localhost:4000/uploads/articles/${article.hero_image}`}
+          src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${article.hero_image}`}
           alt={article.title}
           className="hero-image"
         />

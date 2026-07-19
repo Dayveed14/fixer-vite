@@ -1,0 +1,443 @@
+/* ==========================================
+   SHARED STYLES — Technician sub-pages
+========================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+.tech-page {
+    min-height: 100vh;
+    padding: 35px;
+    background: #f5f7fb;
+    font-family: "Poppins", sans-serif;
+}
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.tech-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.tech-page-header h1 {
+    font-size: 28px;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+}
+
+.tech-page-header p {
+    color: #777;
+    max-width: 560px;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   FILTER TABS
+========================================== */
+
+.tech-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+}
+
+.tech-tab {
+    border: none;
+    background: #fff;
+    color: #555;
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .04);
+    transition: .2s;
+}
+
+.tech-tab:hover {
+    background: #EAF1FE;
+    color: #0B63CE;
+}
+
+.tech-tab.active {
+    background: #0B63CE;
+    color: #fff;
+}
+
+.tech-tab .count {
+    margin-left: 6px;
+    opacity: .75;
+}
+
+/* ==========================================
+   CARD / TABLE WRAPPER
+========================================== */
+
+.tech-panel {
+    background: #fff;
+    border-radius: 18px;
+    padding: 10px 25px 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+}
+
+.tech-panel table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tech-panel thead th {
+    padding: 15px 12px;
+    text-align: left;
+    color: #666;
+    font-size: 13px;
+    border-bottom: 1px solid #ECECEC;
+    white-space: nowrap;
+}
+
+.tech-panel tbody td {
+    padding: 16px 12px;
+    border-bottom: 1px solid #F1F1F1;
+    vertical-align: top;
+    font-size: 14.5px;
+}
+
+.tech-panel tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tech-panel tbody tr:hover {
+    background: #FAFBFF;
+}
+
+.cell-primary {
+    font-weight: 600;
+    color: #222;
+}
+
+.cell-sub {
+    color: #888;
+    font-size: 12.5px;
+    margin-top: 3px;
+}
+
+/* ==========================================
+   BADGES (priority / status / payment)
+========================================== */
+
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge.high,
+.badge.completed,
+.badge.confirmed,
+.badge.paid {
+    background: #16A34A;
+}
+
+.badge.medium,
+.badge.pending {
+    background: #F59E0B;
+}
+
+.badge.low {
+    background: #22A6B3;
+}
+
+.badge.inprogress {
+    background: #2563EB;
+}
+
+.badge.cancelled,
+.badge.missed,
+.badge.unpaid {
+    background: #DC2626;
+}
+
+.badge.open {
+    background: #6B7280;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.tech-action-btn {
+    border: none;
+    background: #F4F7FB;
+    color: #333;
+    padding: 9px 16px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+    white-space: nowrap;
+}
+
+.tech-action-btn:hover {
+    background: #0B63CE;
+    color: #fff;
+}
+
+.tech-action-btn.primary {
+    background: #0B63CE;
+    color: #fff;
+}
+
+.tech-action-btn.primary:hover {
+    background: #084a9c;
+}
+
+.tech-action-btn.danger {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.tech-action-btn.danger:hover {
+    background: #DC2626;
+    color: #fff;
+}
+
+.tech-action-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.row-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* ==========================================
+   MANAGE PANEL (inline expand row)
+========================================== */
+
+.manage-row td {
+    background: #F8FAFC;
+    padding: 22px !important;
+}
+
+.manage-form {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.manage-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.manage-field label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #555;
+}
+
+.manage-field select,
+.manage-field input {
+    padding: 10px 14px;
+    border: 1px solid #DDE3EC;
+    border-radius: 8px;
+    font-size: 14px;
+    min-width: 160px;
+}
+
+.manage-error {
+    color: #DC2626;
+    font-size: 13px;
+    width: 100%;
+}
+
+/* ==========================================
+   EMPTY / LOADING / ERROR STATES
+========================================== */
+
+.dashboard-loading,
+.dashboard-error,
+.dashboard-empty {
+    padding: 40px;
+    text-align: center;
+    color: #888;
+}
+
+.dashboard-error {
+    color: #DC2626;
+}
+
+/* ==========================================
+   RATING STARS
+========================================== */
+
+.rating-stars {
+    color: #F59E0B;
+    letter-spacing: 1px;
+}
+
+/* ==========================================
+   COMING SOON / SHELL PAGE
+========================================== */
+
+.tech-shell {
+    background: #fff;
+    border-radius: 18px;
+    padding: 70px 40px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+}
+
+.tech-shell-icon {
+    font-size: 54px;
+    color: #0B63CE;
+    margin-bottom: 20px;
+    opacity: .85;
+}
+
+.tech-shell h2 {
+    font-size: 22px;
+    color: #222;
+    margin-bottom: 12px;
+}
+
+.tech-shell p {
+    color: #888;
+    max-width: 460px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.tech-shell .badge {
+    display: inline-block;
+    margin-bottom: 18px;
+    background: #EAF1FE;
+    color: #0B63CE;
+}
+
+/* ==========================================
+   PROFILE (Settings)
+========================================== */
+
+.profile-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 35px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+    max-width: 560px;
+}
+
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #EEE;
+}
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0B63CE, #003B80);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.profile-card-header h2 {
+    font-size: 20px;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.profile-card-header p {
+    color: #888;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+.profile-field {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+.profile-field:last-child {
+    border-bottom: none;
+}
+
+.profile-field span {
+    color: #888;
+    font-size: 14px;
+}
+
+.profile-field strong {
+    color: #222;
+    font-size: 14.5px;
+}
+
+.profile-note {
+    margin-top: 22px;
+    padding: 14px 16px;
+    background: #F8FAFC;
+    border-radius: 10px;
+    color: #888;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .tech-page {
+        padding: 20px;
+    }
+
+    .tech-panel {
+        padding: 5px 15px 15px;
+    }
+
+    .tech-panel table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .manage-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .manage-field select,
+    .manage-field input {
+        min-width: 0;
+        width: 100%;
+    }
+}

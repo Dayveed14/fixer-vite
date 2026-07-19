@@ -194,7 +194,7 @@ const menuItems = [
                     My Profile
                   </Link>
 
-                  <Link to="/settings">
+                  <Link to="/adminsettings">
                     Settings
                   </Link>
 

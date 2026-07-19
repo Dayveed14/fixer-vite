@@ -316,6 +316,16 @@ tbody tr:hover {
     color: #fff;
 }
 
+.tech-btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.tech-btn:disabled:hover {
+    background: #F4F7FB;
+    color: inherit;
+}
+
 /* ==========================================
    PERFORMANCE
 ========================================== */

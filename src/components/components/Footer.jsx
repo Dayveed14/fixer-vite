@@ -53,7 +53,7 @@ export default function Footer() {
                 <button className="footer__submit" onClick={handleSubmit}>Subscribe</button>
               </div>
               <p className="footer__legal">
-                By subscribing you agree to our <a href="#">Privacy policy</a>
+                By subscribing you agree to our <Link to="/privacy">Privacy policy</Link>
               </p>
             </>
           )}

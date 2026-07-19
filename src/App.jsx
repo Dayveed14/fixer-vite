@@ -16,6 +16,13 @@ import UserArticle from "./components/UserArticle";
 import UserDashboard from "./dashboard/UserDashboard";
 import AdminDashboard from "./dashboard/AdminDashboard";
 import TechnicianDashboard from "./dashboard/TechnicianDashboard";
+import TechnicianJobs from "./dashboard/TechnicianJobs";
+import TechnicianAppointments from "./dashboard/TechnicianAppointments";
+import TechnicianRepairs from "./dashboard/TechnicianRepairs";
+import TechnicianHistory from "./dashboard/TechnicianHistory";
+import TechnicianSettings from "./dashboard/TechnicianSettings";
+import UserSettings from "./dashboard/UserSettings";
+import AdminSettings from "./dashboard/AdminSettings";
 import AdminArticles from "./dashboard/AdminArticles";
 import UserLayout from "./dashboard/UserLayout";
 import AdminLayout from "./dashboard/AdminLayout";
@@ -65,13 +72,19 @@ function App() {
           <Route path="/diagnosis" element={<Diagnosis />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/registerdevice" element={<RegisterDevice />} />
+          <Route path="/user/settings" element={<UserSettings />} />
+
         </Route>
         </Route>
         {/* Technician Layout */}
           <Route element={<TechnicianPrivateRoutes />}>
           <Route element={<TechnicianLayout />}>
               <Route path="/techniciandashboard" element={<TechnicianDashboard />} />
-              {/* <Route path="/technicianjobs" element={<Jobs />} /> */}
+              <Route path="/technician/jobs" element={<TechnicianJobs />} />
+              <Route path="/technician/appointments" element={<TechnicianAppointments />} />
+              <Route path="/technician/repairs" element={<TechnicianRepairs />} />
+              <Route path="/technician/history" element={<TechnicianHistory />} />
+              <Route path="/technician/settings" element={<TechnicianSettings />} />
           </Route>
           </Route>
           {/* Admin Layout */}
@@ -88,6 +101,8 @@ function App() {
           <Route path="/admin/users/new" element={<AddUsers />} />
           <Route path="/article/:id" element={<Article />} />
           <Route path="/admin/editarticle/:id" element={<EditArticle />} />
+          <Route path="/adminsettings" element={<AdminSettings />} />
+
           </Route>
 </Route>
 

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -60,7 +59,7 @@ const user = JSON.parse(localStorage.getItem("user"));
     },
     {
       name: "Settings",
-      path: "/settings",
+      path: "/user/settings",
       icon: <FaCog />,
     },
   ];
@@ -176,7 +175,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                     My Profile
                   </Link>
 
-                  <Link to="/settings">
+                  <Link to="/user/settings">
                     Settings
                   </Link>
 

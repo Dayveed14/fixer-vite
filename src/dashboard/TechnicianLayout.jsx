@@ -6,9 +6,9 @@ import {
   FaTimes,
   FaTachometerAlt,
   FaTicketAlt,
-  FaRobot,
+  FaCalendarAlt,
   FaBoxOpen,
-  FaComments,
+  FaHistory,
   FaCog,
   FaBell,
   FaSearch,
@@ -39,28 +39,28 @@ const user = JSON.parse(localStorage.getItem("user"));
       icon: <FaTachometerAlt />,
     },
     {
-      name: "History",
-      path: "/history",
+      name: "Assigned Jobs",
+      path: "/technician/jobs",
       icon: <FaTicketAlt />,
     },
     {
-      name: "Assigned Jobs",
-      path: "/technicianjobs",
-      icon: <FaRobot />,
-    },
-    {
       name: "Appointments",
-      path: "/appointments",
-      icon: <FaBoxOpen />,
+      path: "/technician/appointments",
+      icon: <FaCalendarAlt />,
     },
     {
       name: "Repairs",
-      path: "/repairs",
-      icon: <FaComments />,
+      path: "/technician/repairs",
+      icon: <FaBoxOpen />,
+    },
+    {
+      name: "History",
+      path: "/technician/history",
+      icon: <FaHistory />,
     },
     {
       name: "Settings",
-      path: "/settings",
+      path: "/technician/settings",
       icon: <FaCog />,
     },
   ];
@@ -176,7 +176,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                     My Profile
                   </Link>
 
-                  <Link to="/settings">
+                  <Link to="/technician/settings">
                     Settings
                   </Link>
 

@@ -1,14 +1,5 @@
-import {
-  FaTicketAlt,
-  FaTools,
-  FaLaptop,
-  FaRobot,
-  FaCalendarAlt,
-  FaComments,
-  FaArrowRight,
-  FaClock,
-  FaStar,
-} from "react-icons/fa";
+import {FaTicketAlt,FaTools,FaLaptop,FaRobot,FaCalendarAlt,FaComments,FaArrowRight,FaClock,FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import "./UserDashboard.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -64,6 +55,8 @@ const StarRating = ({ ticket, onSubmitted }) => {
 };
 
 const UserDashboard = () => {
+  const navigate = useNavigate();
+
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem("user"));
@@ -196,7 +189,7 @@ const UserDashboard = () => {
             request assistance from our certified technicians.
           </p>
         </div>
-        <button>Register Device</button>
+        <button onClick={() => navigate("/registerdevice")}>Register Device</button>
       </section>
 
       {/* Stats */}
@@ -312,9 +305,9 @@ const UserDashboard = () => {
           {/* Quick Actions */}
           <div className="dashboard-card">
             <h2>Quick Actions</h2>
-            <button className="action-btn"><FaRobot /> Smart Diagnosis</button>
+            <button className="action-btn" onClick={() => navigate("/diagnosis")}><FaRobot /> Smart Diagnosis</button>
             <button className="action-btn"><FaComments /> Live Chat</button>
-            <button className="action-btn"><FaLaptop /> Register Device</button>
+            <button className="action-btn" onClick={() => navigate("/registerdevice")}><FaLaptop /> Register Device</button>
           </div>
 
           {/* Appointment */}

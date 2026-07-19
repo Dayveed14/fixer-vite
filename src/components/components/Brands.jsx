@@ -1,7 +1,7 @@
 import "../css/Brands.css";
 
-const BRANDS = ["Apple","Samsung","Dell","HP","Lenovo","Sony","Microsoft","Asus","Acer","LG","Huawei","OnePlus","Google","Motorola","Toshiba","Xiaomi","Razer","MSI","Alienware","Surface"];
-const ICONS = {Apple:"🍎",Samsung:"📱",Dell:"💻",HP:"🖨️",Lenovo:"⌨️",Sony:"🎮",Microsoft:"🪟",Asus:"🔧",Acer:"⚡",LG:"📺",Huawei:"📡",OnePlus:"🔴",Google:"🔍",Motorola:"📻",Toshiba:"💾",Xiaomi:"🔆",Razer:"🐍",MSI:"🎯",Alienware:"👽",Surface:"🖥️"};
+const BRANDS = ["Apple","Samsung","Dell","HP","Lenovo","Sony","Microsoft","Asus","Acer","MSI","Alienware",];
+const ICONS = {Apple:"🍎",Samsung:"📱",Dell:"💻",HP:"🖨️",Lenovo:"⌨️",Sony:"🎮",Microsoft:"🪟",Asus:"🔧",Acer:"⚡",MSI:"🎯",Alienware:"👽"};
 
 export default function Brands() {
   const doubled = [...BRANDS, ...BRANDS];

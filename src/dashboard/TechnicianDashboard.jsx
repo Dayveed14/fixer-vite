@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import "./TechnicianDashboard.css";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
@@ -29,6 +30,8 @@ const TechnicianDashboard = () => {
   } catch {
     user = null;
   }
+
+  const navigate = useNavigate();
 
   const [techStats, setTechStats] = useState(null);
   const [jobs, setJobs] = useState([]);
@@ -152,7 +155,9 @@ const TechnicianDashboard = () => {
           </p>
         </div>
 
-        <button>View My Schedule</button>
+        <button onClick={() => navigate("/technician/appointments")}>
+          View My Schedule
+        </button>
 
       </section>
 
@@ -198,7 +203,7 @@ const TechnicianDashboard = () => {
 
               <h2>Assigned Jobs</h2>
 
-              <button>
+              <button onClick={() => navigate("/technician/jobs")}>
                 View All
                 <FaArrowRight />
               </button>
@@ -337,19 +342,42 @@ const TechnicianDashboard = () => {
 
             <h2>Quick Actions</h2>
 
-            <button className="tech-btn">
+            <button
+              className="tech-btn"
+              onClick={() => navigate("/technician/appointments")}
+            >
               Start Remote Session
             </button>
 
-            <button className="tech-btn">
+            <button
+              className="tech-btn"
+              onClick={() => navigate("/technician/jobs")}
+            >
               Update Repair Status
             </button>
 
-            <button className="tech-btn">
+            <button
+              className="tech-btn"
+              disabled={!activeTicket?.customer_email}
+              title={
+                activeTicket?.customer_email
+                  ? `Email ${activeTicket.customer_name}`
+                  : "No active job to contact a customer for"
+              }
+              onClick={() => {
+                if (activeTicket?.customer_email) {
+                  window.location.href = `mailto:${activeTicket.customer_email}`;
+                }
+              }}
+            >
               Contact Customer
             </button>
 
-            <button className="tech-btn">
+            <button
+              className="tech-btn"
+              disabled
+              title="Coming soon — repair report uploads aren't built yet"
+            >
               Upload Repair Report
             </button>
 

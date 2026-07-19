@@ -20,7 +20,7 @@ const TechnicianPrivateRoutes = () => {
   }
 
   if (role === "user") {
-    return <Navigate to="/userdashboard" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Navigate to="/" replace />;
