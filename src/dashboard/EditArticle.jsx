@@ -4,7 +4,7 @@ import axios from "axios";
 import "./ArticleForm.css";
 import { Editor } from "@tinymce/tinymce-react";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "http://localhost:4000/api/articles";
 
 export default function EditArticle() {
   const { id } = useParams();
@@ -44,7 +44,7 @@ export default function EditArticle() {
       });
 
       setPreview(
-        `https://fixer-backend-7mng.onrender.com/uploads/articles/${data.hero_image}`
+        `http://localhost:4000/uploads/articles/${data.hero_image}`
       );
     } catch (err) {
       console.error(err);

@@ -7,7 +7,8 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./TechnicianShared.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+const MESHCENTRAL_WEB_URL = import.meta.env.VITE_MESHCENTRAL_WEB_URL || "";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -37,6 +38,10 @@ const TechnicianAppointments = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("All");
   const [updatingId, setUpdatingId] = useState(null);
+
+  const [sessionLinks, setSessionLinks] = useState({});
+  const [startingSessionId, setStartingSessionId] = useState(null);
+  const [sessionError, setSessionError] = useState({});
 
   const loadBookings = async () => {
     if (!user?.id) {
@@ -96,6 +101,31 @@ const TechnicianAppointments = () => {
     }
   };
 
+  const startSession = async (booking) => {
+    setStartingSessionId(booking.id);
+    setSessionError((prev) => ({ ...prev, [booking.id]: null }));
+
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/api/bookings/${booking.id}/remote-session`,
+      );
+
+      setSessionLinks((prev) => ({ ...prev, [booking.id]: res.data.inviteLink }));
+    } catch (err) {
+      console.error(err);
+      setSessionError((prev) => ({
+        ...prev,
+        [booking.id]:
+          err.response?.data?.message || "Couldn't start a remote session. Please try again.",
+      }));
+    } finally {
+      setStartingSessionId(null);
+    }
+  };
+
+  const copyLink = (link) => {
+    navigator.clipboard?.writeText(link);
+  };
   if (loading) {
     return (
       <div className="tech-page">
@@ -154,44 +184,89 @@ const TechnicianAppointments = () => {
             </thead>
             <tbody>
               {filtered.map((appt) => (
-                <tr key={appt.id}>
-                  <td className="cell-primary">{appt.booking_reference}</td>
-                  <td>{appt.customer_name}</td>
-                  <td>{SUPPORT_TYPE_LABELS[appt.support_type] || appt.support_type}</td>
-                  <td>
-                    {appt.booking_date}
-                    <div className="cell-sub">{appt.booking_time} · {appt.duration} min</div>
-                  </td>
-                  <td>
-                    {appt.issue_summary || "—"}
-                    {appt.device && <div className="cell-sub">{appt.device}</div>}
-                  </td>
-                  <td>
-                    <span className={`badge ${appt.status}`}>{appt.status}</span>
-                  </td>
-                  <td>
-                    {appt.status === "confirmed" ? (
-                      <div className="row-actions">
-                        <button
-                          className="tech-action-btn primary"
-                          disabled={updatingId === appt.id}
-                          onClick={() => updateStatus(appt, "completed")}
-                        >
-                          Mark Completed
-                        </button>
-                        <button
-                          className="tech-action-btn danger"
-                          disabled={updatingId === appt.id}
-                          onClick={() => updateStatus(appt, "missed")}
-                        >
-                          Mark Missed
-                        </button>
-                      </div>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
-                </tr>
+                <>
+                  <tr key={appt.id}>
+                    <td className="cell-primary">{appt.booking_reference}</td>
+                    <td>{appt.customer_name}</td>
+                    <td>{SUPPORT_TYPE_LABELS[appt.support_type] || appt.support_type}</td>
+                    <td>
+                      {appt.booking_date}
+                      <div className="cell-sub">{appt.booking_time} · {appt.duration} min</div>
+                    </td>
+                    <td>
+                      {appt.issue_summary || "—"}
+                      {appt.device && <div className="cell-sub">{appt.device}</div>}
+                    </td>
+                    <td>
+                      <span className={`badge ${appt.status}`}>{appt.status}</span>
+                    </td>
+                    <td>
+                      {appt.status === "confirmed" ? (
+                        <div className="row-actions">
+                          <button
+                            className="tech-action-btn primary"
+                            disabled={startingSessionId === appt.id}
+                            onClick={() => startSession(appt)}
+                          >
+                            {startingSessionId === appt.id ? "Starting..." : "Start Session"}
+                          </button>
+                          <button
+                            className="tech-action-btn"
+                            disabled={updatingId === appt.id}
+                            onClick={() => updateStatus(appt, "completed")}
+                          >
+                            Mark Completed
+                          </button>
+                          <button
+                            className="tech-action-btn danger"
+                            disabled={updatingId === appt.id}
+                            onClick={() => updateStatus(appt, "missed")}
+                          >
+                            Mark Missed
+                          </button>
+                        </div>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  </tr>
+
+                  {(sessionLinks[appt.id] || sessionError[appt.id]) && (
+                    <tr className="manage-row" key={`${appt.id}-session`}>
+                      <td colSpan={7}>
+                        {sessionError[appt.id] ? (
+                          <p className="manage-error">{sessionError[appt.id]}</p>
+                        ) : (
+                          <div className="session-panel">
+                            <div className="manage-field full-width">
+                              <label>Send this link to the customer to start the session</label>
+                              <div className="session-link-row">
+                                <input type="text" readOnly value={sessionLinks[appt.id]} />
+                                <button
+                                  className="tech-action-btn"
+                                  onClick={() => copyLink(sessionLinks[appt.id])}
+                                >
+                                  Copy
+                                </button>
+                              </div>
+                            </div>
+
+                            {MESHCENTRAL_WEB_URL && (
+                              <a
+                                href={MESHCENTRAL_WEB_URL}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="tech-action-btn primary"
+                              >
+                                Open MeshCentral Dashboard
+                              </a>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>

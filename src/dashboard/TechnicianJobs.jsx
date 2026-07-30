@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./TechnicianShared.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 const STATUS_OPTIONS = ["Open", "In Progress", "Pending", "Completed"];
 

@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -196,9 +196,6 @@ const TechnicianDashboard = () => {
         <div className="left-tech">
 
           {/* Assigned Jobs */}
-
-          <div className="tech-card">
-
             <div className="tech-header">
 
               <h2>Assigned Jobs</h2>
@@ -209,6 +206,9 @@ const TechnicianDashboard = () => {
               </button>
 
             </div>
+          <div className="tech-card">
+
+
 
             {jobs.length === 0 ? (
 

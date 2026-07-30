@@ -1,11 +1,20 @@
-import {FaTicketAlt,FaTools,FaLaptop,FaRobot,FaCalendarAlt,FaComments,FaArrowRight,FaClock,FaStar } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import {
+  FaTicketAlt,
+  FaTools,
+  FaLaptop,
+  FaRobot,
+  FaCalendarAlt,
+  FaComments,
+  FaArrowRight,
+  FaClock,
+  FaStar,
+} from "react-icons/fa";
 import "./UserDashboard.css";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
   video: "Video Call",
@@ -55,7 +64,7 @@ const StarRating = ({ ticket, onSubmitted }) => {
 };
 
 const UserDashboard = () => {
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
   let user = null;
   try {
@@ -189,7 +198,7 @@ const UserDashboard = () => {
             request assistance from our certified technicians.
           </p>
         </div>
-        <button onClick={() => navigate("/registerdevice")}>Register Device</button>
+        <button onClick={() => navigate("/registerdevice")}> Register Device</button>
       </section>
 
       {/* Stats */}
@@ -217,7 +226,7 @@ const UserDashboard = () => {
           <div className="dashboard-card">
             <div className="card-header">
               <h2>Recent Support Tickets</h2>
-              <button>View All <FaArrowRight /></button>
+              <button onClick={() => navigate("/user/appointments")}>View All <FaArrowRight /></button>
             </div>
 
             {/* Wrapper enables horizontal scroll on small screens */}

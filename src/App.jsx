@@ -32,6 +32,8 @@ import AdminBookings from "./dashboard/AdminBookings";
 import AdminTechnicians from "./dashboard/AdminTechnicians";
 import AdminUsers from "./dashboard/AdminUsers";
 import AdminTickets from "./dashboard/AdminTickets";
+import AdminTicketDetail from "./dashboard/AdminTicketDetail";
+import AdminTicketEdit from "./dashboard/AdminTicketEdit";
 import AddArticle from "./dashboard/AddArticle";
 import AddUsers from "./dashboard/AddUsers";
 import Article from "./dashboard/Article";
@@ -44,6 +46,9 @@ import ShipmentPolicy from "./components/ShipmentPolicy"
 import Help from "./components/Help"
 import PrivacyPolicy from "./components/PrivacyPolicy"
 import Cookies from "./components/Cookies"
+import UserAppointments from "./dashboard/UserAppointments"
+import UserAppointmentDetail from "./dashboard/UserAppointmentDetail"
+import UserJobDetail from "./dashboard/UserJobDetail"
 function App() {
   return (
     <>
@@ -72,8 +77,11 @@ function App() {
           <Route path="/diagnosis" element={<Diagnosis />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/registerdevice" element={<RegisterDevice />} />
-          <Route path="/user/settings" element={<UserSettings />} />
-
+              <Route path="/user/settings" element={<UserSettings />} />
+          <Route path="/user/appointments" element={<UserAppointments />} />
+          <Route path="/userappointment/:id" element={<UserAppointmentDetail />} />
+                    <Route path="/userjob/:id" element={<UserJobDetail />} />
+          
         </Route>
         </Route>
         {/* Technician Layout */}
@@ -96,13 +104,14 @@ function App() {
           <Route path="/admin/technicians" element={<AdminTechnicians />} />
           <Route path="/admin/diagnosis" element={<AdminDiagnosis />} />
           <Route path="/admintickets" element={<AdminTickets />} />
+          <Route path="/admin/tickets/:id" element={<AdminTicketDetail />} />
+          <Route path="/admin/tickets/edit/:id" element={<AdminTicketEdit />} />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/dashboard/admin/articles/new" element={<AddArticle />} />
           <Route path="/admin/users/new" element={<AddUsers />} />
           <Route path="/article/:id" element={<Article />} />
+              <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/editarticle/:id" element={<EditArticle />} />
-          <Route path="/adminsettings" element={<AdminSettings />} />
-
           </Route>
 </Route>
 
