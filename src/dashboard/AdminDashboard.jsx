@@ -118,7 +118,7 @@ const AdminDashboard = () => {
       <section className="admin-banner">
 
         <div>
-          <h1>Admin Dashboard{user?.first_name ? `, ${user.first_name}` : ""}</h1>
+          <h1>Admin{user?.first_name ? ` ${user.first_name}` : ""}</h1>
 
           <p>
             Monitor users, technicians, repairs,
@@ -172,7 +172,7 @@ const AdminDashboard = () => {
 
               <h2>Latest Tickets</h2>
 
-              <button>
+              <button onClick={() => navigate("/admintickets")}>
                 View All
                 <FaArrowRight />
               </button>

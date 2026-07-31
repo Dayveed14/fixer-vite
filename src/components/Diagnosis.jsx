@@ -118,11 +118,9 @@ export default function Diagnosis() {
      
         {/* ── LEFT ── */}
         <div className="diag__left">
-              <h1 className="diag__title">Smart Issue Analyzer</h1>
+              <h1 className="diag__title">Meet FixBot 🤖</h1>
               <p className="diag__body">
-                Can't fix it yourself? Send your device in for professional repair.
-                Schedule a collection, and we'll handle everything from pickup to
-                repair and safe return—keeping you updated every step of the way.
+                Tell us what's wrong with your computer, and our AI will guide you through possible solutions in under two minutes.
               </p>
         </div>
 

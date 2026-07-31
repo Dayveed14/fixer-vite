@@ -196,9 +196,6 @@ const TechnicianDashboard = () => {
         <div className="left-tech">
 
           {/* Assigned Jobs */}
-
-          <div className="tech-card">
-
             <div className="tech-header">
 
               <h2>Assigned Jobs</h2>
@@ -209,6 +206,9 @@ const TechnicianDashboard = () => {
               </button>
 
             </div>
+          <div className="tech-card">
+
+
 
             {jobs.length === 0 ? (
 

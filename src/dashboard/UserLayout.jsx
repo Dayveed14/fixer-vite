@@ -1,5 +1,7 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   FaBars,
   FaTimes,
@@ -22,9 +24,70 @@ import "./UserLayout.css";
 const UserLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileMenu, setProfileMenu] = useState(false);
-const user = JSON.parse(localStorage.getItem("user"));
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifFetchError, setNotifFetchError] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user"));
   const location = useLocation();
   const navigate = useNavigate();
+
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+
+  const loadNotifications = async () => {
+    if (!user?.id) return;
+
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/notifications`, {
+        params: { user_id: user.id, role: user.role },
+      });
+
+      setNotifications(res.data.notifications);
+      setUnreadCount(res.data.unread);
+      setNotifFetchError(false);
+    } catch (err) {
+      console.error(err);
+      setNotifFetchError(true);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+
+    // Poll every 30s so the badge updates without a full page reload.
+    const interval = setInterval(loadNotifications, 30000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const markOneRead = async (notif) => {
+    if (notif.is_read) return;
+
+    try {
+      await axios.patch(`${API_BASE_URL}/api/notifications/${notif.id}/read`);
+
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, is_read: 1 } : n)),
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const markAllRead = async () => {
+    try {
+      await axios.patch(`${API_BASE_URL}/api/notifications/read-all`, {
+        user_id: user.id,
+        role: user.role,
+      });
+
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: 1 })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem("user");
@@ -53,8 +116,8 @@ const user = JSON.parse(localStorage.getItem("user"));
       icon: <FaBoxOpen />,
     },
     {
-      name: "Messages",
-      path: "/messages",
+      name: "Appointments",
+      path: "/user/appointments",
       icon: <FaComments />,
     },
     {
@@ -148,22 +211,68 @@ const user = JSON.parse(localStorage.getItem("user"));
 
           <div className="top-right">
 
-            <button className="icon-btn">
-              <FaBell />
-              <span className="badge">3</span>
-            </button>
+            <div className="notif-wrapper">
+              <button
+                className="icon-btn"
+                onClick={() => {
+                  setNotifOpen((prev) => !prev);
+                  setProfileMenu(false);
+                }}
+              >
+                <FaBell />
+                {unreadCount > 0 && (
+                  <span className="badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="dropdown notif-dropdown">
+                  <div className="notif-header">
+                    <span>Notifications</span>
+                    {unreadCount > 0 && (
+                      <button className="mark-all-btn" onClick={markAllRead}>
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+
+                  {notifFetchError ? (
+                    <p className="notif-empty notif-error">Couldn't load notifications. Check your connection and try again.</p>
+                  ) : notifications.length === 0 ? (
+                    <p className="notif-empty">No notifications yet.</p>
+                  ) : (
+                    <div className="notif-list">
+                      {notifications.map((notif) => (
+                        <button
+                          key={notif.id}
+                          className={`notif-item ${notif.is_read ? "" : "unread"}`}
+                          onClick={() => markOneRead(notif)}
+                        >
+                          <span className="notif-title">{notif.title}</span>
+                          <span className="notif-message">{notif.message}</span>
+                          <span className="notif-time">
+                            {new Date(notif.created_at).toLocaleString()}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             <div
               className="profile"
-              onClick={() =>
-                setProfileMenu(!profileMenu)
-              }
+              onClick={() => {
+                setProfileMenu(!profileMenu);
+                setNotifOpen(false);
+              }}
             >
               <FaUserCircle className="avatar" />
 
               <div className="profile-info">
-                <h4>{user.first_name}</h4>
-                <p>{user.role}</p>
+                <h4>{user?.first_name}</h4>
+                <p>{user?.role}</p>
               </div>
 
               <FaChevronDown />

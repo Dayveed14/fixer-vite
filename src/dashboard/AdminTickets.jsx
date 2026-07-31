@@ -121,7 +121,7 @@ const AdminTickets = () => {
 
                   <td>{ticket.customer_name}</td>
 
-                  <td>{ticket.device_name || "-"}</td>
+                  <td>{ticket.device || "-"}</td>
 
                   <td>{ticket.issue}</td>
 

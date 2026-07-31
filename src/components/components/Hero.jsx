@@ -117,11 +117,9 @@ function DiagnosisModal({ onClose }) {
 
         {/* Left column */}
         <div className="diag-modal__left">
-          <div className="diag-modal__badge">fixer's</div>
-          <h2 className="diag-modal__title">Smart Issue Analyzer</h2>
+          <h2 className="diag-modal__title">Meet FixBot 🤖</h2>
           <p className="diag-modal__body">
-            Describe your device and its symptoms and we'll pinpoint the likely issue
-            and recommend the best fix — DIY guide, technician call, or professional repair.
+            Tell us what's wrong with your computer, and our AI will guide you through possible solutions in under two minutes.
           </p>
 
           {loading && (
