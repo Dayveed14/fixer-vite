@@ -105,7 +105,7 @@ export default function AdminArticles() {
             {filtered.map((a) => (
               <tr key={a.id}>
                 <td>
-                 <img className="article-image" src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${a.hero_image}`} alt={a.title}/>
+                 <img className="article-image" src={a.hero_image} alt={a.title}/>
                 </td>
 
                 <td><span className="article-title"> {a.title} </span></td>

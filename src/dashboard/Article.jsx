@@ -52,7 +52,7 @@ export default function Article() {
       <div className="article-container">
 
         <img
-          src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${article.hero_image}`}
+          src={article.hero_image}
           alt={article.title}
           className="hero-image"
         />

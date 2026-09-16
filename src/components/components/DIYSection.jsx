@@ -93,7 +93,7 @@ export default function DIYSection() {
         <div className="diy__layout">
           <Link to={`/userarticle/${featured.id}`}className="diy__featured">
             <div className="diy__featured-img-wrap">
-              <img src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${featured.hero_image}`} alt={featured.title} />
+              <img src={featured.hero_image} alt={featured.title} />
               {tab === "videos" && <div className="diy__play-btn"><IconPlay /></div>}
               <span className="diy__tag">{featured.category}</span>
             </div>
@@ -112,7 +112,7 @@ export default function DIYSection() {
             {related.map(item => (
               <div className="diy__related-item" key={item.id}>
                 <div className="diy__related-img-wrap">
-                  <img src={`https://fixer-backend-7mng.onrender.com/uploads/articles/${item.hero_image}`} alt={item.title} className="diy__related-img" />
+                  <img src={item.hero_image} alt={item.title} className="diy__related-img" />
                   {tab === "videos" && <div className="diy__play-btn diy__play-btn--sm"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>}
                 </div>
                 <div>

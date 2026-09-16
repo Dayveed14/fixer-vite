@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
 import "../css/Hero.css";
 
@@ -12,7 +12,7 @@ const DEVICE_TYPES = ["Smartphone","Laptop","Tablet","Desktop PC","Smart Watch",
 const SYMPTOMS = [
   "Make noise","Overheating","Battery drains fast",
   "Burning smell","Touchscreen unresponsive","Lagging",
-  "Keyboard not working","Random restart","Won't charge",
+  "Keyboard not working","Random restart","Won't charge","Other"
 ];
 
 // Safe parse — never throws, never crashes the modal
@@ -86,7 +86,25 @@ function DiagnosisModal({ onClose }) {
       );
 
       const data = await response.json();
+
+      if (!response.ok) {
+  const status = response.status;
+  const upstreamMsg = data?.error?.message || data?.message;
+
+  const friendly =
+    status === 503
+      ? "Our diagnostic AI is currently experiencing high demand. Please try again in a moment."
+      : status === 429
+      ? "We're receiving a lot of requests right now. Please wait a moment and try again."
+      : upstreamMsg ||
+        "Something went wrong while running the diagnosis. Please try again.";
+
+  setError(friendly);
+  return;
+}
+
       setDiagnosis(data);
+      console.log("Diagnosis result:", data);
     } catch (err) {
       console.error(err);
       setError("Something went wrong while running the diagnosis. Please try again.");
@@ -425,52 +443,224 @@ function DiagnosisModal({ onClose }) {
   );
 }
 
+// ── Slide 2 visual — FixBot "scanning" animation ──
+function FixBotVisual() {
+  const tags = ["Overheating", "Battery drains fast", "Won't charge", "Random restart"];
+  return (
+    <div className="fixbot-visual">
+      <div className="fixbot-visual__ring">
+        <span className="fixbot-visual__core">🤖</span>
+      </div>
+      <div className="fixbot-visual__scanbox">
+        <div className="fixbot-visual__scanline" />
+        <div className="fixbot-visual__tags">
+          {tags.map((t, i) => (
+            <span
+              key={t}
+              className="fixbot-visual__tag"
+              style={{ animationDelay: `${i * 0.55}s` }}
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="fixbot-visual__result">
+          <span className="fixbot-visual__check">✓</span> Issue detected
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Slide 3 visual — repair pipeline timeline ──
+function RepairVisual() {
+  const steps = [
+    { icon: "🔍", label: "Diagnose" },
+    { icon: "🛠️", label: "Repair" },
+    { icon: "📦", label: "Deliver" },
+  ];
+  return (
+    <div className="repair-visual">
+      {steps.map((s, i) => (
+        <Fragment key={s.label}>
+          <div className="repair-visual__step" style={{ animationDelay: `${i * 0.9}s` }}>
+            <span className="repair-visual__icon">{s.icon}</span>
+            <span className="repair-visual__label">{s.label}</span>
+          </div>
+          {i < steps.length - 1 && (
+            <div className="repair-visual__connector" style={{ animationDelay: `${i * 0.9 + 0.2}s` }} />
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+const SLIDE_COUNT = 3;
+const AUTOPLAY_MS = 6000;
+
 export default function Hero() {
   const [diagOpen, setDiagOpen] = useState(false);
+  const [slide, setSlide]       = useState(0);
+  const [paused, setPaused]     = useState(false);
+
   const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  const goTo   = (i) => setSlide(i);
+  const prev   = () => setSlide((s) => (s - 1 + SLIDE_COUNT) % SLIDE_COUNT);
+  const next   = () => setSlide((s) => (s + 1) % SLIDE_COUNT);
+
+  // Autoplay — pauses on hover and while the diagnosis modal is open
+  useEffect(() => {
+    if (paused || diagOpen) return;
+    const id = setInterval(() => setSlide((s) => (s + 1) % SLIDE_COUNT), AUTOPLAY_MS);
+    return () => clearInterval(id);
+  }, [paused, diagOpen]);
 
   return (
-    <section className="hero">
-      <div className="hero__inner">
-        {/* Left */}
-        <div className="hero__left">
-          <h1 className="hero__title">
-            Broken devices?{" "}
-            <span className="hero__title-accent">fixer</span>{" "}
-            got you <span className="hero__title-underline">covered</span>
-          </h1>
-          <p className="hero__sub">
-            Access premium repair services, expert guidance and flexible solutions
-            with fixer — <strong>your trusted partner in tech maintenance</strong>
-          </p>
-          <div className="hero__actions">
-            <button className="hero__btn hero__btn--primary" onClick={() => setDiagOpen(true)}>
-              Run diagnostic →
-            </button>
-            <button className="hero__btn hero__btn--secondary" onClick={() => scrollTo("#resources")}>
-              Browse DIY Guides
-            </button>
-          </div>
-          <div className="hero__stats">
-            {STATS.map((s) => (
-              <div className="hero__stat" key={s.label}>
-                <span className="hero__stat-value">{s.value}</span>
-                <span className="hero__stat-label">{s.label}</span>
+    <section
+      className="hero"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="hero__slideshow">
+        <div className="hero__track" style={{ transform: `translateX(-${slide * 100}%)` }}>
+
+          {/* Slide 1 — original hero */}
+          <div className="hero__slide">
+            <div className="hero__inner">
+              <div className="hero__left">
+                <h1 className="hero__title">
+                  Broken devices?{" "}
+                  <span className="hero__title-accent">fixer</span>{" "}
+                  got you <span className="hero__title-underline">covered</span>
+                </h1>
+                <p className="hero__sub">
+                  Access premium repair services, expert guidance and flexible solutions
+                  with fixer — <strong>your trusted partner in tech maintenance</strong>
+                </p>
+                <div className="hero__actions">
+                  <button className="hero__btn hero__btn--primary" onClick={() => setDiagOpen(true)}>
+                    Run diagnostic →
+                  </button>
+                  <button className="hero__btn hero__btn--secondary" onClick={() => scrollTo("#resources")}>
+                    Browse DIY Guides
+                  </button>
+                </div>
+                <div className="hero__stats">
+                  {STATS.map((s) => (
+                    <div className="hero__stat" key={s.label}>
+                      <span className="hero__stat-value">{s.value}</span>
+                      <span className="hero__stat-label">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+
+              <div className="hero__right">
+                <div className="hero__img-main">
+                  <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=700&q=80" alt="Laptop repair" />
+                </div>
+                <div className="hero__img-badge">
+                  <span className="hero__img-badge-icon">🔧</span>
+                  <span>Expert technicians ready</span>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* Slide 2 — meet FixBot */}
+          <div className="hero__slide">
+            <div className="hero__inner">
+              <div className="hero__left">
+                <h1 className="hero__title">
+                  Meet <span className="hero__title-accent">FixBot</span>{" "}
+                  <span className="hero__title-underline">🤖</span>
+                </h1>
+                <p className="hero__sub">
+                  Describe your symptoms and our AI pinpoints the issue, estimates cost
+                  and repair time — <strong>diagnosis in under two minutes</strong>
+                </p>
+                <div className="hero__actions">
+                  <button className="hero__btn hero__btn--primary" onClick={() => setDiagOpen(true)}>
+                    Try FixBot →
+                  </button>
+                  <button className="hero__btn hero__btn--secondary" onClick={() => scrollTo("#resources")}>
+                    Browse DIY Guides
+                  </button>
+                </div>
+                <div className="hero__stats">
+                  <div className="hero__stat">
+                    <span className="hero__stat-value">2 min</span>
+                    <span className="hero__stat-label">Avg. diagnosis</span>
+                  </div>
+                  <div className="hero__stat">
+                    <span className="hero__stat-value">AI</span>
+                    <span className="hero__stat-label">Powered</span>
+                  </div>
+                  <div className="hero__stat">
+                    <span className="hero__stat-value">24/7</span>
+                    <span className="hero__stat-label">Available</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="hero__right">
+                <FixBotVisual />
+              </div>
+            </div>
+          </div>
+
+          {/* Slide 3 — we fix it */}
+          <div className="hero__slide">
+            <div className="hero__inner">
+              <div className="hero__left">
+                <h1 className="hero__title">
+                  We don't just diagnose{" "}
+                  <span className="hero__title-accent">we fix it</span>
+                </h1>
+                <p className="hero__sub">
+                  Book a remote session or mail in your device — our expert technicians
+                  handle everything from <strong>diagnosis to delivery</strong>
+                </p>
+                <div className="hero__actions">
+                  <button className="hero__btn hero__btn--primary" onClick={() => setDiagOpen(true)}>
+                    Get started →
+                  </button>
+                  <button className="hero__btn hero__btn--secondary" onClick={() => scrollTo("#resources")}>
+                    Browse DIY Guides
+                  </button>
+                </div>
+                <div className="hero__stats">
+                  {STATS.map((s) => (
+                    <div className="hero__stat" key={s.label}>
+                      <span className="hero__stat-value">{s.value}</span>
+                      <span className="hero__stat-label">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="hero__right">
+                <RepairVisual />
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        {/* Right */}
-        <div className="hero__right">
-          <div className="hero__img-main">
-            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=700&q=80" alt="Laptop repair" />
-          </div>
-          <div className="hero__img-badge">
-            <span className="hero__img-badge-icon">🔧</span>
-            <span>Expert technicians ready</span>
-          </div>
-        </div>
+        <button className="hero__arrow hero__arrow--prev" onClick={prev} aria-label="Previous slide">‹</button>
+        <button className="hero__arrow hero__arrow--next" onClick={next} aria-label="Next slide">›</button>
+      </div>
+
+      <div className="hero__dots">
+        {Array.from({ length: SLIDE_COUNT }).map((_, i) => (
+          <button
+            key={i}
+            className={`hero__dot ${slide === i ? "active" : ""}`}
+            onClick={() => goTo(i)}
+            aria-label={`Go to slide ${i + 1}`}
+          />
+        ))}
       </div>
 
       {/* Diagnosis modal */}
