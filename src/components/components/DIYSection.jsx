@@ -98,7 +98,11 @@ export default function DIYSection() {
         <div className="diy__layout">
           <Link to={linkTo(featured)} className="diy__featured">
             <div className="diy__featured-img-wrap">
-              <img src={thumbOf(featured)} alt={featured.title} />
+              <img
+  src={thumbOf(featured)}
+  alt={featured.title}
+  className="diy__featured-img"
+/>
               {tab === "videos" && <div className="diy__play-btn"><IconPlay /></div>}
               <span className="diy__tag">{featured.category}</span>
             </div>
