@@ -4,9 +4,9 @@ import axios from "axios";
 import "./ArticleForm.css";
 import { Editor } from "@tinymce/tinymce-react";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "https://fixer-backend-7mng.onrender.com/api/diy-videos";
 
-export default function EditArticle() {
+export default function EditVideo() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -18,18 +18,18 @@ export default function EditArticle() {
     content: "",
     status: "draft",
     excerpt: "",
-    image_alt: "",
     tags: "",
   });
 
   const [preview, setPreview] = useState("");
-  const [image, setImage] = useState(null);
+  const [video, setVideo] = useState(null);
 
   useEffect(() => {
-    loadArticle();
+    loadVideo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadArticle = async () => {
+  const loadVideo = async () => {
     try {
       const { data } = await axios.get(`${API}/${id}`);
 
@@ -39,15 +39,14 @@ export default function EditArticle() {
         content: data.content,
         status: data.status,
         excerpt: data.excerpt,
-        image_alt: data.image_alt,
         tags: data.tags,
       });
 
-      // hero_image is now a full Cloudinary URL — no prefix needed.
-      setPreview(data.hero_image);
+      // video_url is already a full Cloudinary URL — no prefix needed.
+      setPreview(data.video_url);
     } catch (err) {
       console.error(err);
-      alert("Unable to load article.");
+      alert("Unable to load video.");
     } finally {
       setLoading(false);
     }
@@ -60,12 +59,12 @@ export default function EditArticle() {
     }));
   };
 
-  const handleImage = (e) => {
+  const handleVideo = (e) => {
     const file = e.target.files[0];
 
     if (!file) return;
 
-    setImage(file);
+    setVideo(file);
     setPreview(URL.createObjectURL(file));
   };
 
@@ -82,11 +81,10 @@ export default function EditArticle() {
       formData.append("content", form.content);
       formData.append("status", form.status);
       formData.append("excerpt", form.excerpt);
-      formData.append("image_alt", form.image_alt);
       formData.append("tags", form.tags);
 
-      if (image) {
-        formData.append("hero_image", image);
+      if (video) {
+        formData.append("video", video);
       }
 
       await axios.put(`${API}/${id}`, formData, {
@@ -95,12 +93,12 @@ export default function EditArticle() {
         },
       });
 
-      alert("Article updated successfully.");
+      alert("Video updated successfully.");
 
-      navigate("/adminarticles");
+      navigate("/adminvideos");
     } catch (err) {
       console.error(err);
-      alert("Failed to update article.");
+      alert("Failed to update video.");
     } finally {
       setSaving(false);
     }
@@ -115,7 +113,7 @@ export default function EditArticle() {
 
       <div className="article-form-card">
 
-        <h2>Edit Article</h2>
+        <h2>Edit Video</h2>
 
         <form onSubmit={handleSubmit}>
 
@@ -130,17 +128,6 @@ export default function EditArticle() {
               required
             />
           </div>
-
-        <div className="form-group">
-          <label>Slug</label>
-
-          <input
-            type="text"
-            name="slug"
-            value={form.slug}
-            readOnly
-          />
-        </div>
 
         <div className="form-group">
           <label>Tags</label>
@@ -218,7 +205,7 @@ export default function EditArticle() {
         </div>
 
           <div className="form-group">
-            <label>Content</label>
+            <label>Description / Instructions</label>
 
             <Editor
                 apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
@@ -233,38 +220,26 @@ export default function EditArticle() {
           </div>
 
           <div className="form-group">
-            <label>Hero Image</label>
+            <label>Video File</label>
 
             <input
               type="file"
-              accept="image/*"
-              onChange={handleImage}
+              accept="video/*"
+              onChange={handleVideo}
             />
           </div>
 
           {preview && (
             <div className="image-preview">
-              <img src={preview} alt="Preview" />
+              <video src={preview} controls style={{ maxWidth: "100%" }} />
             </div>
           )}
-
-          <div className="form-group">
-          <label>Image Description</label>
-
-          <input
-            type="text"
-            name="image_alt"
-            value={form.image_alt}
-            onChange={handleChange}
-            required
-          />
-        </div>
 
           <button
             className="submit-btn"
             disabled={saving}
           >
-            {saving ? "Updating..." : "Update Article"}
+            {saving ? "Updating..." : "Update Video"}
           </button>
 
         </form>

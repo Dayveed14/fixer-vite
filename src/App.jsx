@@ -13,6 +13,7 @@ import ScrollToHash from "./components/components/ScrollToHash";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import UserArticle from "./components/UserArticle";
+import UserVideo from "./components/UserVideo";
 import UserDashboard from "./dashboard/UserDashboard";
 import AdminDashboard from "./dashboard/AdminDashboard";
 import TechnicianDashboard from "./dashboard/TechnicianDashboard";
@@ -38,6 +39,9 @@ import AddArticle from "./dashboard/AddArticle";
 import AddUsers from "./dashboard/AddUsers";
 import Article from "./dashboard/Article";
 import EditArticle from "./dashboard/EditArticle";
+import AdminVideos from "./dashboard/AdminVideos";
+import AddVideo from "./dashboard/AddVideo";
+import EditVideo from "./dashboard/EditVideo";
 import AboutFixer from "./components/AboutFixer"
 import Blog from "./components/Blog"
 import ContactUs from "./components/ContactUs"
@@ -59,6 +63,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/userarticle/:id" element={<UserArticle />} />
+        <Route path="/uservideo/:id" element={<UserVideo />} />
         <Route path="/about"    element={<AboutFixer />} />
         <Route path="/blog"     element={<Blog />} />
         <Route path="/contact"  element={<ContactUs />} />
@@ -112,6 +117,9 @@ function App() {
           <Route path="/article/:id" element={<Article />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/editarticle/:id" element={<EditArticle />} />
+          <Route path="/adminvideos" element={<AdminVideos />} />
+          <Route path="/adminvideos/new" element={<AddVideo />} />
+          <Route path="/admin/editvideo/:id" element={<EditVideo />} />
           </Route>
 </Route>
 

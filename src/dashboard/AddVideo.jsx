@@ -6,12 +6,13 @@ import { Editor } from "@tinymce/tinymce-react";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
-const AddArticle = () => {
+
+const AddVideo = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
 
-  const [image, setImage] = useState(null);
+  const [video, setVideo] = useState(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -21,7 +22,6 @@ const AddArticle = () => {
     content: "",
     status: "draft",
     tags: "",
-    image_alt: "",
   });
 
   const createSlug = (text) =>
@@ -51,21 +51,26 @@ const AddArticle = () => {
   const submit = async (e) => {
     e.preventDefault();
 
+    if (!video) {
+      alert("Please select a video file.");
+      return;
+    }
+
+    let user = null;
+    try {
+      user = JSON.parse(localStorage.getItem("user"));
+    } catch {
+      user = null;
+    }
+
+    if (!user?.id) {
+      alert("Your session has expired. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
     try {
       setLoading(true);
-
-      let user = null;
-      try {
-        user = JSON.parse(localStorage.getItem("user"));
-      } catch {
-        user = null;
-      }
-
-      if (!user?.id) {
-        alert("Your session has expired. Please log in again.");
-        navigate("/login");
-        return;
-      }
 
       const data = new FormData();
 
@@ -73,14 +78,12 @@ const AddArticle = () => {
         data.append(key, value);
       });
 
-      if (image) {
-        data.append("hero_image", image);
-      }
+      data.append("video", video);
       data.append("author_id", user.id);
       data.append("featured", 1);
 
       await axios.post(
-        `${API_BASE_URL}/api/articles`,
+        `${API_BASE_URL}/api/diy-videos`,
         data,
         {
           headers: {
@@ -89,12 +92,12 @@ const AddArticle = () => {
         }
       );
 
-      alert("Article created successfully.");
+      alert("Video created successfully.");
 
-      navigate("/adminarticles");
+      navigate("/adminvideos");
     } catch (err) {
       console.error(err);
-      alert("Unable to create article.");
+      alert("Unable to create video.");
     } finally {
       setLoading(false);
     }
@@ -105,8 +108,8 @@ const AddArticle = () => {
 
       <div className="page-header">
         <div>
-          <h1>New Article</h1>
-          <p>Create a knowledge base article or blog post.</p>
+          <h1>New DIY Video</h1>
+          <p>Upload a new DIY tutorial video.</p>
         </div>
       </div>
 
@@ -116,27 +119,17 @@ const AddArticle = () => {
       >
 
         <div className="form-group">
-          <label>Hero Image</label>
+          <label>Video File</label>
 
           <input
             type="file"
-            accept="image/*"
+            accept="video/*"
             onChange={(e) =>
-              setImage(e.target.files[0])
+              setVideo(e.target.files[0])
             }
           />
         </div>
-        <div className="form-group">
-          <label>Image Description</label>
 
-          <input
-            type="text"
-            name="image_alt"
-            value={form.image_alt}
-            onChange={handleChange}
-            required
-          />
-        </div>
         <div className="form-group">
           <label>Title</label>
 
@@ -224,7 +217,7 @@ const AddArticle = () => {
         </div>
 
         <div className="form-group">
-          <label>Article Content</label>
+          <label>Video Description / Instructions</label>
 
                   <Editor
           apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
@@ -262,7 +255,7 @@ const AddArticle = () => {
             type="button"
             className="cancel-btn"
             onClick={() =>
-              navigate("/adminarticles")
+              navigate("/adminvideos")
             }
           >
             Cancel
@@ -274,8 +267,8 @@ const AddArticle = () => {
             disabled={loading}
           >
             {loading
-              ? "Saving..."
-              : "Publish Article"}
+              ? "Uploading..."
+              : "Publish Video"}
           </button>
 
         </div>
@@ -286,4 +279,4 @@ const AddArticle = () => {
   );
 };
 
-export default AddArticle;
+export default AddVideo;
