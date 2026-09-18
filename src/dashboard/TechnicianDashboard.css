@@ -110,9 +110,13 @@
 ========================================== */
 
 .tech-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
+    display: flex;
+    /* grid-template-columns: 2fr 1fr; */
     gap: 25px;
+}
+
+.left-tech {
+    width: 65%;
 }
 
 .left-tech,
