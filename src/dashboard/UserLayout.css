@@ -119,11 +119,13 @@
    MAIN
 =================================== */
 
-.main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+    .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-left: 270px;
+            min-width: 0;
+        }
 
 /* ===================================
    TOPBAR
@@ -136,6 +138,8 @@
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 5px 15px rgba(0, 0, 0, .05);
+    gap: 20px;
+    min-width: 0;
 }
 
 .menu-btn {
@@ -157,7 +161,9 @@
     padding: 12px 18px;
     border-radius: 10px;
     width: 350px;
-    margin-left: 270px;
+    margin-left: 0;
+    min-width: 0;
+    flex-shrink: 1;
 }
 
 .search-box svg {
@@ -181,6 +187,7 @@
     display: flex;
     align-items: center;
     gap: 25px;
+    flex-shrink: 0;
 }
 
 .icon-btn {
@@ -389,7 +396,7 @@
 .page-content {
     flex: 1;
     padding: 30px;
-    margin-left: 270px;
+    min-width: 0;
 }
 
 /* ===================================
@@ -397,6 +404,9 @@
 =================================== */
 
 @media (max-width: 992px) {
+    .main {
+            margin-left: 0;
+        }
 .layout,
     .admin-grid, .dashboard-grid {
         display: unset;

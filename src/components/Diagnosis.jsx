@@ -24,6 +24,7 @@ const SYMPTOMS = [
   "Random restart",
   "Won't charge",
   "Won't Power on",
+  "Other",
 ];
 
 // Safe parse — never throws, never crashes the modal
