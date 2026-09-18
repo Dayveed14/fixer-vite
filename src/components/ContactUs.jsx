@@ -1,9 +1,13 @@
 import { useState } from "react";
+import axios from "axios";
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+
 const CHANNELS = [
-  { icon: "📧", title: "Email us", desc: "For general enquiries and support", value: "hello@fixer.ng", href: "mailto:hello@fixer.ng" },
+  { icon: "📧", title: "Email us", desc: "For general enquiries and support", value: "support@fixerng.app", href: "mailto:support@fixerng.app" },
   { icon: "💬", title: "Live chat", desc: "Chat with our team in real time", value: "Start a chat", href: "#" },
   { icon: "📞", title: "Call us", desc: "Available Mon – Fri, 8am – 6pm", value: "+234 800 000 0000", href: "tel:+2348000000000" },
 ];
@@ -11,11 +15,26 @@ const CHANNELS = [
 export default function ContactUs() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState(null);
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handleSubmit = () => {
-    if (form.name && form.email && form.message) setSent(true);
+  const handleSubmit = async () => {
+    if (!(form.name && form.email && form.message)) return;
+
+    setSending(true);
+    setError(null);
+
+    try {
+      await axios.post(`${API_BASE_URL}/api/contact`, form);
+      setSent(true);
+    } catch (err) {
+      console.error(err);
+      setError("Couldn't send your message right now. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -76,12 +95,13 @@ export default function ContactUs() {
                   <label>Message</label>
                   <textarea rows={6} placeholder="Tell us more..." value={form.message} onChange={set("message")} />
                 </div>
+                {error && <p className="contact-form__error" style={{ color: "#c0392b" }}>{error}</p>}
                 <button
                   className="contact-form__submit"
                   onClick={handleSubmit}
-                  disabled={!form.name || !form.email || !form.message}
+                  disabled={!form.name || !form.email || !form.message || sending}
                 >
-                  Send message →
+                  {sending ? "Sending..." : "Send message →"}
                 </button>
               </div>
             )}

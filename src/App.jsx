@@ -40,6 +40,7 @@ import AddUsers from "./dashboard/AddUsers";
 import Article from "./dashboard/Article";
 import EditArticle from "./dashboard/EditArticle";
 import AdminVideos from "./dashboard/AdminVideos";
+import AdminShipments from "./dashboard/AdminShipments";
 import AddVideo from "./dashboard/AddVideo";
 import EditVideo from "./dashboard/EditVideo";
 import AboutFixer from "./components/AboutFixer"
@@ -53,6 +54,7 @@ import Cookies from "./components/Cookies"
 import UserAppointments from "./dashboard/UserAppointments"
 import UserAppointmentDetail from "./dashboard/UserAppointmentDetail"
 import UserJobDetail from "./dashboard/UserJobDetail"
+import UserShipments from "./dashboard/UserShipments"
 function App() {
   return (
     <>
@@ -86,6 +88,7 @@ function App() {
           <Route path="/user/appointments" element={<UserAppointments />} />
           <Route path="/userappointment/:id" element={<UserAppointmentDetail />} />
                     <Route path="/userjob/:id" element={<UserJobDetail />} />
+                    <Route path="/usershipments" element={<UserShipments />} />
           
         </Route>
         </Route>
@@ -118,6 +121,7 @@ function App() {
               <Route path="/admin/settings" element={<AdminSettings />} />
           <Route path="/admin/editarticle/:id" element={<EditArticle />} />
           <Route path="/adminvideos" element={<AdminVideos />} />
+          <Route path="/adminshipments" element={<AdminShipments />} />
           <Route path="/adminvideos/new" element={<AddVideo />} />
           <Route path="/admin/editvideo/:id" element={<EditVideo />} />
           </Route>

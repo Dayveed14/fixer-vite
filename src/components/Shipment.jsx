@@ -1,6 +1,15 @@
 import { useState } from "react";
+import axios from "axios";
+import { usePaystackPayment } from "react-paystack";
 import "./css/Shipment.css";
 import Navbar from "./components/Navbar";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+
+// Fixed pickup fee — must match backend's PICKUP_FEE_KOBO exactly, since
+// the server independently verifies the Paystack payment against it.
+const PICKUP_FEE_NAIRA = 2500;
 
 const STEPS_NAV = [
   { step: 1, label: "Device Info" },
@@ -46,6 +55,9 @@ export default function Shipment() {
 
   const [deviceDropOpen, setDeviceDropOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("paystack");
+  const [paying, setPaying] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [shipmentReference, setShipmentReference] = useState(null);
 
   const setField = (key) => (e) => {
     const value = e.target.type === "checkbox" ? e.target.checked : e.target.value;
@@ -79,6 +91,8 @@ export default function Shipment() {
       pickupTime: "",
       agreedToTerms: false
     });
+    setShipmentReference(null);
+    setSubmitError(null);
     setDirection("back");
     setCurrentStep(1);
   };
@@ -99,7 +113,64 @@ export default function Shipment() {
   };
 
   const estimatedPickupFee = "₦2,500";
-  const mockReferenceNumber = "FXR-849204";
+
+  const initializePayment = usePaystackPayment({
+    publicKey: PAYSTACK_PUBLIC_KEY,
+  });
+
+  const submitShipment = async (paymentReference) => {
+    try {
+      const { data } = await axios.post(`${API_BASE_URL}/api/shipments`, {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        device: form.device,
+        brand: form.brand,
+        fault: form.fault,
+        address: form.address,
+        city: form.city,
+        notes: form.notes || null,
+        pickup_date: form.pickupDate,
+        pickup_time: form.pickupTime,
+        payment_reference: paymentReference,
+      });
+
+      setShipmentReference(data.reference);
+      setDirection("next");
+      setCurrentStep(5);
+    } catch (err) {
+      console.error(err);
+      setSubmitError(
+        err.response?.data?.message || "Payment succeeded but scheduling failed. Please contact support with your payment reference."
+      );
+    } finally {
+      setPaying(false);
+    }
+  };
+
+  const payAndSchedule = () => {
+    setSubmitError(null);
+    setPaying(true);
+
+    initializePayment({
+      config: {
+        email: form.email,
+        amount: PICKUP_FEE_NAIRA * 100, // Paystack expects kobo
+        currency: "NGN",
+        reference: `SHP_${Date.now()}_${Math.floor(Math.random() * 1e6)}`,
+        metadata: {
+          name: form.name,
+          phone: form.phone,
+        },
+      },
+      onSuccess: (response) => {
+        submitShipment(response.reference);
+      },
+      onClose: () => {
+        setPaying(false);
+      },
+    });
+  };
 
   return (
     <div className="ship">
@@ -328,8 +399,14 @@ export default function Shipment() {
                 <div className="shipment__paystack-box">
                   <div className="secure-badge-label">🔒 Secure Transaction Ecosystem</div>
                   <p>Click below to securely authorize payment and dispatch your tracking coordinates.</p>
-                  <button className="shipment__btn shipment__btn--primary" style={{ width: "100%", justifyContent: "center" }} onClick={() => setCurrentStep(5)}>
-                    Simulate Payment Success via Paystack
+                  {submitError && <p className="shipment__error" style={{ color: "#c0392b", marginBottom: 10 }}>{submitError}</p>}
+                  <button
+                    className="shipment__btn shipment__btn--primary"
+                    style={{ width: "100%", justifyContent: "center" }}
+                    onClick={payAndSchedule}
+                    disabled={paying || !form.email}
+                  >
+                    {paying ? "Processing..." : `Pay ${estimatedPickupFee} with Paystack`}
                   </button>
                 </div>
 
@@ -348,7 +425,7 @@ export default function Shipment() {
           <h2>Pickup Scheduled</h2>
 
           <div className="shipment__receipt-grid">
-            <div className="receipt-tile"><strong>Reference Number:</strong> <span>{mockReferenceNumber}</span></div>
+            <div className="receipt-tile"><strong>Reference Number:</strong> <span>{shipmentReference}</span></div>
             <div className="receipt-tile"><strong>Pickup Date:</strong> <span>{form.pickupDate}</span></div>
             <div className="receipt-tile"><strong>Pickup Time:</strong> <span>{form.pickupTime}</span></div>
             <div className="receipt-tile"><strong>Pickup Address:</strong> <span>{form.address}, {form.city}</span></div>

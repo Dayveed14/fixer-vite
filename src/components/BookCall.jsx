@@ -1,8 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
+import { usePaystackPayment } from "react-paystack";
 import "./css/BookCall.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -17,10 +19,12 @@ const TIME_SLOTS = [
 
 const DEVICE_TYPES = ["Smartphone","Laptop","Tablet","Desktop PC","Smart Watch","Gaming Console","Other"];
 
+// amount is in Naira — must match backend's SUPPORT_TYPE_MAP exactly, since
+// the server independently verifies the Paystack payment against it.
 const SUPPORT_TYPES = [
-  { id: "voice", title: "Voice Call", desc: "Speak directly with an expert via phone line.", cost: "₦5000" },
-  { id: "video", title: "Video Call", desc: "Face-to-face assistance via Google Meet.", cost: "₦7000" },
-  { id: "remote", title: "Remote Support", desc: "Secure remote desktop access via TeamViewer/AnyDesk.", cost: "₦10000" }
+  { id: "voice", title: "Voice Call", desc: "Speak directly with an expert via phone line.", cost: "₦5000", amount: 5000 },
+  { id: "video", title: "Video Call", desc: "Face-to-face assistance via Google Meet.", cost: "₦7000", amount: 7000 },
+  { id: "remote", title: "Remote Support", desc: "Secure remote desktop access via TeamViewer/AnyDesk.", cost: "₦10000", amount: 10000 }
 ];
 
 function getDaysInMonth(year, month) {
@@ -52,7 +56,8 @@ export default function BookCall() {
   // Flow State
   const [form, setForm] = useState({ name: "", email: "", device: "", issue: "" });
   const [supportType, setSupportType] = useState("");
-  const [payment, setPayment] = useState({ cardNumber: "", expiry: "", cvc: "" });
+  const [paymentReference, setPaymentReference] = useState(null);
+  const [paying, setPaying] = useState(false);
 
   const [deviceDropOpen, setDeviceDropOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -89,11 +94,43 @@ export default function BookCall() {
     if (step === 1 && selectedDate && selectedTime) setStep(2);
     else if (step === 2 && form.name && form.email) setStep(3);
     else if (step === 3 && supportType) setStep(4);
-    else if (step === 4 && payment.cardNumber && payment.expiry && payment.cvc) setStep(5);
   };
 
   const handleBackStep = () => {
     if (step > 1) setStep(prev => prev - 1);
+  };
+
+  const selectedType = SUPPORT_TYPES.find(t => t.id === supportType);
+
+  const initializePayment = usePaystackPayment({
+    publicKey: PAYSTACK_PUBLIC_KEY,
+  });
+
+  const payAndContinue = () => {
+    if (!selectedType) return;
+
+    setPaying(true);
+
+    initializePayment({
+      config: {
+        email: form.email,
+        amount: selectedType.amount * 100, // Paystack expects kobo
+        currency: "NGN",
+        reference: `BK_${Date.now()}_${Math.floor(Math.random() * 1e6)}`,
+        metadata: {
+          name: form.name,
+          support_type: supportType,
+        },
+      },
+      onSuccess: (response) => {
+        setPaying(false);
+        setPaymentReference(response.reference);
+        setStep(5);
+      },
+      onClose: () => {
+        setPaying(false);
+      },
+    });
   };
 
   const handleSubmit = async () => {
@@ -109,6 +146,11 @@ export default function BookCall() {
       return;
     }
 
+    if (!paymentReference) {
+      setSubmitError("Payment was not completed. Please go back and pay first.");
+      return;
+    }
+
     setSubmitting(true);
     setSubmitError(null);
 
@@ -121,13 +163,16 @@ export default function BookCall() {
         duration: 30,
         issue_summary: form.issue || null,
         device: form.device || null,
+        payment_reference: paymentReference,
       });
 
       setBookingReference(res.data.booking_reference);
       setSubmitted(true);
     } catch (err) {
       console.error(err);
-      setSubmitError("Failed to confirm booking. Please try again.");
+      setSubmitError(
+        err.response?.data?.message || "Failed to confirm booking. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -141,7 +186,7 @@ export default function BookCall() {
     setSelectedTime(null);
     setSupportType("");
     setForm({ name:"", email:"", device:"", issue:"" });
-    setPayment({ cardNumber: "", expiry: "", cvc: "" });
+    setPaymentReference(null);
   };
 
   // Helper to generate dynamic Google Calendar invite file
@@ -368,36 +413,24 @@ export default function BookCall() {
           </div>
         )}
 
-        {/* STEP 4 — Payment Details */}
+        {/* STEP 4 — Real Payment via Paystack */}
         {step === 4 && (
           <div className="bookcall__body bookcall__body--form">
-            <h3>Payment Details</h3>
-            <p className="payment-total">Total Amount: <strong>{SUPPORT_TYPES.find(t => t.id === supportType)?.cost}</strong></p>
+            <h3>Payment</h3>
+            <p className="payment-total">Total Amount: <strong>{selectedType?.cost}</strong></p>
             <div className="bookcall__form">
-              <div className="bookcall__field">
-                <label className="bookcall__label">Card Number</label>
-                <input className="bookcall__input" type="text" placeholder="💳 4111 2222 3333 4444"
-                  value={payment.cardNumber} onChange={e => setPayment(p => ({...p, cardNumber: e.target.value}))} />
-              </div>
-              <div className="bookcall__form-row">
-                <div className="bookcall__field">
-                  <label className="bookcall__label">Expiry Date</label>
-                  <input className="bookcall__input" type="text" placeholder="MM/YY"
-                    value={payment.expiry} onChange={e => setPayment(p => ({...p, expiry: e.target.value}))} />
-                </div>
-                <div className="bookcall__field">
-                  <label className="bookcall__label">CVC</label>
-                  <input className="bookcall__input" type="password" placeholder="123"
-                    value={payment.cvc} onChange={e => setPayment(p => ({...p, cvc: e.target.value}))} />
-                </div>
-              </div>
               <p className="bookcall__payment-note">
-                Payment is simulated for now — no card details are transmitted or stored.
+                You'll be securely redirected to Paystack to complete payment. Your booking is only confirmed once payment succeeds.
               </p>
               <div className="bookcall__form-actions">
-                <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep}>Back</button>
-                <button className={`bookcall__btn bookcall__btn--primary ${(!payment.cardNumber || !payment.expiry || !payment.cvc) ? "disabled" : ""}`}
-                  onClick={handleNextStep} disabled={!payment.cardNumber || !payment.expiry || !payment.cvc}>Secure Checkout</button>
+                <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep} disabled={paying}>Back</button>
+                <button
+                  className="bookcall__btn bookcall__btn--primary"
+                  onClick={payAndContinue}
+                  disabled={paying || !form.email}
+                >
+                  {paying ? "Processing..." : `Pay ${selectedType?.cost} with Paystack`}
+                </button>
               </div>
             </div>
           </div>
@@ -421,7 +454,7 @@ export default function BookCall() {
             <div className="bookcall__form-actions" style={{ marginTop: '25px' }}>
               <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep} disabled={submitting}>Back</button>
               <button className="bookcall__btn bookcall__btn--primary" onClick={handleSubmit} disabled={submitting}>
-                {submitting ? "Confirming..." : "Confirm & Pay"}
+                {submitting ? "Confirming..." : "Confirm Booking"}
               </button>
             </div>
           </div>

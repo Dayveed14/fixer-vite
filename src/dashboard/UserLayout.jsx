@@ -115,6 +115,11 @@ const UserLayout = () => {
       path: "/mailin",
       icon: <FaBoxOpen />,
     },
+     {
+      name: "Shipments",
+      path: "/usershipments",
+      icon: <FaBoxOpen />,
+    },
     {
       name: "Appointments",
       path: "/user/appointments",
