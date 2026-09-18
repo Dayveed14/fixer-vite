@@ -110,13 +110,9 @@
 =========================== */
 
 .dashboard-grid {
-  display: flex;
-  /* grid-template-columns: 2fr 1fr; */
+  display: grid;
+  grid-template-columns: 2fr 1fr;
   gap: 25px;
-}
-
-.left-panel{
-  width: 65%;
 }
 
 .left-panel,
