@@ -79,11 +79,11 @@ async function main() {
     path.dirname(fileURLToPath(import.meta.url)),
     "..",
     "public",
-    "sitemap.xml"
+    "sitemap.xml",
   );
   writeFileSync(outPath, xml);
   console.log(
-    `[sitemap] Wrote ${entries.length} URLs (${articles.length} articles, ${videos.length} videos) to public/sitemap.xml`
+    `[sitemap] Wrote ${entries.length} URLs (${articles.length} articles, ${videos.length} videos) to public/sitemap.xml`,
   );
 }
 

@@ -726,6 +726,13 @@
 .diag-modal__btn--run:hover:not(:disabled) { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(79,106,240,0.3); }
 .diag-modal__btn--run:disabled { opacity: 0.55; cursor: not-allowed; }
 
+ol.diag-step-list {
+  color: white
+}
+
+ol.diag-step-list li span{
+  color: #898989
+}
 
 /* ── RESPONSIVE ── */
 /* ── RESPONSIVE ── */

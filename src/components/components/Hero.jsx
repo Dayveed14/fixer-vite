@@ -156,115 +156,139 @@ function DiagnosisModal({ onClose }) {
             </div>
           )}
 
-          {diagnosis && !loading && !error && (
-            <div className="diag-modal__result">
-              {hasKbResults ? (
-                <>
-                  <p className="diag-modal__result-sub">
-                    {diagnosis.results.length > 1
-                      ? `${diagnosis.results.length} issues found`
-                      : "Issue identified"}
-                  </p>
+         {diagnosis && !loading && !error && (
+  <div className="diag-modal__result">
 
-                  {diagnosis.results.map((issue) => {
-                    const causes = safeParse(issue.possible_causes);
-                    const steps = safeParse(issue.recommended_steps);
-                    const sev = getSeverity(issue.severity);
+    <p className="diag-modal__result-sub">
+      AI diagnosis
+    </p>
 
-                    return (
-                      <div key={issue.id} className="diag-result">
-                        <div className="diag-result-title-row">
-                          <h4 className="diag-modal__result-title">{issue.primary_fault}</h4>
-                          <span
-                            className="diag-sev-badge"
-                            style={{ color: sev.color, background: sev.bg }}
-                          >
-                            {sev.label} severity
-                          </span>
-                        </div>
+    <div className="diag-result">
 
-                        <div className="diag-stat-row">
-                          <div className="diag-stat">
-                            <span className="diag-stat-label">Est. time</span>
-                            <span className="diag-stat-value">{issue.estimated_time}</span>
-                          </div>
-                          <div className="diag-stat">
-                            <span className="diag-stat-label">Est. cost</span>
-                            <span className="diag-stat-value">
-                              ₦{Number(issue.estimated_cost).toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
+      {/* Diagnosis + severity */}
+      <div className="diag-result-title-row">
+        <h4 className="diag-modal__result-title">
+          {diagnosis.likelyProblem || "Possible issue identified"}
+        </h4>
 
-                        {causes.length > 0 && (
-                          <>
-                            <p className="diag-modal__result-sub">Possible causes</p>
-                            <ul className="diag-modal__causes">
-                              {causes.map((c, i) => <li key={i}>{c}</li>)}
-                            </ul>
-                          </>
-                        )}
+        <span
+          className="diag-sev-badge"
+          style={{
+            color: getSeverity(diagnosis.severity).color,
+            background: getSeverity(diagnosis.severity).bg,
+          }}
+        >
+          {getSeverity(diagnosis.severity).label} severity
+        </span>
+      </div>
 
-                        {steps.length > 0 && (
-                          <>
-                            <p className="diag-modal__result-sub">Recommended steps</p>
-                            <ol className="diag-step-list">
-                              {steps.map((step, i) => (
-                                <li key={i}>
-                                  <span className="diag-step-num">{i + 1}</span>
-                                  <span>{step}</span>
-                                </li>
-                              ))}
-                            </ol>
-                          </>
-                        )}
+      {/* Confidence */}
+      {diagnosis.confidence !== undefined && (
+        <div className="diag-stat-row">
+          <div className="diag-stat">
+            <span className="diag-stat-label">
+              AI confidence
+            </span>
 
-                        <div className="diag-modal__result-actions">
-                          <button
-                            className="diag-modal__res-btn diag-modal__res-btn--primary"
-                            onClick={() => setAuthPrompt("/book")}
-                          >
-                            Book remote support →
-                          </button>
-                          <button
-                            className="diag-modal__res-btn diag-modal__res-btn--primary"
-                            onClick={() => setAuthPrompt("/shipment")}
-                          >
-                            Mail-in repair →
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </>
-              ) : (
-                <>
-                  <h4 className="diag-modal__result-title">No exact match found</h4>
-                  <p className="diag-modal__rec">
-                    {diagnosis.message || "Our knowledge base couldn't confidently identify this issue."}
-                  </p>
-                  <div className="diag-modal__result-actions">
-                    <button
-                      className="diag-modal__res-btn diag-modal__res-btn--primary"
-                      onClick={() => setAuthPrompt("/book")}
-                    >
-                      Book remote support →
-                    </button>
-                    <button
-                      className="diag-modal__res-btn diag-modal__res-btn--primary"
-                      onClick={() => setAuthPrompt("/shipment")}
-                    >
-                      Mail-in repair →
-                    </button>
-                  </div>
-                </>
-              )}
+            <span className="diag-stat-value">
+              {diagnosis.confidence}%
+            </span>
+          </div>
 
-              <button className="diag-modal__res-btn diag-modal__res-btn--ghost" onClick={handleReset}>
-                Start over
+          <div className="diag-stat">
+            <span className="diag-stat-label">
+              Estimated repair
+            </span>
+
+            <span className="diag-stat-value">
+              {diagnosis.estimatedRepair || "Assessment required"}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Possible causes */}
+      {Array.isArray(diagnosis.causes) &&
+        diagnosis.causes.length > 0 && (
+          <>
+            <p className="diag-modal__result-sub">
+              Possible causes
+            </p>
+
+            <ul className="diag-modal__causes">
+              {diagnosis.causes.map((cause, i) => (
+                <li key={i}>
+                  {cause}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+      {/* Recommended steps */}
+      {Array.isArray(diagnosis.steps) &&
+        diagnosis.steps.length > 0 && (
+          <>
+            <p className="diag-modal__result-sub">
+              Recommended steps
+            </p>
+
+            <ol className="diag-step-list">
+              {diagnosis.steps.map((step, i) => (
+                <li key={i}>
+                  <span className="diag-step-num">
+                    {i + 1}
+                  </span>
+
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </>
+        )}
+
+      {/* AI recommendation */}
+      {(diagnosis.bookTechnician || diagnosis.mailInRepair) && (
+        <>
+          <p className="diag-modal__result-sub">
+            Recommended next step
+          </p>
+
+          <div className="diag-modal__result-actions">
+
+            {diagnosis.bookTechnician && (
+              <button
+                className="diag-modal__res-btn diag-modal__res-btn--primary"
+                onClick={() => setAuthPrompt("/book")}
+              >
+                Book remote support →
               </button>
-            </div>
-          )}
+            )}
+
+            {diagnosis.mailInRepair && (
+              <button
+                className="diag-modal__res-btn diag-modal__res-btn--primary"
+                onClick={() => setAuthPrompt("/shipment")}
+              >
+                Mail-in repair →
+              </button>
+            )}
+
+          </div>
+        </>
+      )}
+
+    </div>
+
+    <button
+      className="diag-modal__res-btn diag-modal__res-btn--ghost"
+      onClick={handleReset}
+    >
+      Start over
+    </button>
+
+  </div>
+)}
         </div>
 
         {/* Right column — form */}
