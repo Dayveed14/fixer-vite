@@ -38,12 +38,24 @@
   line-height: 1.75;
   max-width: 420px;
 }
-
+.diag__left {
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-soft);
+  padding: 92px;
+  box-shadow: 0 12px 32px rgba(15, 18, 30, 0.08);
+}
 /* ── RIGHT ── */
 .diag__right {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 32px;
+  background: var(--bg-soft);
+  box-shadow: 0 12px 32px rgba(15, 18, 30, 0.08);
+  max-width: 480px;
 }
 
 .diag__prompt {
