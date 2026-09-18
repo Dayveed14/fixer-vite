@@ -3,8 +3,20 @@ import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import "../dashboard/Article.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
+import { SITE_URL } from "../config/seo";
 
 const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+
+// The API doesn't return a dedicated excerpt/meta_description field yet
+// (see article.content below) — until it does, this strips the HTML body
+// down to a plain-text snippet for the meta description and OG tags.
+function excerptFrom(html, maxLen = 160) {
+  if (!html) return undefined;
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLen) return text;
+  return text.slice(0, maxLen - 1).trimEnd() + "…";
+}
 
 export default function UserArticle() {
   const { id } = useParams();
@@ -47,8 +59,34 @@ export default function UserArticle() {
     );
   }
 
+  const description = excerptFrom(article.content);
+
   return (
 <div>
+  <SEO
+    title={article.title}
+    description={description}
+    path={`/userarticle/${article.id}`}
+    image={article.hero_image}
+    type="article"
+    structuredData={{
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.title,
+      image: article.hero_image ? [article.hero_image] : undefined,
+      datePublished: article.created_at,
+      dateModified: article.updated_at || article.created_at,
+      author: { "@type": "Organization", name: "Fixer" },
+      publisher: {
+        "@type": "Organization",
+        name: "Fixer",
+        logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+      },
+      mainEntityOfPage: `${SITE_URL}/userarticle/${article.id}`,
+      articleSection: article.category,
+      description,
+    }}
+  />
   <Navbar />
       <div className="article-page">
 

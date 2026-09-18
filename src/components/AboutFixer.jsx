@@ -1,11 +1,10 @@
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
+import imgFixer from "./img/imgg.png";
 
 const TEAM = [
-  { name: "Adaeze Okafor", role: "CEO & Co-founder", avatar: "https://i.pravatar.cc/80?img=47" },
-  { name: "Emeka Nwosu",   role: "CTO & Co-founder", avatar: "https://i.pravatar.cc/80?img=11" },
-  { name: "Sola Bello",    role: "Head of Operations", avatar: "https://i.pravatar.cc/80?img=15" },
-  { name: "Temi Adeyemi",  role: "Lead Technician",    avatar: "https://i.pravatar.cc/80?img=49" },
+  { name: "David Aigbovbiosa", role: "Founder", avatar: imgFixer }
 ];
 
 const VALUES = [
@@ -18,12 +17,17 @@ const VALUES = [
 export default function AboutFixer() {
   return (
     <div className="static-page">
+      <SEO
+        title="About Fixer"
+        description="Fixer is on a mission to make device repair accessible to everyone — combining expert technicians, a DIY community, and smart diagnostic tools."
+        path="/about"
+      />
 <Navbar />
       {/* Hero */}
       <section className="static-hero static-hero--blue">
         <p className="static-hero__eyebrow">About Us</p>
         <h1 className="static-hero__title">We're on a mission to make device repair accessible to everyone</h1>
-        <p className="static-hero__sub">
+         <p className="static-hero__sub">
           Fixer was built because getting your gadget repaired shouldn't be expensive, confusing, or stressful.
           We combine expert technicians, a DIY community, and smart AI tools — so you always have a path forward.
         </p>
@@ -33,24 +37,22 @@ export default function AboutFixer() {
       <section className="static-section">
         <div className="static-section__inner static-section__inner--split">
           <div>
-            <h2 className="static-section__title">Our Story</h2>
+             <h2 className="static-section__title">Our Story</h2>
             <p className="static-section__body">
-              Fixer started in 2022 when our founders realized that millions of people discard working devices
+              Fixer was birthed in 2022 when a young IT technician realized that millions of people discard working devices
               simply because they don't know how to fix a small fault — or can't afford professional repair shops.
             </p>
             <p className="static-section__body" style={{ marginTop: 16 }}>
               We set out to build a platform where anyone — from a first-time DIYer to a seasoned technician —
-              could get the help they need. Today, Fixer serves thousands of users across Africa and beyond,
-              with a growing library of guides, a network of certified technicians, and an AI-powered
-              diagnostic engine.
+              could get the help they need.
             </p>
           </div>
           <div className="static-stats-grid">
             {[
-              { v: "+25k", l: "Repairs completed" },
-              { v: "+1500", l: "DIY articles" },
+              { v: "X", l: "Repairs completed" },
+              { v: "X", l: "DIY articles" },
               { v: "98%", l: "Satisfaction rate" },
-              { v: "+2k", l: "Daily active users" },
+              { v: "X", l: "Daily active users" },
             ].map(s => (
               <div className="static-stat" key={s.l}>
                 <span className="static-stat__value">{s.v}</span>

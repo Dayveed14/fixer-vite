@@ -728,36 +728,229 @@
 
 
 /* ── RESPONSIVE ── */
+/* ── RESPONSIVE ── */
 @media (max-width: 768px) {
 
+  /* Hero */
   .hero__inner {
     display: unset;
   }
+
   .hero {
-      padding: 30px 24px;
+    padding: 30px 24px;
   }
+
   .hero__title {
-          text-align: center;
-
+    text-align: center;
   }
+
   .hero__sub {
-      text-align: center;
+    text-align: center;
   }
+
   .hero__actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
   }
 
-.hero__img-badge {
+  .hero__img-badge {
     display: none;
+  }
+
+  .hero__arrow {
+    display: none;
+  }
+
+  .hero__dots {
+    margin-top: 20px;
+  }
+
+  .repair-visual {
+    padding: 40px 16px;
+    gap: 0;
+  }
+
+  .repair-visual__connector {
+    width: 32px;
+  }
+
+
+  /* ═══════════════════════════════════════
+     FIXBOT / AI DIAGNOSIS MODAL
+     ═══════════════════════════════════════ */
+
+  .diag-modal__overlay {
+    padding: 12px;
+    align-items: center;
+  }
+
+  .diag-modal__panel {
+    width: 100%;
+    max-width: 100%;
+    max-height: 94vh;
+    border-radius: 16px;
+
+    /* Stack the two desktop columns */
+    grid-template-columns: 1fr;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Left / AI information section */
+  .diag-modal__left {
+    border-radius: 16px 16px 0 0;
+    padding: 28px 20px;
+    gap: 12px;
+  }
+
+  .diag-modal__title {
+    font-size: 1.35rem;
+  }
+
+  .diag-modal__body {
+    font-size: 0.84rem;
+  }
+
+  /* Result card */
+  .diag-modal__result {
+    padding: 16px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .diag-result-title-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .diag-modal__result-title {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .diag-modal__result-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .diag-modal__res-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Form section */
+  .diag-modal__right {
+    padding: 24px 20px 28px;
+    gap: 14px;
+  }
+
+  .diag-modal__prompt {
+    font-size: 0.9rem;
+    padding-right: 20px;
+  }
+
+  /* Device + brand fields become one column */
+  .diag-modal__row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .diag-modal__input,
+  .diag-modal__textarea,
+  .diag-modal__select {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Symptoms */
+  .diag-modal__chips {
+    gap: 6px;
+  }
+
+  .diag-modal__chip {
+    font-size: 0.78rem;
+    padding: 7px 11px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  /* Bottom buttons */
+  .diag-modal__actions {
+    flex-direction: column-reverse;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .diag-modal__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Close button */
+  .diag-modal__close {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+
+
+  /* ═══════════════════════════════════════
+     LOGIN REQUIRED POPUP
+     ═══════════════════════════════════════ */
+
+  .diag-modal__overlay+div {
+    padding: 12px !important;
+  }
 }
 
-.hero__arrow { display: none; }
-.hero__dots { margin-top: 20px; }
-.repair-visual { padding: 40px 16px; gap: 0; }
-.repair-visual__connector { width: 32px; }
+
+/* Extra-small phones */
+@media (max-width: 480px) {
+
+  .diag-modal__overlay {
+    padding: 8px;
+  }
+
+  .diag-modal__panel {
+    max-height: 96vh;
+    border-radius: 14px;
+  }
+
+  .diag-modal__left {
+    padding: 24px 16px;
+  }
+
+  .diag-modal__right {
+    padding: 20px 16px 24px;
+  }
+
+  .diag-modal__title {
+    font-size: 1.25rem;
+  }
+
+  .diag-modal__body {
+    font-size: 0.8rem;
+  }
+
+  .diag-modal__result {
+    padding: 14px;
+  }
+
+  .diag-modal__stat-row {
+    flex-direction: column;
+  }
+
+  .diag-modal__chip {
+    font-size: 0.75rem;
+    padding: 6px 9px;
+  }
 }

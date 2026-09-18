@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
@@ -39,6 +40,11 @@ export default function ContactUs() {
 
   return (
     <div className="static-page">
+      <SEO
+        title="Contact Fixer"
+        description="Get in touch with the Fixer team by email, live chat, or phone for support, partnership enquiries, or general questions."
+        path="/contact"
+      />
 <Navbar />
       <section className="static-hero">
         <p className="static-hero__eyebrow">Contact</p>

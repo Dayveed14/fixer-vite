@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const TOPICS = [
   {
@@ -78,6 +79,11 @@ export default function Help() {
 
   return (
     <div className="static-page">
+      <SEO
+        title="Help Center"
+        description="Find answers to common questions about DIY repairs, technician support, shipment, billing, and your Fixer account."
+        path="/help"
+      />
 <Navbar />
       <section className="static-hero static-hero--blue">
         <p className="static-hero__eyebrow">Help Center</p>

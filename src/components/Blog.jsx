@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const CATEGORIES = ["All", "Phones", "Laptops", "PC", "Gaming", "Tips & Tricks"];
 
@@ -25,6 +26,11 @@ export default function Blog() {
 
   return (
     <div className="static-page">
+      <SEO
+        title="Repair Tips, Guides & Device Knowledge"
+        description="Expert-verified articles on phone, laptop, PC and gaming device repair, maintenance, and troubleshooting from the Fixer technician team."
+        path="/blog"
+      />
 <Navbar />
       <section className="static-hero">
         <p className="static-hero__eyebrow">Blog</p>

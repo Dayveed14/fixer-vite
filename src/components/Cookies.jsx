@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const COOKIE_TYPES = [
   {
@@ -37,6 +38,11 @@ export default function Cookies() {
 
   return (
     <div className="static-page">
+      <SEO
+        title="Cookies Policy"
+        description="How Fixer uses cookies and similar technologies, and how to manage your cookie preferences."
+        path="/cookies"
+      />
 <Navbar />
       <section className="static-hero">
         <p className="static-hero__eyebrow">Legal</p>

@@ -1,5 +1,6 @@
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const SECTIONS = [
   {
@@ -39,6 +40,11 @@ const SECTIONS = [
 export default function ShipmentPolicy() {
   return (
     <div className="static-page">
+      <SEO
+        title="Device Shipment & Repair Policy"
+        description="How Fixer's device pickup, diagnosis, repair estimate, and delivery process works, including accepted devices and turnaround times."
+        path="/shipment-policy"
+      />
 <Navbar />
       <section className="static-hero">
         <p className="static-hero__eyebrow">Shipment Policy</p>

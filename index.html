@@ -3,10 +3,32 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fixer</title>
-  <meta name="fixer" />
+  <meta name="theme-color" content="#000000" />
+
+  <!--
+    These are the pre-hydration fallbacks. React Helmet overwrites title/
+    description/OG tags per route once the app mounts, but link-preview
+    bots (WhatsApp, Slack, iMessage, some Twitter/LinkedIn crawlers) often
+    grab meta tags from the raw HTML without running JS, so this default
+    is what most shared links will actually show.
+  -->
+  <title>Fixer | Online Computer & Device Support in Nigeria</title>
+  <meta
+    name="description"
+    content="Get expert help for computer, phone and device problems. Diagnose issues, chat with technicians, book remote support or ship your device in for repair."
+  />
+  <meta property="og:site_name" content="Fixer" />
+  <meta property="og:title" content="Fixer | Online Computer & Device Support in Nigeria" />
+  <meta
+    property="og:description"
+    content="Get expert help for computer, phone and device problems. Diagnose issues, chat with technicians, book remote support or ship your device in for repair."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://fixerng.app/logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
 </head>
 
 <body>

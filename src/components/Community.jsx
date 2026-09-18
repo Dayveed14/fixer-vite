@@ -1,5 +1,6 @@
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const THREADS = [
   { id: 1, title: "MacBook Pro 2021 won't charge after water spill — tried everything", category: "Laptops", author: "Chisom A.", replies: 14, views: 203, time: "2 hours ago", solved: true },
@@ -21,6 +22,11 @@ const CATEGORIES = [
 export default function Community() {
   return (
     <div className="static-page">
+      <SEO
+        title="Community"
+        description="Ask questions, share fixes, and get help from other Fixer users and certified technicians in the Fixer community forum."
+        path="/community"
+      />
 <Navbar />
       <section className="static-hero static-hero--blue">
         <p className="static-hero__eyebrow">Community</p>

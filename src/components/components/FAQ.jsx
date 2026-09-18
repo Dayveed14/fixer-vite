@@ -36,9 +36,7 @@ export default function FAQ() {
             </div>
           ))}
         </div>
-        
       </div>
-      <div className="faq__watermark" aria-hidden="true">fixer</div>
     </section>
   );
 }

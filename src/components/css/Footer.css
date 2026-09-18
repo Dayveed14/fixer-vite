@@ -95,7 +95,9 @@
 
 .footer__links {
   display: flex;
-  gap: 44px;
+  justify-content: center;
+  gap: 84px;
+  width: 100%;
   flex-shrink: 0;
 }
 

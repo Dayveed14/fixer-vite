@@ -1,5 +1,6 @@
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
+import SEO from "./SEO";
 
 const SECTIONS = [
   { title: "1. Information we collect", body: `When you use Fixer, we collect the following types of information:\n\n• Account information: name, email address, phone number, and password when you register.\n• Device information: the make, model, and fault details of devices you submit for repair or diagnosis.\n• Usage data: pages visited, features used, diagnostic queries, and time spent on the platform.\n• Payment information: billing details processed securely through our payment partners. We do not store full card numbers.\n• Communications: messages sent to our support team or technicians through the platform.` },
@@ -16,6 +17,11 @@ const SECTIONS = [
 export default function PrivacyPolicy() {
   return (
     <div className="static-page">
+      <SEO
+        title="Privacy Policy"
+        description="How Fixer collects, uses, shares, and protects your personal data, and your rights over your information."
+        path="/privacy"
+      />
 <Navbar />
       <section className="static-hero">
         <p className="static-hero__eyebrow">Legal</p>
