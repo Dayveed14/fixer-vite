@@ -5,28 +5,26 @@ import axios from "axios";
  * directly — there's no shared instance. Rather than touch every one of
  * those files, we configure the one shared axios singleton here, once,
  * and import this file a single time in main.jsx before anything else
- * runs. Every axios.get/post/patch/delete call anywhere in the app then
- * automatically carries the logged-in user's token and reacts the same
- * way to an expired/invalid session.
+ * runs.
+ *
+ * Auth now works via an httpOnly cookie the backend sets on login —
+ * JavaScript never sees the token, so there's nothing to read out of
+ * localStorage and attach manually anymore. `withCredentials: true` is
+ * what makes the browser actually send that cookie on cross-origin
+ * requests to the API (frontend and backend are on different domains).
  */
+axios.defaults.withCredentials = true;
 
-function getStoredToken() {
-  try {
-    const raw = localStorage.getItem("user");
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    return parsed?.token || null;
-  } catch {
-    return null;
-  }
-}
+const MUTATING_METHODS = new Set(["post", "put", "patch", "delete"]);
 
 axios.interceptors.request.use((config) => {
-  const token = getStoredToken();
-
-  if (token) {
+  // Matches the backend's CSRF guard: a plain cross-site form post can't
+  // add a custom header at all, and a cross-site script trying to add
+  // one triggers a CORS preflight the backend's origin allowlist blocks.
+  // See backend app.js for the other half of this.
+  if (MUTATING_METHODS.has((config.method || "").toLowerCase())) {
     config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers["X-Fixer-Client"] = "web";
   }
 
   return config;
@@ -36,10 +34,10 @@ axios.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token missing/invalid/expired — the stored session is no longer
-      // usable, so clear it and send the user back to log in. Skip this
-      // on the login/register calls themselves, where a 401 just means
-      // "wrong password", not "your session expired".
+      // Session cookie missing/invalid/expired — clear whatever display
+      // info we cached locally and send the user back to log in. Skip
+      // this on the login/register calls themselves, where a 401 just
+      // means "wrong password", not "your session expired".
       const requestUrl = error.config?.url || "";
       const isAuthEndpoint =
         requestUrl.includes("/users/login") ||

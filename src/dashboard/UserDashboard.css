@@ -541,7 +541,8 @@ tbody tr:hover {
   .right-panel {
     gap: 16px;
   }
-
+.left-panel{
+  width: 100%;}
   .dashboard-card {
     padding: 16px 14px;
     border-radius: 14px;

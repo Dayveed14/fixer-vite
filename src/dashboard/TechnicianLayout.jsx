@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 
 import logo from "../components/img/logo.png";
+import RouteErrorBoundary from "../components/components/RouteErrorBoundary";
 import "./UserLayout.css";
 
 const TechnicianLayout = () => {
@@ -88,7 +89,16 @@ const TechnicianLayout = () => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    // The token lives in an httpOnly cookie now, which JS can't clear
+    // itself — has to ask the server to do it. Still proceed with the
+    // local cleanup/redirect even if that call fails, so a flaky
+    // network doesn't strand someone on a screen they can't use.
+    try {
+      await axios.post(`${API_BASE_URL}/api/users/logout`);
+    } catch {
+      // ignore — we're logging out either way
+    }
     localStorage.removeItem("user");
     navigate("/login");
   };
@@ -303,7 +313,9 @@ const TechnicianLayout = () => {
         {/* Page Content */}
 
         <main className="page-content">
-          <Outlet />
+          <RouteErrorBoundary>
+            <Outlet />
+          </RouteErrorBoundary>
         </main>
 
       </div>

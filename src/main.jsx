@@ -7,10 +7,13 @@ import { HelmetProvider } from 'react-helmet-async';
 import './config/axios';
 import './App.css';
 import App from './App';
+import ErrorBoundary from './components/components/ErrorBoundary';
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <HelmetProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </HelmetProvider>
+  <ErrorBoundary fullPage>
+    <HelmetProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </HelmetProvider>
+  </ErrorBoundary>
 );
