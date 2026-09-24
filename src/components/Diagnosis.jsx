@@ -3,13 +3,8 @@ import "./css/Diagnosis.css";
 import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
 const DEVICE_TYPES = [
-  "Smartphone",
   "Laptop",
-  "Tablet",
   "Desktop PC",
-  "Smart Watch",
-  "Gaming Console",
-  "Printer",
   "Other",
 ];
 

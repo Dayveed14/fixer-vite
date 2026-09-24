@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import "../css/Hero.css";
 
 const STATS = [
-  { value: "+1500", label: "Articles" },
-  { value: "25k",   label: "Repairs" },
-  { value: "+2k",   label: "Daily users" },
+  { value: "X", label: "Articles" },
+  { value: "X",   label: "Repairs" },
+  { value: "X",   label: "Daily users" },
 ];
 
-const DEVICE_TYPES = ["Smartphone","Laptop","Tablet","Desktop PC","Smart Watch","Gaming Console","Printer","Other"];
+const DEVICE_TYPES = ["Laptop","Desktop PC","Other"];
 const SYMPTOMS = [
   "Make noise","Overheating","Battery drains fast",
   "Burning smell","Touchscreen unresponsive","Lagging",

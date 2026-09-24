@@ -19,7 +19,7 @@ function excerptFrom(html, maxLen = 160) {
 }
 
 export default function UserArticle() {
-  const { id } = useParams();
+  const { slug } = useParams();
 
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,7 @@ export default function UserArticle() {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        const { data } = await axios.get(`${API}/${id}`);
+        const { data } = await axios.get(`${API}/${slug}`);
         setArticle(data);
       } catch (err) {
         console.error(err);
@@ -37,7 +37,7 @@ export default function UserArticle() {
     };
 
     loadArticle();
-  }, [id]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -52,7 +52,7 @@ export default function UserArticle() {
       <div className="article-page">
         <h2>Article not found.</h2>
 
-        <Link to="/knowledgebase" className="back-btn">
+        <Link to="/blog" className="back-btn">
           ← Back to Articles
         </Link>
       </div>
@@ -66,7 +66,7 @@ export default function UserArticle() {
   <SEO
     title={article.title}
     description={description}
-    path={`/userarticle/${article.id}`}
+    path={`/userarticle/${article.slug}`}
     image={article.hero_image}
     type="article"
     structuredData={{
@@ -82,13 +82,16 @@ export default function UserArticle() {
         name: "Fixer",
         logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
       },
-      mainEntityOfPage: `${SITE_URL}/userarticle/${article.id}`,
+      mainEntityOfPage: `${SITE_URL}/userarticle/${article.slug}`,
       articleSection: article.category,
       description,
     }}
   />
   <Navbar />
       <div className="article-page">
+        <Link to="/blog" className="back-btn">
+          ← Back to Articles
+        </Link>
 
       <div className="article-container">
 

@@ -16,7 +16,7 @@ function excerptFrom(html, maxLen = 160) {
 }
 
 export default function UserVideo() {
-  const { id } = useParams();
+  const { slug } = useParams();
 
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,7 @@ export default function UserVideo() {
   useEffect(() => {
     const loadVideo = async () => {
       try {
-        const { data } = await axios.get(`${API}/${id}`);
+        const { data } = await axios.get(`${API}/${slug}`);
         setVideo(data);
       } catch (err) {
         console.error(err);
@@ -34,7 +34,7 @@ export default function UserVideo() {
     };
 
     loadVideo();
-  }, [id]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -49,7 +49,7 @@ export default function UserVideo() {
       <div className="article-page">
         <h2>Video not found.</h2>
 
-        <Link to="/knowledgebase" className="back-btn">
+        <Link to="/blog" className="back-btn">
           ← Back to Videos
         </Link>
       </div>
@@ -63,7 +63,7 @@ export default function UserVideo() {
   <SEO
     title={video.title}
     description={description}
-    path={`/uservideo/${video.id}`}
+    path={`/uservideo/${video.slug}`}
     image={video.thumbnail_url}
     type="video.other"
     structuredData={{
@@ -83,7 +83,9 @@ export default function UserVideo() {
   />
   <Navbar />
       <div className="article-page">
-
+        <Link to="/" className="back-btn">
+          ← Back to Videos
+        </Link>
       <div className="article-container">
 
         <video

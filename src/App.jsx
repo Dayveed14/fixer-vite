@@ -64,8 +64,8 @@ function App() {
         <Route path="/shipment" element={<Shipment />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/userarticle/:id" element={<UserArticle />} />
-        <Route path="/uservideo/:id" element={<UserVideo />} />
+        <Route path="/userarticle/:slug" element={<UserArticle />} />
+        <Route path="/uservideo/:slug" element={<UserVideo />} />
         <Route path="/about"    element={<AboutFixer />} />
         <Route path="/blog"     element={<Blog />} />
         <Route path="/contact"  element={<ContactUs />} />
@@ -84,11 +84,11 @@ function App() {
           <Route path="/diagnosis" element={<Diagnosis />} />
           <Route path="/dashboard" element={<UserDashboard />} />
           <Route path="/registerdevice" element={<RegisterDevice />} />
-              <Route path="/user/settings" element={<UserSettings />} />
+          <Route path="/user/settings" element={<UserSettings />} />
           <Route path="/user/appointments" element={<UserAppointments />} />
           <Route path="/userappointment/:id" element={<UserAppointmentDetail />} />
-                    <Route path="/userjob/:id" element={<UserJobDetail />} />
-                    <Route path="/usershipments" element={<UserShipments />} />
+          <Route path="/userjob/:id" element={<UserJobDetail />} />
+          <Route path="/usershipments" element={<UserShipments />} />
           
         </Route>
         </Route>

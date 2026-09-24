@@ -12,7 +12,7 @@
   const NAV_LINKS = [
     { label: "How it works", href: "#how-it-works" },
     { label: "Services", href: "#services" },
-    { label: "Resources", href: "#resources" },
+    { label: "Resources", href: "/blog" },
   ];
 
   const AVATAR_URL = "https://i.pravatar.cc/40?img=12";
@@ -50,22 +50,30 @@
     }, [location.pathname]);
 
   const handleNav = (e, href) => {
-    e.preventDefault();
-    setMenuOpen(false);
+  e.preventDefault();
+  setMenuOpen(false);
 
-    if (href === "#how-it-works") {
-      setShowHowModal(true);
-      return;
-    }
+  // Open How It Works modal
+  if (href === "#how-it-works") {
+    setShowHowModal(true);
+    return;
+  }
 
-    if (location.pathname === "/") {
-      document
-        .querySelector(href)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    } else {
-      navigate("/" + href);
-    }
-  };
+  // Handle normal React routes
+  if (href.startsWith("/")) {
+    navigate(href);
+    return;
+  }
+
+  // Handle homepage sections
+  if (location.pathname === "/") {
+    document
+      .querySelector(href)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } else {
+    navigate("/" + href);
+  }
+};
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -190,7 +198,7 @@
 
       <div className="navbar__dropdown-footer">
         <Link to="/about">About</Link>
-        <Link to="/">Articles</Link>
+        <Link to="/blog">Articles</Link>
         <Link to="/community">Community</Link>
         <Link to="/privacy">Terms</Link>
       </div>
