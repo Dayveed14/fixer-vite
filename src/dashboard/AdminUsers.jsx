@@ -5,7 +5,8 @@ import axios from "axios";
 import "./AdminTechnicians.css";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const AdminUsers = () => {
   const navigate = useNavigate();
@@ -17,14 +18,11 @@ const AdminUsers = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const { data } = await axios.get(
-        `${API_BASE_URL}/api/users/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const { data } = await axios.get(`${API_BASE_URL}/api/users/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setUsers(data);
     } catch (err) {
@@ -40,9 +38,7 @@ const AdminUsers = () => {
   }, []);
 
   const deleteUser = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this user?"
-    );
+    const confirmDelete = window.confirm("Delete this user?");
 
     if (!confirmDelete) return;
 
@@ -64,7 +60,6 @@ const AdminUsers = () => {
 
   return (
     <div className="admin-page">
-
       <div className="page-header">
         <div>
           <h2>Users</h2>
@@ -73,17 +68,14 @@ const AdminUsers = () => {
 
         <button
           className="add-btn"
-          onClick={() => navigate("/admin/users/new")}
-        >
+          onClick={() => navigate("/admin/users/new")}>
           <FaPlus />
           Add User
         </button>
       </div>
 
       <div className="table-container">
-
         <table>
-
           <thead>
             <tr>
               <th>Name</th>
@@ -96,7 +88,6 @@ const AdminUsers = () => {
           </thead>
 
           <tbody>
-
             {loading ? (
               <tr>
                 <td colSpan="6" style={{ textAlign: "center" }}>
@@ -121,50 +112,30 @@ const AdminUsers = () => {
                   <td>{user.phone}</td>
 
                   <td>
-                    <span className="role-badge">
-                      {user.role}
-                    </span>
+                    <span className="role-badge">{user.role}</span>
                   </td>
 
-                  <td>
-                    {new Date(
-                      user.created_at
-                    ).toLocaleDateString()}
-                  </td>
+                  <td>{new Date(user.created_at).toLocaleDateString()}</td>
 
                   <td>
-
                     <button
                       className="edit-btn"
-                      onClick={() =>
-                        navigate(
-                          `/admin/users/edit/${user.id}`
-                        )
-                      }
-                    >
+                      onClick={() => navigate(`/admin/users/edit/${user.id}`)}>
                       <FaEdit />
                     </button>
 
                     <button
                       className="delete-btn"
-                      onClick={() =>
-                        deleteUser(user.id)
-                      }
-                    >
+                      onClick={() => deleteUser(user.id)}>
                       <FaTrash />
                     </button>
-
                   </td>
                 </tr>
               ))
             )}
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
   );
 };

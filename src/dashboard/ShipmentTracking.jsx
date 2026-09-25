@@ -3,7 +3,8 @@ import axios from "axios";
 import "./AdminArticles.css";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 const API = `${API_BASE_URL}/api/shipment`;
 
 // Slugs match the stages shown on the customer-facing tracking timeline
@@ -50,14 +51,12 @@ export default function AdminShipments() {
       shipments.filter(
         (s) =>
           (status === "all" || s.status === status) &&
-          (
-            (s.reference || "").toLowerCase().includes(search.toLowerCase()) ||
+          ((s.reference || "").toLowerCase().includes(search.toLowerCase()) ||
             (s.name || "").toLowerCase().includes(search.toLowerCase()) ||
             (s.email || "").toLowerCase().includes(search.toLowerCase()) ||
-            (s.device || "").toLowerCase().includes(search.toLowerCase())
-          )
+            (s.device || "").toLowerCase().includes(search.toLowerCase())),
       ),
-    [shipments, search, status]
+    [shipments, search, status],
   );
 
   const updateStatus = async (id, newStatus) => {
@@ -67,7 +66,7 @@ export default function AdminShipments() {
       await axios.patch(`${API}/${id}/status`, { status: newStatus });
 
       setShipments((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s))
+        prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
       );
     } catch (err) {
       console.error(err);
@@ -97,8 +96,7 @@ export default function AdminShipments() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="form-select"
-        >
+          className="form-select">
           <option value="all">All Statuses</option>
           {STATUS_OPTIONS.map((s) => (
             <option key={s.value} value={s.value}>
@@ -130,7 +128,9 @@ export default function AdminShipments() {
               {filtered.map((s) => (
                 <Fragment key={s.id}>
                   <tr>
-                    <td><span className="article-title">{s.reference}</span></td>
+                    <td>
+                      <span className="article-title">{s.reference}</span>
+                    </td>
 
                     <td>
                       {s.name}
@@ -157,8 +157,7 @@ export default function AdminShipments() {
                         value={s.status}
                         onChange={(e) => updateStatus(s.id, e.target.value)}
                         disabled={updatingId === s.id}
-                        className="form-select"
-                      >
+                        className="form-select">
                         {STATUS_OPTIONS.map((opt) => (
                           <option key={opt.value} value={opt.value}>
                             {opt.label}
@@ -175,8 +174,7 @@ export default function AdminShipments() {
                           className="article-view"
                           onClick={() =>
                             setExpandedId(expandedId === s.id ? null : s.id)
-                          }
-                        >
+                          }>
                           {expandedId === s.id ? "Hide" : "View"}
                         </button>
                       </div>
@@ -217,7 +215,9 @@ export default function AdminShipments() {
             </tbody>
           </table>
 
-          {filtered.length === 0 && <p style={{ padding: 16 }}>No shipments found.</p>}
+          {filtered.length === 0 && (
+            <p style={{ padding: 16 }}>No shipments found.</p>
+          )}
         </div>
       )}
     </div>

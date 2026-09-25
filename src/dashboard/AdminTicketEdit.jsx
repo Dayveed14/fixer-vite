@@ -9,7 +9,9 @@ import axios from "axios";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const STATUS_OPTIONS = ["Open", "In Progress", "Pending", "Completed"];
 const PRIORITY_OPTIONS = ["Low", "Medium", "High"];
@@ -129,17 +131,20 @@ const AdminTicketEdit = () => {
     return (
       <div className="tech-page">
         <p className="dashboard-error">{error}</p>
-        <Link to="/admintickets" className="tech-action-btn">Back to Tickets</Link>
+        <Link to="/admintickets" className="tech-action-btn">
+          Back to Tickets
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
-          <button className="back-link" onClick={() => navigate(`/admin/tickets/${id}`)}>
+          <button
+            className="back-link"
+            onClick={() => navigate(`/admin/tickets/${id}`)}>
             ← Back to Ticket
           </button>
           <h1>Edit Ticket</h1>
@@ -148,9 +153,7 @@ const AdminTicketEdit = () => {
       </div>
 
       <div className="tech-panel edit-form-panel">
-
         <div className="edit-form-grid">
-
           <div className="manage-field">
             <label>Customer Name</label>
             <input
@@ -166,7 +169,7 @@ const AdminTicketEdit = () => {
               type="text"
               value={form.device}
               onChange={(e) => updateField("device", e.target.value)}
-              placeholder="e.g. MacBook Pro 14&quot;"
+              placeholder='e.g. MacBook Pro 14"'
             />
           </div>
 
@@ -183,10 +186,11 @@ const AdminTicketEdit = () => {
             <label>Priority</label>
             <select
               value={form.priority}
-              onChange={(e) => updateField("priority", e.target.value)}
-            >
+              onChange={(e) => updateField("priority", e.target.value)}>
               {PRIORITY_OPTIONS.map((p) => (
-                <option key={p} value={p}>{p}</option>
+                <option key={p} value={p}>
+                  {p}
+                </option>
               ))}
             </select>
           </div>
@@ -195,10 +199,11 @@ const AdminTicketEdit = () => {
             <label>Status</label>
             <select
               value={form.status}
-              onChange={(e) => updateField("status", e.target.value)}
-            >
+              onChange={(e) => updateField("status", e.target.value)}>
               {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>
+                  {s}
+                </option>
               ))}
             </select>
           </div>
@@ -207,8 +212,7 @@ const AdminTicketEdit = () => {
             <label>Technician</label>
             <select
               value={form.technician_id}
-              onChange={(e) => updateField("technician_id", e.target.value)}
-            >
+              onChange={(e) => updateField("technician_id", e.target.value)}>
               <option value="">Unassigned</option>
               {technicians.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -229,7 +233,6 @@ const AdminTicketEdit = () => {
               placeholder="0.00"
             />
           </div>
-
         </div>
 
         {saveError && <p className="manage-error">{saveError}</p>}
@@ -238,21 +241,17 @@ const AdminTicketEdit = () => {
           <button
             className="tech-action-btn primary"
             disabled={saving}
-            onClick={handleSave}
-          >
+            onClick={handleSave}>
             {saving ? "Saving..." : "Save Changes"}
           </button>
 
           <button
             className="tech-action-btn"
-            onClick={() => navigate(`/admin/tickets/${id}`)}
-          >
+            onClick={() => navigate(`/admin/tickets/${id}`)}>
             Cancel
           </button>
         </div>
-
       </div>
-
     </div>
   );
 };

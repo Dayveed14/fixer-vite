@@ -9,7 +9,9 @@ import axios from "axios";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 function badgeClass(status) {
   switch (status) {
@@ -113,17 +115,20 @@ const UserJobDetail = () => {
     return (
       <div className="tech-page">
         <p className="dashboard-error">{error}</p>
-        <Link to="/user/appointments" className="tech-action-btn">Back to Appointments</Link>
+        <Link to="/user/appointments" className="tech-action-btn">
+          Back to Appointments
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
-          <button className="back-link" onClick={() => navigate("/user/appointments")}>
+          <button
+            className="back-link"
+            onClick={() => navigate("/user/appointments")}>
             ← Back to Appointments
           </button>
           <h1>{ticket.ticket_code}</h1>
@@ -133,7 +138,6 @@ const UserJobDetail = () => {
       </div>
 
       <div className="detail-grid">
-
         <div className="tech-panel detail-card">
           <h3>Repair</h3>
 
@@ -154,7 +158,11 @@ const UserJobDetail = () => {
 
           <div className="detail-row">
             <span>Amount</span>
-            <strong>{ticket.amount ? `$${Number(ticket.amount).toFixed(2)}` : "Not billed yet"}</strong>
+            <strong>
+              {ticket.amount
+                ? `$${Number(ticket.amount).toFixed(2)}`
+                : "Not billed yet"}
+            </strong>
           </div>
 
           <div className="detail-row">
@@ -177,7 +185,9 @@ const UserJobDetail = () => {
                 <div className="detail-row">
                   <span>Email</span>
                   <strong>
-                    <a href={`mailto:${ticket.technician_email}`}>{ticket.technician_email}</a>
+                    <a href={`mailto:${ticket.technician_email}`}>
+                      {ticket.technician_email}
+                    </a>
                   </strong>
                 </div>
               )}
@@ -193,7 +203,6 @@ const UserJobDetail = () => {
             <p className="dashboard-empty">Not assigned yet.</p>
           )}
         </div>
-
       </div>
 
       {ticket.status === "Completed" && (
@@ -203,10 +212,13 @@ const UserJobDetail = () => {
           {ticket.existing_rating ? (
             <>
               <span className="rating-stars large">
-                {"★".repeat(ticket.existing_rating)}{"☆".repeat(5 - ticket.existing_rating)}
+                {"★".repeat(ticket.existing_rating)}
+                {"☆".repeat(5 - ticket.existing_rating)}
               </span>
               {ticket.existing_rating_comment && (
-                <p className="rating-comment">"{ticket.existing_rating_comment}"</p>
+                <p className="rating-comment">
+                  "{ticket.existing_rating_comment}"
+                </p>
               )}
             </>
           ) : (
@@ -218,8 +230,7 @@ const UserJobDetail = () => {
                   <button
                     key={n}
                     className={`star-btn ${n <= ratingValue ? "filled" : ""}`}
-                    onClick={() => setRatingValue(n)}
-                  >
+                    onClick={() => setRatingValue(n)}>
                     ★
                   </button>
                 ))}
@@ -237,15 +248,13 @@ const UserJobDetail = () => {
               <button
                 className="tech-action-btn primary"
                 disabled={submittingRating}
-                onClick={submitRating}
-              >
+                onClick={submitRating}>
                 {submittingRating ? "Submitting..." : "Submit Rating"}
               </button>
             </>
           )}
         </div>
       )}
-
     </div>
   );
 };

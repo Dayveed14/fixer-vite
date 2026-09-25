@@ -32,12 +32,10 @@ export default function AdminArticles() {
       articles.filter(
         (a) =>
           (status === "all" || a.status === status) &&
-          (
-            (a.title || "").toLowerCase().includes(search.toLowerCase()) ||
-            (a.category || "").toLowerCase().includes(search.toLowerCase())
-          )
+          ((a.title || "").toLowerCase().includes(search.toLowerCase()) ||
+            (a.category || "").toLowerCase().includes(search.toLowerCase())),
       ),
-    [articles, search, status]
+    [articles, search, status],
   );
 
   const del = async (id) => {
@@ -50,17 +48,14 @@ export default function AdminArticles() {
   return (
     <div className="admin-articles">
       <div className="admin-articles-header">
-          <div>
-              <h1>Articles</h1>
-              <p>Manage knowledge base articles and blog posts.</p>
-          </div>
+        <div>
+          <h1>Articles</h1>
+          <p>Manage knowledge base articles and blog posts.</p>
+        </div>
 
-          <Link
-              to="/dashboard/admin/articles/new"
-              className="new-article-btn"
-          >
-              + New Article
-          </Link>
+        <Link to="/dashboard/admin/articles/new" className="new-article-btn">
+          + New Article
+        </Link>
       </div>
 
       <div className="admin-articles-filters">
@@ -74,8 +69,7 @@ export default function AdminArticles() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="form-select"
-        >
+          className="form-select">
           <option value="all">All</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
@@ -86,74 +80,70 @@ export default function AdminArticles() {
         <p>Loading...</p>
       ) : (
         <div className="admin-table-wrapper">
-
           <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Views</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Views</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+            <tbody>
+              {filtered.map((a) => (
+                <tr key={a.id}>
+                  <td>
+                    <img
+                      className="article-image"
+                      src={a.hero_image}
+                      alt={a.title}
+                    />
+                  </td>
 
-          <tbody>
-            {filtered.map((a) => (
-              <tr key={a.id}>
-                <td>
-                 <img className="article-image" src={a.hero_image} alt={a.title}/>
-                </td>
+                  <td>
+                    <span className="article-title"> {a.title} </span>
+                  </td>
 
-                <td><span className="article-title"> {a.title} </span></td>
+                  <td>{a.category}</td>
 
-                <td>{a.category}</td>
+                  <td>{a.views}</td>
 
-                <td>{a.views}</td>
+                  <td>
+                    <span className={`article-status ${a.status}`}>
+                      {a.status}
+                    </span>
+                  </td>
 
-                <td><span className={`article-status ${a.status}`}>{a.status}</span></td>
+                  <td>{new Date(a.created_at).toLocaleDateString()}</td>
 
-                <td>
-                  {new Date(a.created_at).toLocaleDateString()}
-                </td>
-
-                <td>
-
-                  <div className="article-actions">
-
-                      <Link
-                          className="article-view"
-                          to={`/article/${a.id}`}
-                      >
-                          View
+                  <td>
+                    <div className="article-actions">
+                      <Link className="article-view" to={`/article/${a.id}`}>
+                        View
                       </Link>
 
                       <Link
-                          className="article-edit"
-                          to={`/admin/editarticle/${a.id}`}
-                      >
-                          Edit
+                        className="article-edit"
+                        to={`/admin/editarticle/${a.id}`}>
+                        Edit
                       </Link>
 
                       <button
-                          className="article-delete"
-                          onClick={() => del(a.id)}
-                      >
-                          Delete
+                        className="article-delete"
+                        onClick={() => del(a.id)}>
+                        Delete
                       </button>
-
-                  </div>
-
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

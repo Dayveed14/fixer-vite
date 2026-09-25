@@ -7,7 +7,9 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./TechnicianShared.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 const MESHCENTRAL_WEB_URL = import.meta.env.VITE_MESHCENTRAL_WEB_URL || "";
 
 const SUPPORT_TYPE_LABELS = {
@@ -89,7 +91,9 @@ const TechnicianAppointments = () => {
     setUpdatingId(booking.id);
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/bookings/${booking.id}/status`, { status });
+      await axios.patch(`${API_BASE_URL}/api/bookings/${booking.id}/status`, {
+        status,
+      });
 
       setBookings((prev) =>
         prev.map((b) => (b.id === booking.id ? { ...b, status } : b)),
@@ -110,13 +114,17 @@ const TechnicianAppointments = () => {
         `${API_BASE_URL}/api/bookings/${booking.id}/remote-session`,
       );
 
-      setSessionLinks((prev) => ({ ...prev, [booking.id]: res.data.inviteLink }));
+      setSessionLinks((prev) => ({
+        ...prev,
+        [booking.id]: res.data.inviteLink,
+      }));
     } catch (err) {
       console.error(err);
       setSessionError((prev) => ({
         ...prev,
         [booking.id]:
-          err.response?.data?.message || "Couldn't start a remote session. Please try again.",
+          err.response?.data?.message ||
+          "Couldn't start a remote session. Please try again.",
       }));
     } finally {
       setStartingSessionId(null);
@@ -144,11 +152,13 @@ const TechnicianAppointments = () => {
 
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
           <h1>Appointments</h1>
-          <p>Your scheduled voice, video and remote-support sessions, booked by customers.</p>
+          <p>
+            Your scheduled voice, video and remote-support sessions, booked by
+            customers.
+          </p>
         </div>
       </div>
 
@@ -157,8 +167,7 @@ const TechnicianAppointments = () => {
           <button
             key={tab.key}
             className={`tech-tab ${activeTab === tab.key ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
+            onClick={() => setActiveTab(tab.key)}>
             {tab.label}
             <span className="count">({counts[tab.key] || 0})</span>
           </button>
@@ -166,7 +175,6 @@ const TechnicianAppointments = () => {
       </div>
 
       <div className="tech-panel">
-
         {filtered.length === 0 ? (
           <p className="dashboard-empty">No appointments in this category.</p>
         ) : (
@@ -188,17 +196,26 @@ const TechnicianAppointments = () => {
                   <tr key={appt.id}>
                     <td className="cell-primary">{appt.booking_reference}</td>
                     <td>{appt.customer_name}</td>
-                    <td>{SUPPORT_TYPE_LABELS[appt.support_type] || appt.support_type}</td>
+                    <td>
+                      {SUPPORT_TYPE_LABELS[appt.support_type] ||
+                        appt.support_type}
+                    </td>
                     <td>
                       {appt.booking_date}
-                      <div className="cell-sub">{appt.booking_time} · {appt.duration} min</div>
+                      <div className="cell-sub">
+                        {appt.booking_time} · {appt.duration} min
+                      </div>
                     </td>
                     <td>
                       {appt.issue_summary || "—"}
-                      {appt.device && <div className="cell-sub">{appt.device}</div>}
+                      {appt.device && (
+                        <div className="cell-sub">{appt.device}</div>
+                      )}
                     </td>
                     <td>
-                      <span className={`badge ${appt.status}`}>{appt.status}</span>
+                      <span className={`badge ${appt.status}`}>
+                        {appt.status}
+                      </span>
                     </td>
                     <td>
                       {appt.status === "confirmed" ? (
@@ -206,22 +223,21 @@ const TechnicianAppointments = () => {
                           <button
                             className="tech-action-btn primary"
                             disabled={startingSessionId === appt.id}
-                            onClick={() => startSession(appt)}
-                          >
-                            {startingSessionId === appt.id ? "Starting..." : "Start Session"}
+                            onClick={() => startSession(appt)}>
+                            {startingSessionId === appt.id
+                              ? "Starting..."
+                              : "Start Session"}
                           </button>
                           <button
                             className="tech-action-btn"
                             disabled={updatingId === appt.id}
-                            onClick={() => updateStatus(appt, "completed")}
-                          >
+                            onClick={() => updateStatus(appt, "completed")}>
                             Mark Completed
                           </button>
                           <button
                             className="tech-action-btn danger"
                             disabled={updatingId === appt.id}
-                            onClick={() => updateStatus(appt, "missed")}
-                          >
+                            onClick={() => updateStatus(appt, "missed")}>
                             Mark Missed
                           </button>
                         </div>
@@ -235,7 +251,9 @@ const TechnicianAppointments = () => {
                     <tr className="manage-row" key={`${appt.id}-session`}>
                       <td colSpan={7}>
                         {sessionError[appt.id] ? (
-                          <p className="manage-error">{sessionError[appt.id]}</p>
+                          <p className="manage-error">
+                            {sessionError[appt.id]}
+                          </p>
                         ) : (
                           <div className="session-panel">
                             <div className="manage-field full-width">
@@ -256,8 +274,7 @@ const TechnicianAppointments = () => {
                                 href={MESHCENTRAL_WEB_URL}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="tech-action-btn primary"
-                              >
+                                className="tech-action-btn primary">
                                 Open MeshCentral Dashboard
                               </a>
                             )}
@@ -271,9 +288,7 @@ const TechnicianAppointments = () => {
             </tbody>
           </table>
         )}
-
       </div>
-
     </div>
   );
 };

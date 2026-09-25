@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-import "./AddUsers.css"; 
+import "./AddUsers.css";
 
 const AddUsers = () => {
   const [formData, setFormData] = useState({
@@ -31,7 +31,7 @@ const AddUsers = () => {
     try {
       const res = await axios.post(
         "https://fixer-backend-7mng.onrender.com/api/users/create",
-        formData
+        formData,
       );
 
       setMessage(res.data.message || "User created successfully!");
@@ -45,9 +45,7 @@ const AddUsers = () => {
         role: "",
       });
     } catch (err) {
-      setMessage(
-        err.response?.data?.message || "Failed to create user."
-      );
+      setMessage(err.response?.data?.message || "Failed to create user.");
     } finally {
       setLoading(false);
     }
@@ -55,20 +53,15 @@ const AddUsers = () => {
 
   return (
     <div className="add-user-container">
-  <div className="add-user-card">
-    <div className="add-user-header">
-      <h2>Add User</h2>
-    </div>
+      <div className="add-user-card">
+        <div className="add-user-header">
+          <h2>Add User</h2>
+        </div>
 
         <div className="add-user-body">
-          {message && (
-            <div className="alert alert-info">
-              {message}
-            </div>
-          )}
+          {message && <div className="alert alert-info">{message}</div>}
 
           <form onSubmit={handleSubmit}>
-
             <div className="form-row">
               <div className=" form-group">
                 <label>First Name</label>
@@ -137,21 +130,15 @@ const AddUsers = () => {
                 className="form-select"
                 name="role"
                 value={formData.role}
-                onChange={handleChange}
-              >
+                onChange={handleChange}>
                 <option value="technician">Technician</option>
                 <option value="user">User</option>
               </select>
             </div>
 
-            <button
-                type="submit"
-                className="submit-btn"
-                disabled={loading}
-                >
-                {loading ? "Creating..." : "Create User"}
-                </button>
-
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? "Creating..." : "Create User"}
+            </button>
           </form>
         </div>
       </div>

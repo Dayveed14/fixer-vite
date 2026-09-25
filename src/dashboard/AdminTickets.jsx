@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import "./AdminTickets.css";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const AdminTickets = () => {
   const navigate = useNavigate();
@@ -18,9 +19,7 @@ const AdminTickets = () => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(
-        `${API_BASE_URL}/api/tickets`
-      );
+      const { data } = await axios.get(`${API_BASE_URL}/api/tickets`);
 
       setTickets(data);
     } catch (err) {
@@ -41,9 +40,7 @@ const AdminTickets = () => {
     try {
       await axios.delete(`${API_BASE_URL}/api/tickets/${id}`);
 
-      setTickets((prev) =>
-        prev.filter((ticket) => ticket.id !== id)
-      );
+      setTickets((prev) => prev.filter((ticket) => ticket.id !== id));
     } catch (err) {
       console.error(err);
       alert("Unable to delete ticket.");
@@ -69,9 +66,7 @@ const AdminTickets = () => {
 
   return (
     <div className="admin-tickets">
-
       <div className="page-header">
-
         <div>
           <h1>Support Tickets</h1>
           <p>Manage customer support requests.</p>
@@ -83,15 +78,11 @@ const AdminTickets = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-
       </div>
 
       <div className="table-wrapper">
-
         <table>
-
           <thead>
-
             <tr>
               <th>Ticket</th>
               <th>Customer</th>
@@ -102,21 +93,16 @@ const AdminTickets = () => {
               <th>Created</th>
               <th>Actions</th>
             </tr>
-
           </thead>
 
           <tbody>
-
             {filteredTickets.length === 0 ? (
               <tr>
-                <td colSpan="8">
-                  No tickets found.
-                </td>
+                <td colSpan="8">No tickets found.</td>
               </tr>
             ) : (
               filteredTickets.map((ticket) => (
                 <tr key={ticket.id}>
-
                   <td>{ticket.ticket_code}</td>
 
                   <td>{ticket.customer_name}</td>
@@ -125,34 +111,23 @@ const AdminTickets = () => {
 
                   <td>{ticket.issue}</td>
 
-                  <td>
-                    {ticket.technician_name || "Unassigned"}
-                  </td>
+                  <td>{ticket.technician_name || "Unassigned"}</td>
 
                   <td>
                     <span
                       className={`status ${ticket.status
                         .replace(/\s+/g, "")
-                        .toLowerCase()}`}
-                    >
+                        .toLowerCase()}`}>
                       {ticket.status}
                     </span>
                   </td>
 
-                  <td>
-                    {new Date(
-                      ticket.created_at
-                    ).toLocaleDateString()}
-                  </td>
+                  <td>{new Date(ticket.created_at).toLocaleDateString()}</td>
 
                   <td>
-
                     <button
                       className="action-btn view"
-                      onClick={() =>
-                        navigate(`/admin/tickets/${ticket.id}`)
-                      }
-                    >
+                      onClick={() => navigate(`/admin/tickets/${ticket.id}`)}>
                       <FaEye /> View
                     </button>
 
@@ -160,32 +135,22 @@ const AdminTickets = () => {
                       className="action-btn edit"
                       onClick={() =>
                         navigate(`/admin/tickets/edit/${ticket.id}`)
-                      }
-                    >
+                      }>
                       <FaEdit /> Edit
                     </button>
 
                     <button
                       className="action-btn delete"
-                      onClick={() =>
-                        deleteTicket(ticket.id)
-                      }
-                    >
+                      onClick={() => deleteTicket(ticket.id)}>
                       <FaTrash /> Delete
                     </button>
-
                   </td>
-
                 </tr>
               ))
             )}
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
   );
 };

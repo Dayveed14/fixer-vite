@@ -48,9 +48,7 @@ export default function Article() {
 
   return (
     <div className="article-page">
-
       <div className="article-container">
-
         <img
           src={article.hero_image}
           alt={article.title}
@@ -58,17 +56,12 @@ export default function Article() {
         />
 
         <div className="article-content">
-
-          <span className="article-category">
-            {article.category}
-          </span>
+          <span className="article-category">{article.category}</span>
 
           <h1>{article.title}</h1>
 
           <div className="article-meta">
-            <span>
-              {new Date(article.created_at).toLocaleDateString()}
-            </span>
+            <span>{new Date(article.created_at).toLocaleDateString()}</span>
 
             <span>{article.views} Views</span>
           </div>
@@ -79,11 +72,8 @@ export default function Article() {
               __html: article.content,
             }}
           />
-
         </div>
-
       </div>
-
     </div>
   );
 }

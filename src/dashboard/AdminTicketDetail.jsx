@@ -9,7 +9,9 @@ import axios from "axios";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 function badgeClass(status) {
   switch (status) {
@@ -85,17 +87,20 @@ const AdminTicketDetail = () => {
     return (
       <div className="tech-page">
         <p className="dashboard-error">{error}</p>
-        <Link to="/admintickets" className="tech-action-btn">Back to Tickets</Link>
+        <Link to="/admintickets" className="tech-action-btn">
+          Back to Tickets
+        </Link>
       </div>
     );
   }
 
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
-          <button className="back-link" onClick={() => navigate("/admintickets")}>
+          <button
+            className="back-link"
+            onClick={() => navigate("/admintickets")}>
             ← Back to Tickets
           </button>
           <h1>{ticket.ticket_code}</h1>
@@ -105,7 +110,6 @@ const AdminTicketDetail = () => {
       </div>
 
       <div className="detail-grid">
-
         <div className="tech-panel detail-card">
           <h3>Repair</h3>
 
@@ -118,7 +122,9 @@ const AdminTicketDetail = () => {
             <div className="detail-row">
               <span>Email</span>
               <strong>
-                <a href={`mailto:${ticket.customer_email}`}>{ticket.customer_email}</a>
+                <a href={`mailto:${ticket.customer_email}`}>
+                  {ticket.customer_email}
+                </a>
               </strong>
             </div>
           )}
@@ -147,7 +153,11 @@ const AdminTicketDetail = () => {
 
           <div className="detail-row">
             <span>Amount</span>
-            <strong>{ticket.amount ? `$${Number(ticket.amount).toFixed(2)}` : "Not billed yet"}</strong>
+            <strong>
+              {ticket.amount
+                ? `$${Number(ticket.amount).toFixed(2)}`
+                : "Not billed yet"}
+            </strong>
           </div>
 
           <div className="detail-row">
@@ -170,7 +180,9 @@ const AdminTicketDetail = () => {
                 <div className="detail-row">
                   <span>Email</span>
                   <strong>
-                    <a href={`mailto:${ticket.technician_email}`}>{ticket.technician_email}</a>
+                    <a href={`mailto:${ticket.technician_email}`}>
+                      {ticket.technician_email}
+                    </a>
                   </strong>
                 </div>
               )}
@@ -191,33 +203,35 @@ const AdminTicketDetail = () => {
           {ticket.existing_rating ? (
             <>
               <span className="rating-stars large">
-                {"★".repeat(ticket.existing_rating)}{"☆".repeat(5 - ticket.existing_rating)}
+                {"★".repeat(ticket.existing_rating)}
+                {"☆".repeat(5 - ticket.existing_rating)}
               </span>
               {ticket.existing_rating_comment && (
-                <p className="rating-comment">"{ticket.existing_rating_comment}"</p>
+                <p className="rating-comment">
+                  "{ticket.existing_rating_comment}"
+                </p>
               )}
             </>
           ) : (
             <p className="dashboard-empty">No rating yet.</p>
           )}
         </div>
-
       </div>
 
       <div className="detail-actions row-actions">
-        <Link to={`/admin/tickets/edit/${ticket.id}`} className="tech-action-btn primary">
+        <Link
+          to={`/admin/tickets/edit/${ticket.id}`}
+          className="tech-action-btn primary">
           Edit Ticket
         </Link>
 
         <button
           className="tech-action-btn danger"
           disabled={deleting}
-          onClick={handleDelete}
-        >
+          onClick={handleDelete}>
           {deleting ? "Deleting..." : "Delete Ticket"}
         </button>
       </div>
-
     </div>
   );
 };

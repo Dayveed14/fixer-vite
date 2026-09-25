@@ -15,7 +15,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -60,7 +62,11 @@ const TechnicianDashboard = () => {
             params: { technician_id: user.id, limit: 3 },
           }),
           axios.get(`${API_BASE_URL}/api/bookings`, {
-            params: { technician_id: user.id, today: true, status: "confirmed" },
+            params: {
+              technician_id: user.id,
+              today: true,
+              status: "confirmed",
+            },
           }),
           axios.get(`${API_BASE_URL}/api/tickets/active/${user.id}`),
         ]);
@@ -141,38 +147,31 @@ const TechnicianDashboard = () => {
 
   return (
     <div className="technician-dashboard">
-
       {/* Banner */}
 
       <section className="tech-banner">
-
         <div>
-          <h1>Welcome Back{user?.first_name ? `, ${user.first_name}` : ""} 👨‍🔧</h1>
+          <h1>
+            Welcome Back{user?.first_name ? `, ${user.first_name}` : ""} 👨‍🔧
+          </h1>
 
           <p>
-            Manage assigned repair requests, update customer
-            tickets and monitor your repair progress.
+            Manage assigned repair requests, update customer tickets and monitor
+            your repair progress.
           </p>
         </div>
 
         <button onClick={() => navigate("/technician/appointments")}>
           View My Schedule
         </button>
-
       </section>
 
       {/* Stats */}
 
       <section className="tech-stats">
-
         {stats.map((item, index) => (
-
           <div className="tech-stat-card" key={index}>
-
-            <div
-              className="tech-icon"
-              style={{ background: item.color }}
-            >
+            <div className="tech-icon" style={{ background: item.color }}>
               {item.icon}
             </div>
 
@@ -180,46 +179,31 @@ const TechnicianDashboard = () => {
               <h2>{item.value}</h2>
               <p>{item.title}</p>
             </div>
-
           </div>
-
         ))}
-
       </section>
 
       {/* Main Grid */}
 
       <section className="tech-grid">
-
         {/* Left Side */}
 
         <div className="left-tech">
-
           {/* Assigned Jobs */}
-            <div className="tech-header">
+          <div className="tech-header">
+            <h2>Assigned Jobs</h2>
 
-              <h2>Assigned Jobs</h2>
-
-              <button onClick={() => navigate("/technician/jobs")}>
-                View All
-                <FaArrowRight />
-              </button>
-
-            </div>
+            <button onClick={() => navigate("/technician/jobs")}>
+              View All
+              <FaArrowRight />
+            </button>
+          </div>
           <div className="tech-card">
-
-
-
             {jobs.length === 0 ? (
-
               <p className="dashboard-empty">No jobs assigned yet.</p>
-
             ) : (
-
               <table>
-
                 <thead>
-
                   <tr>
                     <th>Ticket</th>
                     <th>Customer</th>
@@ -227,15 +211,11 @@ const TechnicianDashboard = () => {
                     <th>Priority</th>
                     <th>Status</th>
                   </tr>
-
                 </thead>
 
                 <tbody>
-
                   {jobs.map((job) => (
-
                     <tr key={job.id}>
-
                       <td>{job.ticket_code}</td>
 
                       <td>{job.customer_name}</td>
@@ -244,8 +224,7 @@ const TechnicianDashboard = () => {
 
                       <td>
                         <span
-                          className={`priority ${job.priority.toLowerCase()}`}
-                        >
+                          className={`priority ${job.priority.toLowerCase()}`}>
                           {job.priority}
                         </span>
                       </td>
@@ -254,105 +233,81 @@ const TechnicianDashboard = () => {
                         <span
                           className={`status ${job.status
                             .replace(/\s+/g, "")
-                            .toLowerCase()}`}
-                        >
+                            .toLowerCase()}`}>
                           {job.status}
                         </span>
                       </td>
-
                     </tr>
-
                   ))}
-
                 </tbody>
-
               </table>
-
             )}
-
           </div>
 
           {/* Today's Tasks */}
 
           <div className="tech-card">
-
             <h2>Today's Schedule</h2>
 
             {schedule.length === 0 ? (
-
-              <p className="dashboard-empty">No bookings scheduled for today.</p>
-
+              <p className="dashboard-empty">
+                No bookings scheduled for today.
+              </p>
             ) : (
-
               schedule.map((appt) => (
-
                 <div className="schedule-item" key={appt.id}>
                   <FaCalendarAlt />
                   <div>
-                    <h4>{SUPPORT_TYPE_LABELS[appt.support_type] || "Support Call"}</h4>
+                    <h4>
+                      {SUPPORT_TYPE_LABELS[appt.support_type] || "Support Call"}
+                    </h4>
                     <p>
                       {appt.booking_time} - {appt.customer_name}
                     </p>
                   </div>
                 </div>
-
               ))
-
             )}
-
           </div>
-
         </div>
 
         {/* Right Side */}
 
         <div className="right-tech">
-
           {/* Customer Info */}
 
           <div className="tech-card">
-
             <h2>Current Customer</h2>
 
             {activeTicket ? (
-
               <div className="customer-box">
-
-                <FaUser className="customer-icon"/>
+                <FaUser className="customer-icon" />
 
                 <h3>{activeTicket.customer_name}</h3>
 
                 <p>{activeTicket.device || "Device not specified"}</p>
 
                 <small>{activeTicket.issue}</small>
-
               </div>
-
             ) : (
-
               <p className="dashboard-empty">No active job right now.</p>
-
             )}
-
           </div>
 
           {/* Quick Actions */}
 
           <div className="tech-card">
-
             <h2>Quick Actions</h2>
 
             <button
               className="tech-btn"
-              onClick={() => navigate("/technician/appointments")}
-            >
+              onClick={() => navigate("/technician/appointments")}>
               Start Remote Session
             </button>
 
             <button
               className="tech-btn"
-              onClick={() => navigate("/technician/jobs")}
-            >
+              onClick={() => navigate("/technician/jobs")}>
               Update Repair Status
             </button>
 
@@ -368,30 +323,25 @@ const TechnicianDashboard = () => {
                 if (activeTicket?.customer_email) {
                   window.location.href = `mailto:${activeTicket.customer_email}`;
                 }
-              }}
-            >
+              }}>
               Contact Customer
             </button>
 
             <button
               className="tech-btn"
               disabled
-              title="Coming soon — repair report uploads aren't built yet"
-            >
+              title="Coming soon — repair report uploads aren't built yet">
               Upload Repair Report
             </button>
-
           </div>
 
           {/* Performance */}
 
           <div className="tech-card">
-
             <h2>Performance</h2>
 
             <div className="performance-box">
-
-              <FaTools className="performance-icon"/>
+              <FaTools className="performance-icon" />
 
               <h1>
                 {techStats.performancePercent === null
@@ -400,15 +350,10 @@ const TechnicianDashboard = () => {
               </h1>
 
               <p>{performanceLabel}</p>
-
             </div>
-
           </div>
-
         </div>
-
       </section>
-
     </div>
   );
 };

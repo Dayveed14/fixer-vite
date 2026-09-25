@@ -110,13 +110,10 @@ export default function EditVideo() {
 
   return (
     <div className="article-form-page">
-
       <div className="article-form-card">
-
         <h2>Edit Video</h2>
 
         <form onSubmit={handleSubmit}>
-
           <div className="form-group">
             <label>Title</label>
 
@@ -129,104 +126,82 @@ export default function EditVideo() {
             />
           </div>
 
-        <div className="form-group">
-          <label>Tags</label>
+          <div className="form-group">
+            <label>Tags</label>
 
-          <input
-            type="text"
-            name="tags"
-            value={form.tags}
-            onChange={handleChange}
-            required
-          />
-        </div>
+            <input
+              type="text"
+              name="tags"
+              value={form.tags}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div className="form-group">
-          <label>Category</label>
+          <div className="form-group">
+            <label>Category</label>
 
-          <select
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            required
-          >
-            <option value="">
-              Select Category
-            </option>
+            <select
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              required>
+              <option value="">Select Category</option>
 
-            <option value="Hardware">
-              Hardware
-            </option>
+              <option value="Hardware">Hardware</option>
 
-            <option value="Software">
-              Software
-            </option>
+              <option value="Software">Software</option>
 
-            <option value="Networking">
-              Networking
-            </option>
+              <option value="Networking">Networking</option>
 
-            <option value="Security">
-              Security
-            </option>
+              <option value="Security">Security</option>
 
-            <option value="Maintenance">
-              Maintenance
-            </option>
-
-          </select>
-        </div>
+              <option value="Maintenance">Maintenance</option>
+            </select>
+          </div>
 
           <div className="form-group">
             <label>Status</label>
 
-            <select
-              name="status"
-              value={form.status}
-              onChange={handleChange}
-            >
+            <select name="status" value={form.status} onChange={handleChange}>
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
           </div>
-        <div className="form-group">
-          <label>Excerpt</label>
+          <div className="form-group">
+            <label>Excerpt</label>
 
-                        <Editor
-                apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-                value={form.excerpt}
-                onEditorChange={(excerpt) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    excerpt,
-                  }))
-                }
-              />
-        </div>
+            <Editor
+              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+              value={form.excerpt}
+              onEditorChange={(excerpt) =>
+                setForm((prev) => ({
+                  ...prev,
+                  excerpt,
+                }))
+              }
+            />
+          </div>
 
           <div className="form-group">
             <label>Description / Instructions</label>
 
             <Editor
-                apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-                value={form.content}
-                onEditorChange={(content) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    content,
-                  }))
-                }
-              />
+              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+              value={form.content}
+              onEditorChange={(content) =>
+                setForm((prev) => ({
+                  ...prev,
+                  content,
+                }))
+              }
+            />
           </div>
 
           <div className="form-group">
             <label>Video File</label>
 
-            <input
-              type="file"
-              accept="video/*"
-              onChange={handleVideo}
-            />
+            <input type="file" accept="video/*" onChange={handleVideo} />
           </div>
 
           {preview && (
@@ -235,17 +210,11 @@ export default function EditVideo() {
             </div>
           )}
 
-          <button
-            className="submit-btn"
-            disabled={saving}
-          >
+          <button className="submit-btn" disabled={saving}>
             {saving ? "Updating..." : "Update Video"}
           </button>
-
         </form>
-
       </div>
-
     </div>
   );
 }

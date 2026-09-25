@@ -4,7 +4,9 @@ import { FaLaptop } from "react-icons/fa";
 import axios from "axios";
 import "./RegisterDevice.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const RegisterDevice = () => {
   const navigate = useNavigate();
@@ -67,17 +69,17 @@ const RegisterDevice = () => {
 
   return (
     <div className="register-device">
-
       <section className="register-device-header">
         <FaLaptop className="register-device-icon" />
         <div>
           <h1>Register Device</h1>
-          <p>Add a device so we can track repairs and service history for it.</p>
+          <p>
+            Add a device so we can track repairs and service history for it.
+          </p>
         </div>
       </section>
 
       <form className="register-device-form" onSubmit={handleSubmit}>
-
         <label htmlFor="device_name">Device Name</label>
         <input
           id="device_name"
@@ -126,18 +128,18 @@ const RegisterDevice = () => {
             type="button"
             className="register-device-cancel"
             onClick={() => navigate("/dashboard")}
-            disabled={submitting}
-          >
+            disabled={submitting}>
             Cancel
           </button>
 
-          <button type="submit" className="register-device-submit" disabled={submitting}>
+          <button
+            type="submit"
+            className="register-device-submit"
+            disabled={submitting}>
             {submitting ? "Registering..." : "Register Device"}
           </button>
         </div>
-
       </form>
-
     </div>
   );
 };

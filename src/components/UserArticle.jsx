@@ -13,7 +13,10 @@ const API = "https://fixer-backend-7mng.onrender.com/api/articles";
 // down to a plain-text snippet for the meta description and OG tags.
 function excerptFrom(html, maxLen = 160) {
   if (!html) return undefined;
-  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const text = html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
   if (text.length <= maxLen) return text;
   return text.slice(0, maxLen - 1).trimEnd() + "…";
 }
@@ -62,74 +65,64 @@ export default function UserArticle() {
   const description = excerptFrom(article.content);
 
   return (
-<div>
-  <SEO
-    title={article.title}
-    description={description}
-    path={`/userarticle/${article.slug}`}
-    image={article.hero_image}
-    type="article"
-    structuredData={{
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: article.title,
-      image: article.hero_image ? [article.hero_image] : undefined,
-      datePublished: article.created_at,
-      dateModified: article.updated_at || article.created_at,
-      author: { "@type": "Organization", name: "Fixer" },
-      publisher: {
-        "@type": "Organization",
-        name: "Fixer",
-        logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
-      },
-      mainEntityOfPage: `${SITE_URL}/userarticle/${article.slug}`,
-      articleSection: article.category,
-      description,
-    }}
-  />
-  <Navbar />
+    <div>
+      <SEO
+        title={article.title}
+        description={description}
+        path={`/userarticle/${article.slug}`}
+        image={article.hero_image}
+        type="article"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: article.title,
+          image: article.hero_image ? [article.hero_image] : undefined,
+          datePublished: article.created_at,
+          dateModified: article.updated_at || article.created_at,
+          author: { "@type": "Organization", name: "Fixer" },
+          publisher: {
+            "@type": "Organization",
+            name: "Fixer",
+            logo: { "@type": "ImageObject", url: `${SITE_URL}/logo.png` },
+          },
+          mainEntityOfPage: `${SITE_URL}/userarticle/${article.slug}`,
+          articleSection: article.category,
+          description,
+        }}
+      />
+      <Navbar />
       <div className="article-page">
         <Link to="/blog" className="back-btn">
           ← Back to Articles
         </Link>
 
-      <div className="article-container">
-
-        <img
-          src={article.hero_image}
-          alt={article.title}
-          className="hero-image"
-        />
-
-        <div className="article-content">
-
-          <span className="article-category">
-            {article.category}
-          </span>
-
-          <h1>{article.title}</h1>
-
-          <div className="article-meta">
-            <span>
-              {new Date(article.created_at).toLocaleDateString()}
-            </span>
-
-            <span>{article.views} Views</span>
-          </div>
-
-          <div
-            className="article-body"
-            dangerouslySetInnerHTML={{
-              __html: article.content,
-            }}
+        <div className="article-container">
+          <img
+            src={article.hero_image}
+            alt={article.title}
+            className="hero-image"
           />
 
+          <div className="article-content">
+            <span className="article-category">{article.category}</span>
+
+            <h1>{article.title}</h1>
+
+            <div className="article-meta">
+              <span>{new Date(article.created_at).toLocaleDateString()}</span>
+
+              <span>{article.views} Views</span>
+            </div>
+
+            <div
+              className="article-body"
+              dangerouslySetInnerHTML={{
+                __html: article.content,
+              }}
+            />
+          </div>
         </div>
-
       </div>
-
     </div>
-</div>
-
   );
 }

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -33,7 +32,9 @@ const UserLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://fixer-backend-7mng.onrender.com";
 
   const loadNotifications = async () => {
     if (!user?.id) return;
@@ -125,7 +126,7 @@ const UserLayout = () => {
       path: "/mailin",
       icon: <FaBoxOpen />,
     },
-     {
+    {
       name: "Shipments",
       path: "/usershipments",
       icon: <FaBoxOpen />,
@@ -144,49 +145,37 @@ const UserLayout = () => {
 
   return (
     <div className="layout">
-
       {/* Sidebar */}
 
-      <aside
-        className={`sidebar ${
-          sidebarOpen ? "show-sidebar" : ""
-        }`}
-      >
+      <aside className={`sidebar ${sidebarOpen ? "show-sidebar" : ""}`}>
         <div className="logo">
+          <Link to="/">
+            {" "}
+            <img src={logo} alt="Fixer Logo" className="logo" />
+          </Link>
 
-         <Link to="/" > <img src={logo} alt="Fixer Logo" className="logo" /></Link>
-
-        <button
-          className="menu-btn"
-          onClick={() => setSidebarOpen(prev => !prev)}>
-          {sidebarOpen ? <FaTimes /> : <FaBars />}
-        </button>
-
+          <button
+            className="menu-btn"
+            onClick={() => setSidebarOpen((prev) => !prev)}>
+            {sidebarOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
 
         <nav>
-
           {menuItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               className={`nav-link ${
-                location.pathname === item.path
-                  ? "active-link"
-                  : ""
-              }`}
-            >
+                location.pathname === item.path ? "active-link" : ""
+              }`}>
               {item.icon}
               <span>{item.name}</span>
             </Link>
           ))}
-
         </nav>
 
-        <button
-          className="logout-btn"
-          onClick={logout}
-        >
+        <button className="logout-btn" onClick={logout}>
           <FaSignOutAlt />
           Logout
         </button>
@@ -195,48 +184,36 @@ const UserLayout = () => {
       {/* Main */}
 
       <div className="main">
-
         {/* Topbar */}
 
         <header className="topbar">
-
-          <button
-            className="menu-btn"
-            onClick={() =>
-              setSidebarOpen(true)
-            }
-          >
+          <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
             <FaBars />
           </button>
 
           {/* Search */}
 
           <div className="search-box">
-
             <FaSearch />
 
-            <input
-              type="text"
-              placeholder="Search..."
-            />
-
+            <input type="text" placeholder="Search..." />
           </div>
 
           {/* Right */}
 
           <div className="top-right">
-
             <div className="notif-wrapper">
               <button
                 className="icon-btn"
                 onClick={() => {
                   setNotifOpen((prev) => !prev);
                   setProfileMenu(false);
-                }}
-              >
+                }}>
                 <FaBell />
                 {unreadCount > 0 && (
-                  <span className="badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
+                  <span className="badge">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
                 )}
               </button>
 
@@ -252,7 +229,10 @@ const UserLayout = () => {
                   </div>
 
                   {notifFetchError ? (
-                    <p className="notif-empty notif-error">Couldn't load notifications. Check your connection and try again.</p>
+                    <p className="notif-empty notif-error">
+                      Couldn't load notifications. Check your connection and try
+                      again.
+                    </p>
                   ) : notifications.length === 0 ? (
                     <p className="notif-empty">No notifications yet.</p>
                   ) : (
@@ -261,8 +241,7 @@ const UserLayout = () => {
                         <button
                           key={notif.id}
                           className={`notif-item ${notif.is_read ? "" : "unread"}`}
-                          onClick={() => markOneRead(notif)}
-                        >
+                          onClick={() => markOneRead(notif)}>
                           <span className="notif-title">{notif.title}</span>
                           <span className="notif-message">{notif.message}</span>
                           <span className="notif-time">
@@ -281,8 +260,7 @@ const UserLayout = () => {
               onClick={() => {
                 setProfileMenu(!profileMenu);
                 setNotifOpen(false);
-              }}
-            >
+              }}>
               <FaUserCircle className="avatar" />
 
               <div className="profile-info">
@@ -294,26 +272,15 @@ const UserLayout = () => {
 
               {profileMenu && (
                 <div className="dropdown">
+                  <Link to="/profile">My Profile</Link>
 
-                  <Link to="/profile">
-                    My Profile
-                  </Link>
+                  <Link to="/user/settings">Settings</Link>
 
-                  <Link to="/user/settings">
-                    Settings
-                  </Link>
-
-                  <button onClick={logout}>
-                    Logout
-                  </button>
-
+                  <button onClick={logout}>Logout</button>
                 </div>
               )}
-
             </div>
-
           </div>
-
         </header>
 
         {/* Page Content */}
@@ -323,9 +290,7 @@ const UserLayout = () => {
             <Outlet />
           </RouteErrorBoundary>
         </main>
-
       </div>
-
     </div>
   );
 };

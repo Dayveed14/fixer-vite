@@ -6,7 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import "./TechnicianShared.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const STATUS_OPTIONS = ["Open", "In Progress", "Pending", "Completed"];
 
@@ -95,7 +97,10 @@ const TechnicianJobs = () => {
   };
 
   const handleSave = async (ticket) => {
-    if (formStatus === "Completed" && (formAmount === "" || Number(formAmount) < 0)) {
+    if (
+      formStatus === "Completed" &&
+      (formAmount === "" || Number(formAmount) < 0)
+    ) {
       setFormError("Enter a valid amount to mark this job as completed.");
       return;
     }
@@ -112,7 +117,11 @@ const TechnicianJobs = () => {
       setTickets((prev) =>
         prev.map((t) =>
           t.id === ticket.id
-            ? { ...t, status: formStatus, amount: formAmount === "" ? null : Number(formAmount) }
+            ? {
+                ...t,
+                status: formStatus,
+                amount: formAmount === "" ? null : Number(formAmount),
+              }
             : t,
         ),
       );
@@ -151,11 +160,13 @@ const TechnicianJobs = () => {
 
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
           <h1>Assigned Jobs</h1>
-          <p>Every repair ticket assigned to you. Update the status as you work, and mark a job complete once it's done.</p>
+          <p>
+            Every repair ticket assigned to you. Update the status as you work,
+            and mark a job complete once it's done.
+          </p>
         </div>
       </div>
 
@@ -164,8 +175,7 @@ const TechnicianJobs = () => {
           <button
             key={tab.key}
             className={`tech-tab ${activeTab === tab.key ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
+            onClick={() => setActiveTab(tab.key)}>
             {tab.label}
             <span className="count">({counts[tab.key] || 0})</span>
           </button>
@@ -173,7 +183,6 @@ const TechnicianJobs = () => {
       </div>
 
       <div className="tech-panel">
-
         {filtered.length === 0 ? (
           <p className="dashboard-empty">No jobs in this category.</p>
         ) : (
@@ -197,33 +206,48 @@ const TechnicianJobs = () => {
                     <td className="cell-primary">{job.ticket_code}</td>
                     <td>
                       {job.customer_name}
-                      {job.customer_phone && <div className="cell-sub">{job.customer_phone}</div>}
+                      {job.customer_phone && (
+                        <div className="cell-sub">{job.customer_phone}</div>
+                      )}
                     </td>
                     <td>
                       {job.device || "—"}
                       {job.issue && <div className="cell-sub">{job.issue}</div>}
                     </td>
                     <td>
-                      <span className={`badge ${job.priority.toLowerCase()}`}>{job.priority}</span>
+                      <span className={`badge ${job.priority.toLowerCase()}`}>
+                        {job.priority}
+                      </span>
                     </td>
                     <td>
-                      <span className={`badge ${statusClass(job.status)}`}>{job.status}</span>
+                      <span className={`badge ${statusClass(job.status)}`}>
+                        {job.status}
+                      </span>
                     </td>
-                    <td>{job.amount ? `$${Number(job.amount).toFixed(2)}` : "—"}</td>
+                    <td>
+                      {job.amount ? `$${Number(job.amount).toFixed(2)}` : "—"}
+                    </td>
                     <td>
                       {job.existing_rating ? (
-                        <span className="rating-stars">{"★".repeat(job.existing_rating)}{"☆".repeat(5 - job.existing_rating)}</span>
+                        <span className="rating-stars">
+                          {"★".repeat(job.existing_rating)}
+                          {"☆".repeat(5 - job.existing_rating)}
+                        </span>
                       ) : (
                         "—"
                       )}
                     </td>
                     <td>
                       <div className="row-actions">
-                        <button className="tech-action-btn" onClick={() => openManage(job)}>
+                        <button
+                          className="tech-action-btn"
+                          onClick={() => openManage(job)}>
                           {openRowId === job.id ? "Close" : "Manage"}
                         </button>
                         {job.status !== "Completed" && (
-                          <button className="tech-action-btn primary" onClick={() => quickComplete(job)}>
+                          <button
+                            className="tech-action-btn primary"
+                            onClick={() => quickComplete(job)}>
                             Mark Complete
                           </button>
                         )}
@@ -235,21 +259,26 @@ const TechnicianJobs = () => {
                     <tr className="manage-row" key={`${job.id}-manage`}>
                       <td colSpan={8}>
                         <div className="manage-form">
-
                           <div className="manage-field">
                             <label>Status</label>
                             <select
                               value={formStatus}
-                              onChange={(e) => setFormStatus(e.target.value)}
-                            >
+                              onChange={(e) => setFormStatus(e.target.value)}>
                               {STATUS_OPTIONS.map((s) => (
-                                <option key={s} value={s}>{s}</option>
+                                <option key={s} value={s}>
+                                  {s}
+                                </option>
                               ))}
                             </select>
                           </div>
 
                           <div className="manage-field">
-                            <label>Amount ($){formStatus === "Completed" ? " — required" : " — optional"}</label>
+                            <label>
+                              Amount ($)
+                              {formStatus === "Completed"
+                                ? " — required"
+                                : " — optional"}
+                            </label>
                             <input
                               type="number"
                               min="0"
@@ -263,13 +292,13 @@ const TechnicianJobs = () => {
                           <button
                             className="tech-action-btn primary"
                             disabled={saving}
-                            onClick={() => handleSave(job)}
-                          >
+                            onClick={() => handleSave(job)}>
                             {saving ? "Saving..." : "Save Update"}
                           </button>
 
-                          {formError && <p className="manage-error">{formError}</p>}
-
+                          {formError && (
+                            <p className="manage-error">{formError}</p>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -279,9 +308,7 @@ const TechnicianJobs = () => {
             </tbody>
           </table>
         )}
-
       </div>
-
     </div>
   );
 };

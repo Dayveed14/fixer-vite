@@ -14,7 +14,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
   video: "Video Call",
@@ -64,7 +66,7 @@ const StarRating = ({ ticket, onSubmitted }) => {
 };
 
 const UserDashboard = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   let user = null;
   try {
@@ -188,17 +190,19 @@ const navigate = useNavigate();
 
   return (
     <div className="user-dashboard">
-
       {/* Welcome Banner */}
       <section className="welcome-banner">
         <div>
           <h1>Welcome Back, {user?.first_name} 👋</h1>
           <p>
-            Manage your support tickets, monitor repairs and
-            request assistance from our certified technicians.
+            Manage your support tickets, monitor repairs and request assistance
+            from our certified technicians.
           </p>
         </div>
-        <button onClick={() => navigate("/registerdevice")}> Register Device</button>
+        <button onClick={() => navigate("/registerdevice")}>
+          {" "}
+          Register Device
+        </button>
       </section>
 
       {/* Stats */}
@@ -218,25 +222,22 @@ const navigate = useNavigate();
 
       {/* Main Grid */}
       <section className="dashboard-grid">
-
         {/* Left */}
         <div className="left-panel">
-
           {/* Tickets */}
           <div className="dashboard-card">
             <div className="card-header">
               <h2>Recent Support Tickets</h2>
-              <button onClick={() => navigate("/user/appointments")}>View All <FaArrowRight /></button>
+              <button onClick={() => navigate("/user/appointments")}>
+                View All <FaArrowRight />
+              </button>
             </div>
 
             {/* Wrapper enables horizontal scroll on small screens */}
             <div className="table-wrapper">
               {tickets.length === 0 ? (
-
                 <p className="dashboard-empty">No support tickets yet.</p>
-
               ) : (
-
                 <table>
                   <thead>
                     <tr>
@@ -256,35 +257,27 @@ const navigate = useNavigate();
                           <span
                             className={`status ${ticket.status
                               .replace(/\s+/g, "")
-                              .toLowerCase()}`}
-                          >
+                              .toLowerCase()}`}>
                             {ticket.status}
                           </span>
 
-                          {ticket.status === "Completed" && ticket.technician_id && (
-
-                            ticket.existing_rating ? (
-
+                          {ticket.status === "Completed" &&
+                            ticket.technician_id &&
+                            (ticket.existing_rating ? (
                               <span className="rating-done">
                                 Rated {ticket.existing_rating}/5
                               </span>
-
                             ) : (
-
                               <StarRating
                                 ticket={ticket}
                                 onSubmitted={handleRatingSubmitted}
                               />
-
-                            )
-
-                          )}
+                            ))}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-
               )}
             </div>
           </div>
@@ -305,18 +298,26 @@ const navigate = useNavigate();
               <p>Your mail-in shipment has been received.</p>
             </div>
           </div>
-
         </div>
 
         {/* Right */}
         <div className="right-panel">
-
           {/* Quick Actions */}
           <div className="dashboard-card">
             <h2>Quick Actions</h2>
-            <button className="action-btn" onClick={() => navigate("/diagnosis")}><FaRobot /> Smart Diagnosis</button>
-            <button className="action-btn"><FaComments /> Live Chat</button>
-            <button className="action-btn" onClick={() => navigate("/registerdevice")}><FaLaptop /> Register Device</button>
+            <button
+              className="action-btn"
+              onClick={() => navigate("/diagnosis")}>
+              <FaRobot /> Smart Diagnosis
+            </button>
+            <button className="action-btn">
+              <FaComments /> Live Chat
+            </button>
+            <button
+              className="action-btn"
+              onClick={() => navigate("/registerdevice")}>
+              <FaLaptop /> Register Device
+            </button>
           </div>
 
           {/* Appointment */}
@@ -324,20 +325,18 @@ const navigate = useNavigate();
             <h2>Upcoming Appointment</h2>
 
             {nextAppointment ? (
-
               <div className="appointment">
                 <FaCalendarAlt className="calendar-icon" />
-                <h3>{SUPPORT_TYPE_LABELS[nextAppointment.support_type] || "Support Call"}</h3>
+                <h3>
+                  {SUPPORT_TYPE_LABELS[nextAppointment.support_type] ||
+                    "Support Call"}
+                </h3>
                 <p>{nextAppointment.booking_date}</p>
                 <span>{nextAppointment.booking_time}</span>
               </div>
-
             ) : (
-
               <p className="dashboard-empty">No upcoming appointments.</p>
-
             )}
-
           </div>
 
           {/* Registered Device */}
@@ -345,7 +344,6 @@ const navigate = useNavigate();
             <h2>Registered Device</h2>
 
             {device ? (
-
               <div className="device-card">
                 <FaLaptop className="device-icon" />
                 <h3>{device.device_name}</h3>
@@ -356,17 +354,11 @@ const navigate = useNavigate();
                     : "Not serviced yet"}
                 </small>
               </div>
-
             ) : (
-
               <p className="dashboard-empty">No devices registered yet.</p>
-
             )}
-
           </div>
-
         </div>
-
       </section>
     </div>
   );

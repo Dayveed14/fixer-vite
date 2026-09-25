@@ -5,7 +5,8 @@ import "./AddArticle.css";
 import { Editor } from "@tinymce/tinymce-react";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 const AddArticle = () => {
   const navigate = useNavigate();
 
@@ -79,15 +80,11 @@ const AddArticle = () => {
       data.append("author_id", user.id);
       data.append("featured", 1);
 
-      await axios.post(
-        `${API_BASE_URL}/api/articles`,
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await axios.post(`${API_BASE_URL}/api/articles`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       alert("Article created successfully.");
 
@@ -102,7 +99,6 @@ const AddArticle = () => {
 
   return (
     <div className="add-article">
-
       <div className="page-header">
         <div>
           <h1>New Article</h1>
@@ -110,20 +106,14 @@ const AddArticle = () => {
         </div>
       </div>
 
-      <form
-        className="article-form"
-        onSubmit={submit}
-      >
-
+      <form className="article-form" onSubmit={submit}>
         <div className="form-group">
           <label>Hero Image</label>
 
           <input
             type="file"
             accept="image/*"
-            onChange={(e) =>
-              setImage(e.target.files[0])
-            }
+            onChange={(e) => setImage(e.target.files[0])}
           />
         </div>
         <div className="form-group">
@@ -152,12 +142,7 @@ const AddArticle = () => {
         <div className="form-group">
           <label>Slug</label>
 
-          <input
-            type="text"
-            name="slug"
-            value={form.slug}
-            readOnly
-          />
+          <input type="text" name="slug" value={form.slug} readOnly />
         </div>
 
         <div className="form-group">
@@ -179,109 +164,74 @@ const AddArticle = () => {
             name="category"
             value={form.category}
             onChange={handleChange}
-            required
-          >
-            <option value="">
-              Select Category
-            </option>
+            required>
+            <option value="">Select Category</option>
 
-            <option value="Hardware">
-              Hardware
-            </option>
+            <option value="Hardware">Hardware</option>
 
-            <option value="Software">
-              Software
-            </option>
+            <option value="Software">Software</option>
 
-            <option value="Networking">
-              Networking
-            </option>
+            <option value="Networking">Networking</option>
 
-            <option value="Security">
-              Security
-            </option>
+            <option value="Security">Security</option>
 
-            <option value="Maintenance">
-              Maintenance
-            </option>
-
+            <option value="Maintenance">Maintenance</option>
           </select>
         </div>
 
         <div className="form-group">
           <label>Excerpt</label>
 
-                        <Editor
-                apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-                value={form.excerpt}
-                onEditorChange={(excerpt) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    excerpt,
-                  }))
-                }
-              />
+          <Editor
+            apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+            value={form.excerpt}
+            onEditorChange={(excerpt) =>
+              setForm((prev) => ({
+                ...prev,
+                excerpt,
+              }))
+            }
+          />
         </div>
 
         <div className="form-group">
           <label>Article Content</label>
 
-                  <Editor
-          apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
-          value={form.content}
-          onEditorChange={(content) =>
-            setForm((prev) => ({
-              ...prev,
-              content,
-            }))
-          }
-        />
+          <Editor
+            apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+            value={form.content}
+            onEditorChange={(content) =>
+              setForm((prev) => ({
+                ...prev,
+                content,
+              }))
+            }
+          />
         </div>
 
         <div className="form-group">
           <label>Status</label>
 
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-          >
-            <option value="draft">
-              Draft
-            </option>
+          <select name="status" value={form.status} onChange={handleChange}>
+            <option value="draft">Draft</option>
 
-            <option value="published">
-              Published
-            </option>
+            <option value="published">Published</option>
           </select>
         </div>
 
         <div className="article-buttons">
-
           <button
             type="button"
             className="cancel-btn"
-            onClick={() =>
-              navigate("/adminarticles")
-            }
-          >
+            onClick={() => navigate("/adminarticles")}>
             Cancel
           </button>
 
-          <button
-            type="submit"
-            className="save-btn"
-            disabled={loading}
-          >
-            {loading
-              ? "Saving..."
-              : "Publish Article"}
+          <button type="submit" className="save-btn" disabled={loading}>
+            {loading ? "Saving..." : "Publish Article"}
           </button>
-
         </div>
-
       </form>
-
     </div>
   );
 };

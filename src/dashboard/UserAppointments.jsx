@@ -8,7 +8,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "./UserAppointments.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const TABS = [
   { key: "All", label: "All" },
@@ -98,7 +100,9 @@ const UserAppointments = () => {
           service: t.issue,
           device: t.device,
           technician_name: t.technician_name,
-          date: t.created_at ? new Date(t.created_at).toLocaleDateString() : "—",
+          date: t.created_at
+            ? new Date(t.created_at).toLocaleDateString()
+            : "—",
           time: null,
           status: t.status,
           payment_status: t.amount ? "paid" : "—",
@@ -113,7 +117,8 @@ const UserAppointments = () => {
         );
       } catch (err) {
         console.error(err);
-        if (!cancelled) setError("Failed to load your appointments. Please try again.");
+        if (!cancelled)
+          setError("Failed to load your appointments. Please try again.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -162,8 +167,7 @@ const UserAppointments = () => {
           <button
             key={tab.key}
             className={`tab ${activeTab === tab.key ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.key)}
-          >
+            onClick={() => setActiveTab(tab.key)}>
             {tab.label}
           </button>
         ))}
@@ -213,7 +217,9 @@ const UserAppointments = () => {
                   </td>
 
                   <td>
-                    <span className={badgeClass(item.status)}>{item.status}</span>
+                    <span className={badgeClass(item.status)}>
+                      {item.status}
+                    </span>
                   </td>
 
                   <td>{item.payment_status}</td>

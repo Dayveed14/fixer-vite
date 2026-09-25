@@ -7,7 +7,9 @@ import axios from "axios";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -100,20 +102,24 @@ const UserAppointmentDetail = () => {
     return (
       <div className="tech-page">
         <p className="dashboard-error">{error}</p>
-        <Link to="/user/appointments" className="tech-action-btn">Back to Appointments</Link>
+        <Link to="/user/appointments" className="tech-action-btn">
+          Back to Appointments
+        </Link>
       </div>
     );
   }
 
-  const canCancel = booking.status === "pending" || booking.status === "confirmed";
+  const canCancel =
+    booking.status === "pending" || booking.status === "confirmed";
   const isOwner = user?.id === booking.user_id;
 
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
-          <button className="back-link" onClick={() => navigate("/user/appointments")}>
+          <button
+            className="back-link"
+            onClick={() => navigate("/user/appointments")}>
             ← Back to Appointments
           </button>
           <h1>{booking.booking_reference}</h1>
@@ -123,13 +129,15 @@ const UserAppointmentDetail = () => {
       </div>
 
       <div className="detail-grid">
-
         <div className="tech-panel detail-card">
           <h3>Appointment</h3>
 
           <div className="detail-row">
             <span>Type</span>
-            <strong>{SUPPORT_TYPE_LABELS[booking.support_type] || booking.support_type}</strong>
+            <strong>
+              {SUPPORT_TYPE_LABELS[booking.support_type] ||
+                booking.support_type}
+            </strong>
           </div>
 
           <div className="detail-row">
@@ -172,7 +180,9 @@ const UserAppointmentDetail = () => {
                 <div className="detail-row">
                   <span>Email</span>
                   <strong>
-                    <a href={`mailto:${booking.technician_email}`}>{booking.technician_email}</a>
+                    <a href={`mailto:${booking.technician_email}`}>
+                      {booking.technician_email}
+                    </a>
                   </strong>
                 </div>
               )}
@@ -185,7 +195,9 @@ const UserAppointmentDetail = () => {
               )}
             </>
           ) : (
-            <p className="dashboard-empty">Not assigned yet. We'll notify you once a technician is confirmed.</p>
+            <p className="dashboard-empty">
+              Not assigned yet. We'll notify you once a technician is confirmed.
+            </p>
           )}
 
           <h3 className="section-gap">Payment</h3>
@@ -200,7 +212,6 @@ const UserAppointmentDetail = () => {
             <strong className="capitalize">{booking.payment_status}</strong>
           </div>
         </div>
-
       </div>
 
       {isOwner && canCancel && (
@@ -208,8 +219,7 @@ const UserAppointmentDetail = () => {
           <button
             className="tech-action-btn danger"
             disabled={cancelling}
-            onClick={handleCancel}
-          >
+            onClick={handleCancel}>
             {cancelling ? "Cancelling..." : "Cancel Appointment"}
           </button>
         </div>
@@ -217,12 +227,13 @@ const UserAppointmentDetail = () => {
 
       {booking.ticket_id && (
         <div className="detail-actions">
-          <Link to={`/userjob/${booking.ticket_id}`} className="tech-action-btn primary">
+          <Link
+            to={`/userjob/${booking.ticket_id}`}
+            className="tech-action-btn primary">
             View Linked Repair Job
           </Link>
         </div>
       )}
-
     </div>
   );
 };

@@ -13,52 +13,49 @@ import {
 } from "react-icons/fa";
 
 const Login = () => {
-const navigate = useNavigate();
-const [showPassword, setShowPassword] = useState(false);
-const [loading, setLoading] = useState(false);
-const [loginData, setLoginData] = useState({
-  email: "",
-  password: "",
-});
-
-const handleChange = (e) => {
-  setLoginData({
-    ...loginData,
-    [e.target.name]: e.target.value,
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
   });
-};
 
-const handleLogin = async (e) => {
-  e.preventDefault();
+  const handleChange = (e) => {
+    setLoginData({
+      ...loginData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  try {
-    setLoading(true);
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-    const response = await axios.post(
-      "https://fixer-backend-7mng.onrender.com/api/users/login",
-      loginData
-    );
+    try {
+      setLoading(true);
 
-    const user = response.data;
+      const response = await axios.post(
+        "https://fixer-backend-7mng.onrender.com/api/users/login",
+        loginData,
+      );
 
-    localStorage.setItem("user", JSON.stringify(user));
+      const user = response.data;
 
-    if (user.role === "admin") {
-      navigate("../admindashboard");
-    } else if (user.role === "technician") {
-      navigate("../techniciandashboard");
-    } else {
-      navigate("../dashboard");
+      localStorage.setItem("user", JSON.stringify(user));
+
+      if (user.role === "admin") {
+        navigate("../admindashboard");
+      } else if (user.role === "technician") {
+        navigate("../techniciandashboard");
+      } else {
+        navigate("../dashboard");
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "Login Failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    alert(
-      err.response?.data?.message || "Login Failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
     <div className="login-page">
@@ -115,7 +112,8 @@ const handleLogin = async (e) => {
                 placeholder="john@example.com"
                 value={loginData.email}
                 onChange={handleChange}
-                required/>
+                required
+              />
             </div>
 
             <div className="input-group">
@@ -123,18 +121,18 @@ const handleLogin = async (e) => {
 
               <div className="password-input">
                 <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                value={loginData.password}
-                onChange={handleChange}
-                required/>
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={loginData.password}
+                  onChange={handleChange}
+                  required
+                />
 
                 <button
                   type="button"
                   className="toggle-password"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
+                  onClick={() => setShowPassword(!showPassword)}>
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
@@ -151,10 +149,7 @@ const handleLogin = async (e) => {
               </Link>
             </div>
 
-            <button
-              type="submit"
-              className="login-btn"
-              disabled={loading}>
+            <button type="submit" className="login-btn" disabled={loading}>
               {loading ? "Signing In..." : "Login"}
             </button>
           </form>

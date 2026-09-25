@@ -5,7 +5,8 @@ import axios from "axios";
 import "./AdminTechnicians.css";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const AdminTechnicians = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const AdminTechnicians = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setTechnicians(data);
@@ -40,9 +41,7 @@ const AdminTechnicians = () => {
   }, []);
 
   const deleteTechnician = async (id) => {
-    const confirmDelete = window.confirm(
-      "Delete this technician?"
-    );
+    const confirmDelete = window.confirm("Delete this technician?");
 
     if (!confirmDelete) return;
 
@@ -64,7 +63,6 @@ const AdminTechnicians = () => {
 
   return (
     <div className="admin-page">
-
       <div className="page-header">
         <div>
           <h2>Technicians</h2>
@@ -73,17 +71,14 @@ const AdminTechnicians = () => {
 
         <button
           className="add-btn"
-          onClick={() => navigate("/admin/users/new")}
-        >
+          onClick={() => navigate("/admin/users/new")}>
           <FaPlus />
           Add Technician
         </button>
       </div>
 
       <div className="table-container">
-
         <table>
-
           <thead>
             <tr>
               <th>Name</th>
@@ -96,7 +91,6 @@ const AdminTechnicians = () => {
           </thead>
 
           <tbody>
-
             {loading ? (
               <tr>
                 <td colSpan="6" style={{ textAlign: "center" }}>
@@ -121,50 +115,32 @@ const AdminTechnicians = () => {
                   <td>{tech.phone}</td>
 
                   <td>
-                    <span className="role-badge">
-                      {tech.role}
-                    </span>
+                    <span className="role-badge">{tech.role}</span>
                   </td>
 
-                  <td>
-                    {new Date(
-                      tech.created_at
-                    ).toLocaleDateString()}
-                  </td>
+                  <td>{new Date(tech.created_at).toLocaleDateString()}</td>
 
                   <td>
-
                     <button
                       className="edit-btn"
                       onClick={() =>
-                        navigate(
-                          `/admin/technicians/edit/${tech.id}`
-                        )
-                      }
-                    >
+                        navigate(`/admin/technicians/edit/${tech.id}`)
+                      }>
                       <FaEdit />
                     </button>
 
                     <button
                       className="delete-btn"
-                      onClick={() =>
-                        deleteTechnician(tech.id)
-                      }
-                    >
+                      onClick={() => deleteTechnician(tech.id)}>
                       <FaTrash />
                     </button>
-
                   </td>
                 </tr>
               ))
             )}
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
   );
 };

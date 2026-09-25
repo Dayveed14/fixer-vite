@@ -3,28 +3,94 @@ import axios from "axios";
 import { usePaystackPayment } from "react-paystack";
 import "./css/BookCall.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Updated working hours: 8:00 AM to 10:00 PM
 const TIME_SLOTS = [
-  "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-  "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM",
-  "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM",
-  "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM"
+  "8:00 AM",
+  "8:30 AM",
+  "9:00 AM",
+  "9:30 AM",
+  "10:00 AM",
+  "10:30 AM",
+  "11:00 AM",
+  "11:30 AM",
+  "12:00 PM",
+  "12:30 PM",
+  "1:00 PM",
+  "1:30 PM",
+  "2:00 PM",
+  "2:30 PM",
+  "3:00 PM",
+  "3:30 PM",
+  "4:00 PM",
+  "4:30 PM",
+  "5:00 PM",
+  "5:30 PM",
+  "6:00 PM",
+  "6:30 PM",
+  "7:00 PM",
+  "7:30 PM",
+  "8:00 PM",
+  "8:30 PM",
+  "9:00 PM",
+  "9:30 PM",
+  "10:00 PM",
 ];
 
-const DEVICE_TYPES = ["Smartphone","Laptop","Tablet","Desktop PC","Smart Watch","Gaming Console","Other"];
+const DEVICE_TYPES = [
+  "Smartphone",
+  "Laptop",
+  "Tablet",
+  "Desktop PC",
+  "Smart Watch",
+  "Gaming Console",
+  "Other",
+];
 
 // amount is in Naira — must match backend's SUPPORT_TYPE_MAP exactly, since
 // the server independently verifies the Paystack payment against it.
 const SUPPORT_TYPES = [
-  { id: "voice", title: "Voice Call", desc: "Speak directly with an expert via phone line.", cost: "₦5000", amount: 5000 },
-  { id: "video", title: "Video Call", desc: "Face-to-face assistance via Google Meet.", cost: "₦7000", amount: 7000 },
-  { id: "remote", title: "Remote Support", desc: "Secure remote desktop access via TeamViewer/AnyDesk.", cost: "₦10000", amount: 10000 }
+  {
+    id: "voice",
+    title: "Voice Call",
+    desc: "Speak directly with an expert via phone line.",
+    cost: "₦5000",
+    amount: 5000,
+  },
+  {
+    id: "video",
+    title: "Video Call",
+    desc: "Face-to-face assistance via Google Meet.",
+    cost: "₦7000",
+    amount: 7000,
+  },
+  {
+    id: "remote",
+    title: "Remote Support",
+    desc: "Secure remote desktop access via TeamViewer/AnyDesk.",
+    cost: "₦10000",
+    amount: 10000,
+  },
 ];
 
 function getDaysInMonth(year, month) {
@@ -54,7 +120,12 @@ export default function BookCall() {
   const [selectedTime, setSelectedTime] = useState(null);
 
   // Flow State
-  const [form, setForm] = useState({ name: "", email: "", device: "", issue: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    device: "",
+    issue: "",
+  });
   const [supportType, setSupportType] = useState("");
   const [paymentReference, setPaymentReference] = useState(null);
   const [paying, setPaying] = useState(false);
@@ -66,13 +137,17 @@ export default function BookCall() {
   const [bookingReference, setBookingReference] = useState(null);
 
   const prevMonth = () => {
-    if (month === 0) { setMonth(11); setYear(y => y - 1); }
-    else setMonth(m => m - 1);
+    if (month === 0) {
+      setMonth(11);
+      setYear((y) => y - 1);
+    } else setMonth((m) => m - 1);
     setSelectedDate(null);
   };
   const nextMonth = () => {
-    if (month === 11) { setMonth(0); setYear(y => y + 1); }
-    else setMonth(m => m + 1);
+    if (month === 11) {
+      setMonth(0);
+      setYear((y) => y + 1);
+    } else setMonth((m) => m + 1);
     setSelectedDate(null);
   };
 
@@ -81,8 +156,9 @@ export default function BookCall() {
 
   const isPast = (day) => {
     const d = new Date(year, month, day);
-    d.setHours(0,0,0,0);
-    const t = new Date(); t.setHours(0,0,0,0);
+    d.setHours(0, 0, 0, 0);
+    const t = new Date();
+    t.setHours(0, 0, 0, 0);
     return d < t;
   };
 
@@ -97,10 +173,10 @@ export default function BookCall() {
   };
 
   const handleBackStep = () => {
-    if (step > 1) setStep(prev => prev - 1);
+    if (step > 1) setStep((prev) => prev - 1);
   };
 
-  const selectedType = SUPPORT_TYPES.find(t => t.id === supportType);
+  const selectedType = SUPPORT_TYPES.find((t) => t.id === supportType);
 
   const initializePayment = usePaystackPayment({
     publicKey: PAYSTACK_PUBLIC_KEY,
@@ -147,7 +223,9 @@ export default function BookCall() {
     }
 
     if (!paymentReference) {
-      setSubmitError("Payment was not completed. Please go back and pay first.");
+      setSubmitError(
+        "Payment was not completed. Please go back and pay first.",
+      );
       return;
     }
 
@@ -171,7 +249,8 @@ export default function BookCall() {
     } catch (err) {
       console.error(err);
       setSubmitError(
-        err.response?.data?.message || "Failed to confirm booking. Please try again."
+        err.response?.data?.message ||
+          "Failed to confirm booking. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -185,14 +264,16 @@ export default function BookCall() {
     setSelectedDate(null);
     setSelectedTime(null);
     setSupportType("");
-    setForm({ name:"", email:"", device:"", issue:"" });
+    setForm({ name: "", email: "", device: "", issue: "" });
     setPaymentReference(null);
   };
 
   // Helper to generate dynamic Google Calendar invite file
   const downloadCalendarInvite = () => {
-    const eventDetails = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Device Repair Call (${supportType.toUpperCase()})\nDESCRIPTION:Expert troubleshooting appointment.\nDTSTART:${year}${String(month + 1).padStart(2, '0')}${String(selectedDate).padStart(2, '0')}T120000Z\nDURATION:PT30M\nEND:VEVENT\nEND:VCALENDAR`;
-    const blob = new Blob([eventDetails], { type: "text/calendar;charset=utf-8;" });
+    const eventDetails = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Device Repair Call (${supportType.toUpperCase()})\nDESCRIPTION:Expert troubleshooting appointment.\nDTSTART:${year}${String(month + 1).padStart(2, "0")}${String(selectedDate).padStart(2, "0")}T120000Z\nDURATION:PT30M\nEND:VEVENT\nEND:VCALENDAR`;
+    const blob = new Blob([eventDetails], {
+      type: "text/calendar;charset=utf-8;",
+    });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.setAttribute("download", "repair_appointment.ics");
@@ -206,35 +287,71 @@ export default function BookCall() {
       <div className="bookcall__success">
         <div className="bookcall__success-icon">✓</div>
         <h2>Booking Confirmed!</h2>
-        {bookingReference && <p className="bookcall__reference">Reference: <strong>{bookingReference}</strong></p>}
-        <p>Your <strong>{SUPPORT_TYPES.find(t => t.id === supportType)?.title}</strong> is scheduled for <strong>{selectedLabel}</strong> at <strong>{selectedTime}</strong>.</p>
-        <p>A receipt and confirmation link have been sent to <strong>{form.email}</strong>. A technician will be assigned to your booking shortly.</p>
+        {bookingReference && (
+          <p className="bookcall__reference">
+            Reference: <strong>{bookingReference}</strong>
+          </p>
+        )}
+        <p>
+          Your{" "}
+          <strong>
+            {SUPPORT_TYPES.find((t) => t.id === supportType)?.title}
+          </strong>{" "}
+          is scheduled for <strong>{selectedLabel}</strong> at{" "}
+          <strong>{selectedTime}</strong>.
+        </p>
+        <p>
+          A receipt and confirmation link have been sent to{" "}
+          <strong>{form.email}</strong>. A technician will be assigned to your
+          booking shortly.
+        </p>
 
         <div className="bookcall__action-box">
           {supportType === "voice" && (
             <>
               <h4>📞 Action Required: Call Us at Appointment Time</h4>
-              <p>Please dial our support number: <strong>+2348093625430</strong>. Your session pin is your registered phone/email.</p>
+              <p>
+                Please dial our support number: <strong>+2348093625430</strong>.
+                Your session pin is your registered phone/email.
+              </p>
             </>
           )}
           {supportType === "video" && (
             <>
               <h4>🎥 Google Meet Link Generated</h4>
-              <p>Your secure meeting space: <a href="https://meet.google.com/abc-defg-hij" target="_blank" rel="noreferrer">meet.google.com/abc-defg-hij</a>. This link has also been added to your calendar event.</p>
+              <p>
+                Your secure meeting space:{" "}
+                <a
+                  href="https://meet.google.com/abc-defg-hij"
+                  target="_blank"
+                  rel="noreferrer">
+                  meet.google.com/abc-defg-hij
+                </a>
+                . This link has also been added to your calendar event.
+              </p>
             </>
           )}
           {supportType === "remote" && (
             <>
               <h4>💻 Remote Support Ready</h4>
-              <p>Please ensure you have <strong>TeamViewer</strong> or <strong>AnyDesk</strong> downloaded before the session. Our technician will ask for your Access ID when they reach out.</p>
+              <p>
+                Please ensure you have <strong>TeamViewer</strong> or{" "}
+                <strong>AnyDesk</strong> downloaded before the session. Our
+                technician will ask for your Access ID when they reach out.
+              </p>
             </>
           )}
         </div>
 
-        <button className="bookcall__btn bookcall__btn--ghost" onClick={downloadCalendarInvite} style={{ marginRight: '10px', marginTop: '15px' }}>
+        <button
+          className="bookcall__btn bookcall__btn--ghost"
+          onClick={downloadCalendarInvite}
+          style={{ marginRight: "10px", marginTop: "15px" }}>
           📅 Add to Calendar
         </button>
-        <button className="bookcall__btn bookcall__btn--primary" onClick={resetForm}>
+        <button
+          className="bookcall__btn bookcall__btn--primary"
+          onClick={resetForm}>
           Book another call
         </button>
       </div>
@@ -244,29 +361,52 @@ export default function BookCall() {
   return (
     <div className="book">
       <div className="bookcall">
-        
         {/* Header & Step Tracking Wizard Line */}
         <div className="bookcall__header">
           <h1 className="bookcall__title">Book an Expert Call</h1>
           <div className="bookcall__steps">
-            <div className={`bookcall__step ${step >= 1 ? "active" : ""}`}><span className="bookcall__step-num">1</span><span className="bookcall__step-label">Time</span></div>
+            <div className={`bookcall__step ${step >= 1 ? "active" : ""}`}>
+              <span className="bookcall__step-num">1</span>
+              <span className="bookcall__step-label">Time</span>
+            </div>
             <div className="bookcall__step-line" />
-            <div className={`bookcall__step ${step >= 2 ? "active" : ""}`}><span className="bookcall__step-num">2</span><span className="bookcall__step-label">Details</span></div>
+            <div className={`bookcall__step ${step >= 2 ? "active" : ""}`}>
+              <span className="bookcall__step-num">2</span>
+              <span className="bookcall__step-label">Details</span>
+            </div>
             <div className="bookcall__step-line" />
-            <div className={`bookcall__step ${step >= 3 ? "active" : ""}`}><span className="bookcall__step-num">3</span><span className="bookcall__step-label">Type</span></div>
+            <div className={`bookcall__step ${step >= 3 ? "active" : ""}`}>
+              <span className="bookcall__step-num">3</span>
+              <span className="bookcall__step-label">Type</span>
+            </div>
             <div className="bookcall__step-line" />
-            <div className={`bookcall__step ${step >= 4 ? "active" : ""}`}><span className="bookcall__step-num">4</span><span className="bookcall__step-label">Payment</span></div>
+            <div className={`bookcall__step ${step >= 4 ? "active" : ""}`}>
+              <span className="bookcall__step-num">4</span>
+              <span className="bookcall__step-label">Payment</span>
+            </div>
             <div className="bookcall__step-line" />
-            <div className={`bookcall__step ${step >= 5 ? "active" : ""}`}><span className="bookcall__step-num">5</span><span className="bookcall__step-label">Confirm</span></div>
+            <div className={`bookcall__step ${step >= 5 ? "active" : ""}`}>
+              <span className="bookcall__step-num">5</span>
+              <span className="bookcall__step-label">Confirm</span>
+            </div>
           </div>
         </div>
 
         {/* Universal Banner for displaying current data selection */}
         {step > 1 && (
           <div className="bookcall__confirm-banner">
-            <span className="banner-item">📅 {selectedLabel} @ {selectedTime}</span>
-            {supportType && <span className="banner-item"> • ⚙️ {SUPPORT_TYPES.find(t => t.id === supportType)?.title}</span>}
-            <button className="bookcall__change" onClick={() => setStep(1)}>Restart</button>
+            <span className="banner-item">
+              📅 {selectedLabel} @ {selectedTime}
+            </span>
+            {supportType && (
+              <span className="banner-item">
+                {" "}
+                • ⚙️ {SUPPORT_TYPES.find((t) => t.id === supportType)?.title}
+              </span>
+            )}
+            <button className="bookcall__change" onClick={() => setStep(1)}>
+              Restart
+            </button>
           </div>
         )}
 
@@ -276,17 +416,41 @@ export default function BookCall() {
             <div className="bookcall__calendar-wrap">
               <div className="bookcall__cal-nav">
                 <button className="bookcall__cal-arrow" onClick={prevMonth}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M10 3L5 8l5 5"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
-                <span className="bookcall__cal-month">{MONTHS[month]} {year}</span>
+                <span className="bookcall__cal-month">
+                  {MONTHS[month]} {year}
+                </span>
                 <button className="bookcall__cal-arrow" onClick={nextMonth}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M6 3l5 5-5 5"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </button>
               </div>
 
               <div className="bookcall__cal-grid">
-                {DAYS.map(d => <div key={d} className="bookcall__cal-dayname">{d}</div>)}
-                {Array.from({ length: firstDay }).map((_, i) => <div key={`e${i}`} />)}
+                {DAYS.map((d) => (
+                  <div key={d} className="bookcall__cal-dayname">
+                    {d}
+                  </div>
+                ))}
+                {Array.from({ length: firstDay }).map((_, i) => (
+                  <div key={`e${i}`} />
+                ))}
                 {Array.from({ length: daysInMonth }).map((_, i) => {
                   const day = i + 1;
                   const past = isPast(day);
@@ -296,8 +460,7 @@ export default function BookCall() {
                       key={day}
                       className={`bookcall__cal-day ${past ? "past" : ""} ${sel ? "selected" : ""}`}
                       onClick={() => !past && setSelectedDate(day)}
-                      disabled={past}
-                    >
+                      disabled={past}>
                       {day}
                     </button>
                   );
@@ -307,16 +470,17 @@ export default function BookCall() {
 
             <div className="bookcall__time-wrap">
               <h3 className="bookcall__time-title">
-                {selectedDate ? `Available Times (8:00 AM - 10:00 PM)` : "Select a date to see available times"}
+                {selectedDate
+                  ? `Available Times (8:00 AM - 10:00 PM)`
+                  : "Select a date to see available times"}
               </h3>
               {selectedDate && (
                 <div className="bookcall__time-grid">
-                  {TIME_SLOTS.map(t => (
+                  {TIME_SLOTS.map((t) => (
                     <button
                       key={t}
                       className={`bookcall__time-slot ${selectedTime === t ? "selected" : ""}`}
-                      onClick={() => setSelectedTime(t)}
-                    >
+                      onClick={() => setSelectedTime(t)}>
                       {t}
                     </button>
                   ))}
@@ -326,10 +490,9 @@ export default function BookCall() {
 
             <div className="bookcall__footer">
               <button
-                className={`bookcall__btn bookcall__btn--primary ${(!selectedDate || !selectedTime) ? "disabled" : ""}`}
+                className={`bookcall__btn bookcall__btn--primary ${!selectedDate || !selectedTime ? "disabled" : ""}`}
                 onClick={handleNextStep}
-                disabled={!selectedDate || !selectedTime}
-              >
+                disabled={!selectedDate || !selectedTime}>
                 Continue
               </button>
             </div>
@@ -343,27 +506,50 @@ export default function BookCall() {
               <div className="bookcall__form-row">
                 <div className="bookcall__field">
                   <label className="bookcall__label">Full name</label>
-                  <input className="bookcall__input" type="text" placeholder="John Doe"
-                    value={form.name} onChange={e => setForm(f => ({...f, name: e.target.value}))} />
+                  <input
+                    className="bookcall__input"
+                    type="text"
+                    placeholder="John Doe"
+                    value={form.name}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, name: e.target.value }))
+                    }
+                  />
                 </div>
                 <div className="bookcall__field">
                   <label className="bookcall__label">Email address</label>
-                  <input className="bookcall__input" type="email" placeholder="john@email.com"
-                    value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))} />
+                  <input
+                    className="bookcall__input"
+                    type="email"
+                    placeholder="john@email.com"
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, email: e.target.value }))
+                    }
+                  />
                 </div>
               </div>
 
               <div className="bookcall__field">
                 <label className="bookcall__label">Device type</label>
                 <div className="bookcall__select-wrap">
-                  <button className="bookcall__select" onClick={() => setDeviceDropOpen(v => !v)}>
-                    <span className={form.device ? "" : "placeholder"}>{form.device || "Choose a device"}</span>
+                  <button
+                    className="bookcall__select"
+                    onClick={() => setDeviceDropOpen((v) => !v)}>
+                    <span className={form.device ? "" : "placeholder"}>
+                      {form.device || "Choose a device"}
+                    </span>
                   </button>
                   {deviceDropOpen && (
                     <ul className="bookcall__dropdown">
-                      {DEVICE_TYPES.map(d => (
-                        <li key={d} className={`bookcall__dropdown-item ${form.device === d ? "selected" : ""}`}
-                          onClick={() => { setForm(f => ({...f, device: d})); setDeviceDropOpen(false); }}>
+                      {DEVICE_TYPES.map((d) => (
+                        <li
+                          key={d}
+                          className={`bookcall__dropdown-item ${form.device === d ? "selected" : ""}`}
+                          onClick={() => {
+                            setForm((f) => ({ ...f, device: d }));
+                            setDeviceDropOpen(false);
+                          }}>
                           {d}
                         </li>
                       ))}
@@ -374,14 +560,29 @@ export default function BookCall() {
 
               <div className="bookcall__field">
                 <label className="bookcall__label">Describe your issue</label>
-                <textarea className="bookcall__textarea" rows={3} placeholder="What is happening with your device?"
-                  value={form.issue} onChange={e => setForm(f => ({...f, issue: e.target.value}))} />
+                <textarea
+                  className="bookcall__textarea"
+                  rows={3}
+                  placeholder="What is happening with your device?"
+                  value={form.issue}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, issue: e.target.value }))
+                  }
+                />
               </div>
 
               <div className="bookcall__form-actions">
-                <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep}>Back</button>
-                <button className={`bookcall__btn bookcall__btn--primary ${(!form.name || !form.email) ? "disabled" : ""}`}
-                  onClick={handleNextStep} disabled={!form.name || !form.email}>Continue</button>
+                <button
+                  className="bookcall__btn bookcall__btn--ghost"
+                  onClick={handleBackStep}>
+                  Back
+                </button>
+                <button
+                  className={`bookcall__btn bookcall__btn--primary ${!form.name || !form.email ? "disabled" : ""}`}
+                  onClick={handleNextStep}
+                  disabled={!form.name || !form.email}>
+                  Continue
+                </button>
               </div>
             </div>
           </div>
@@ -392,11 +593,11 @@ export default function BookCall() {
           <div className="bookcall__body">
             <h3>Choose Support Type</h3>
             <div className="bookcall__support-list">
-              {SUPPORT_TYPES.map(type => (
-                <div key={type.id} 
+              {SUPPORT_TYPES.map((type) => (
+                <div
+                  key={type.id}
                   className={`bookcall__support-card ${supportType === type.id ? "selected" : ""}`}
-                  onClick={() => setSupportType(type.id)}
-                >
+                  onClick={() => setSupportType(type.id)}>
                   <div className="support-card__info">
                     <h4>{type.title}</h4>
                     <p>{type.desc}</p>
@@ -405,10 +606,20 @@ export default function BookCall() {
                 </div>
               ))}
             </div>
-            <div className="bookcall__form-actions" style={{ marginTop: '20px' }}>
-              <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep}>Back</button>
-              <button className={`bookcall__btn bookcall__btn--primary ${!supportType ? "disabled" : ""}`}
-                onClick={handleNextStep} disabled={!supportType}>Continue</button>
+            <div
+              className="bookcall__form-actions"
+              style={{ marginTop: "20px" }}>
+              <button
+                className="bookcall__btn bookcall__btn--ghost"
+                onClick={handleBackStep}>
+                Back
+              </button>
+              <button
+                className={`bookcall__btn bookcall__btn--primary ${!supportType ? "disabled" : ""}`}
+                onClick={handleNextStep}
+                disabled={!supportType}>
+                Continue
+              </button>
             </div>
           </div>
         )}
@@ -417,19 +628,28 @@ export default function BookCall() {
         {step === 4 && (
           <div className="bookcall__body bookcall__body--form">
             <h3>Payment</h3>
-            <p className="payment-total">Total Amount: <strong>{selectedType?.cost}</strong></p>
+            <p className="payment-total">
+              Total Amount: <strong>{selectedType?.cost}</strong>
+            </p>
             <div className="bookcall__form">
               <p className="bookcall__payment-note">
-                You'll be securely redirected to Paystack to complete payment. Your booking is only confirmed once payment succeeds.
+                You'll be securely redirected to Paystack to complete payment.
+                Your booking is only confirmed once payment succeeds.
               </p>
               <div className="bookcall__form-actions">
-                <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep} disabled={paying}>Back</button>
+                <button
+                  className="bookcall__btn bookcall__btn--ghost"
+                  onClick={handleBackStep}
+                  disabled={paying}>
+                  Back
+                </button>
                 <button
                   className="bookcall__btn bookcall__btn--primary"
                   onClick={payAndContinue}
-                  disabled={paying || !form.email}
-                >
-                  {paying ? "Processing..." : `Pay ${selectedType?.cost} with Paystack`}
+                  disabled={paying || !form.email}>
+                  {paying
+                    ? "Processing..."
+                    : `Pay ${selectedType?.cost} with Paystack`}
                 </button>
               </div>
             </div>
@@ -441,25 +661,49 @@ export default function BookCall() {
           <div className="bookcall__body">
             <h3>Review Your Booking</h3>
             <div className="bookcall__review-panel">
-              <div className="review-item"><strong>Name:</strong> {form.name}</div>
-              <div className="review-item"><strong>Email:</strong> {form.email}</div>
-              <div className="review-item"><strong>Device:</strong> {form.device || "N/A"}</div>
-              <div className="review-item"><strong>Service Type:</strong> {SUPPORT_TYPES.find(t => t.id === supportType)?.title}</div>
-              <div className="review-item"><strong>Date & Time:</strong> {selectedLabel} at {selectedTime}</div>
-              {form.issue && <div className="review-item"><strong>Issue:</strong> "{form.issue}"</div>}
+              <div className="review-item">
+                <strong>Name:</strong> {form.name}
+              </div>
+              <div className="review-item">
+                <strong>Email:</strong> {form.email}
+              </div>
+              <div className="review-item">
+                <strong>Device:</strong> {form.device || "N/A"}
+              </div>
+              <div className="review-item">
+                <strong>Service Type:</strong>{" "}
+                {SUPPORT_TYPES.find((t) => t.id === supportType)?.title}
+              </div>
+              <div className="review-item">
+                <strong>Date & Time:</strong> {selectedLabel} at {selectedTime}
+              </div>
+              {form.issue && (
+                <div className="review-item">
+                  <strong>Issue:</strong> "{form.issue}"
+                </div>
+              )}
             </div>
 
             {submitError && <p className="bookcall__error">{submitError}</p>}
 
-            <div className="bookcall__form-actions" style={{ marginTop: '25px' }}>
-              <button className="bookcall__btn bookcall__btn--ghost" onClick={handleBackStep} disabled={submitting}>Back</button>
-              <button className="bookcall__btn bookcall__btn--primary" onClick={handleSubmit} disabled={submitting}>
+            <div
+              className="bookcall__form-actions"
+              style={{ marginTop: "25px" }}>
+              <button
+                className="bookcall__btn bookcall__btn--ghost"
+                onClick={handleBackStep}
+                disabled={submitting}>
+                Back
+              </button>
+              <button
+                className="bookcall__btn bookcall__btn--primary"
+                onClick={handleSubmit}
+                disabled={submitting}>
                 {submitting ? "Confirming..." : "Confirm Booking"}
               </button>
             </div>
           </div>
         )}
-
       </div>
     </div>
   );

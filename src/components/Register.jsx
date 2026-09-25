@@ -14,60 +14,57 @@ import "./css/Register.css";
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-const [formData, setFormData] = useState({
-  first_name: "",
-  last_name: "",
-  email: "",
-  phone: "",
-  password: "",
-  confirmPassword: "",
-});
-
-const handleChange = (e) => {
-  setFormData({
-    ...formData,
-    [e.target.name]: e.target.value,
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
-};
 
-const handleRegister = async (e) => {
-  e.preventDefault();
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-  if (formData.password !== formData.confirmPassword) {
-    alert("Passwords do not match.");
-    return;
-  }
+  const handleRegister = async (e) => {
+    e.preventDefault();
 
-  try {
-    setLoading(true);
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
 
-    const response = await axios.post(
-      "https://fixer-backend-7mng.onrender.com/api/users/register",
-      {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone,
-        password: formData.password,
-      }
-    );
+    try {
+      setLoading(true);
 
-    alert(response.data.message);
+      const response = await axios.post(
+        "https://fixer-backend-7mng.onrender.com/api/users/register",
+        {
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+        },
+      );
 
-    navigate("/login");
-  } catch (err) {
-    alert(
-      err.response?.data?.message ||
-        "Registration Failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      alert(response.data.message);
+
+      navigate("/login");
+    } catch (err) {
+      alert(err.response?.data?.message || "Registration Failed");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="register-page">
       {/* LEFT PANEL */}
@@ -78,7 +75,9 @@ const handleRegister = async (e) => {
           </Link>
 
           <div className="brand">
-            <h1>Join <img src={logo} alt="Fixer Logo" className="logo" /></h1>
+            <h1>
+              Join <img src={logo} alt="Fixer Logo" className="logo" />
+            </h1>
 
             <p>
               Create an account to access remote computer support, schedule
@@ -116,54 +115,53 @@ const handleRegister = async (e) => {
           <p>Fill in your details to get started.</p>
 
           <form className="register-form" onSubmit={handleRegister}>
-
             <div className="row">
               <div className="input-group">
                 <label>First Name</label>
                 <input
-  type="text"
-  name="first_name"
-  placeholder="John"
-  value={formData.first_name}
-  onChange={handleChange}
-  required
-/>
+                  type="text"
+                  name="first_name"
+                  placeholder="John"
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
 
               <div className="input-group">
                 <label>Last Name</label>
                 <input
-  type="text"
-  name="last_name"
-  placeholder="Doe"
-  value={formData.last_name}
-  onChange={handleChange}
-  required
-/>
+                  type="text"
+                  name="last_name"
+                  placeholder="Doe"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             </div>
 
             <div className="input-group">
               <label>Email Address</label>
               <input
-  type="email"
-  name="email"
-  placeholder="john@example.com"
-  value={formData.email}
-  onChange={handleChange}
-  required
-/>
+                type="email"
+                name="email"
+                placeholder="john@example.com"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="input-group">
               <label>Phone Number</label>
               <input
-  type="tel"
-  name="phone"
-  placeholder="+234..."
-  value={formData.phone}
-  onChange={handleChange}
-/>
+                type="tel"
+                name="phone"
+                placeholder="+234..."
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="input-group">
@@ -171,26 +169,19 @@ const handleRegister = async (e) => {
 
               <div className="password-input">
                 <input
-  type={showPassword ? "text" : "password"}
-  name="password"
-  placeholder="Create password"
-  value={formData.password}
-  onChange={handleChange}
-  required
-/>
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Create password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
 
                 <button
                   type="button"
                   className="toggle-password"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
-                >
-                  {showPassword ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
+                  onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
             </div>
@@ -200,26 +191,19 @@ const handleRegister = async (e) => {
 
               <div className="password-input">
                 <input
-  type={showConfirm ? "text" : "password"}
-  name="confirmPassword"
-  placeholder="Confirm password"
-  value={formData.confirmPassword}
-  onChange={handleChange}
-  required
-/>
+                  type={showConfirm ? "text" : "password"}
+                  name="confirmPassword"
+                  placeholder="Confirm password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                />
 
                 <button
                   type="button"
                   className="toggle-password"
-                  onClick={() =>
-                    setShowConfirm(!showConfirm)
-                  }
-                >
-                  {showConfirm ? (
-                    <FaEyeSlash />
-                  ) : (
-                    <FaEye />
-                  )}
+                  onClick={() => setShowConfirm(!showConfirm)}>
+                  {showConfirm ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
             </div>
@@ -233,13 +217,9 @@ const handleRegister = async (e) => {
               </label>
             </div>
 
-           <button
-  type="submit"
-  className="register-btn"
-  disabled={loading}
->
-  {loading ? "Creating Account..." : "Create Account"}
-</button>
+            <button type="submit" className="register-btn" disabled={loading}>
+              {loading ? "Creating Account..." : "Create Account"}
+            </button>
           </form>
 
           <div className="divider">

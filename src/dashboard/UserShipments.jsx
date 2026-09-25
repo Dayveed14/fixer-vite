@@ -3,7 +3,8 @@ import axios from "axios";
 import "./AdminArticles.css";
 
 const API_BASE_URL =
-import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 const API = `${API_BASE_URL}/api/shipments/user`;
 
 // Slugs match the stages shown on the customer-facing tracking timeline
@@ -50,7 +51,7 @@ export default function UserShipments() {
 
       // Get this user's shipments using their email
       const { data } = await axios.get(
-        `${API}/${encodeURIComponent(user.email)}`
+        `${API}/${encodeURIComponent(user.email)}`,
       );
 
       setShipments(data);
@@ -71,22 +72,12 @@ export default function UserShipments() {
       shipments.filter(
         (s) =>
           (status === "all" || s.status === status) &&
-          (
-            (s.reference || "")
-              .toLowerCase()
-              .includes(search.toLowerCase()) ||
-            (s.name || "")
-              .toLowerCase()
-              .includes(search.toLowerCase()) ||
-            (s.email || "")
-              .toLowerCase()
-              .includes(search.toLowerCase()) ||
-            (s.device || "")
-              .toLowerCase()
-              .includes(search.toLowerCase())
-          )
+          ((s.reference || "").toLowerCase().includes(search.toLowerCase()) ||
+            (s.name || "").toLowerCase().includes(search.toLowerCase()) ||
+            (s.email || "").toLowerCase().includes(search.toLowerCase()) ||
+            (s.device || "").toLowerCase().includes(search.toLowerCase())),
       ),
-    [shipments, search, status]
+    [shipments, search, status],
   );
 
   const updateStatus = async (id, newStatus) => {
@@ -98,11 +89,7 @@ export default function UserShipments() {
       });
 
       setShipments((prev) =>
-        prev.map((s) =>
-          s.id === id
-            ? { ...s, status: newStatus }
-            : s
-        )
+        prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),
       );
     } catch (err) {
       console.error(err);
@@ -132,8 +119,7 @@ export default function UserShipments() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="form-select"
-        >
+          className="form-select">
           <option value="all">All Statuses</option>
 
           {STATUS_OPTIONS.map((s) => (
@@ -167,9 +153,7 @@ export default function UserShipments() {
                 <Fragment key={s.id}>
                   <tr>
                     <td>
-                      <span className="article-title">
-                        {s.reference}
-                      </span>
+                      <span className="article-title">{s.reference}</span>
                     </td>
 
                     <td>
@@ -184,46 +168,26 @@ export default function UserShipments() {
 
                     <td>
                       {s.pickup_date
-                        ? new Date(
-                            s.pickup_date
-                          ).toLocaleDateString()
+                        ? new Date(s.pickup_date).toLocaleDateString()
                         : ""}
                       <br />
                       <small>{s.pickup_time}</small>
                     </td>
 
-                    <td>
-                      ₦
-                      {Number(
-                        s.fee_amount
-                      ).toLocaleString()}
-                    </td>
+                    <td>₦{Number(s.fee_amount).toLocaleString()}</td>
 
-                    <td>
-                       {s.status}
-                    </td>
+                    <td>{s.status}</td>
 
-                    <td>
-                      {new Date(
-                        s.created_at
-                      ).toLocaleDateString()}
-                    </td>
+                    <td>{new Date(s.created_at).toLocaleDateString()}</td>
 
                     <td>
                       <div className="article-actions">
                         <button
                           className="article-view"
                           onClick={() =>
-                            setExpandedId(
-                              expandedId === s.id
-                                ? null
-                                : s.id
-                            )
-                          }
-                        >
-                          {expandedId === s.id
-                            ? "Hide"
-                            : "View"}
+                            setExpandedId(expandedId === s.id ? null : s.id)
+                          }>
+                          {expandedId === s.id ? "Hide" : "View"}
                         </button>
                       </div>
                     </td>
@@ -235,42 +199,32 @@ export default function UserShipments() {
                         <div
                           style={{
                             padding: "12px 16px",
-                          }}
-                        >
+                          }}>
                           <p>
-                            <strong>Phone:</strong>{" "}
-                            {s.phone}
+                            <strong>Phone:</strong> {s.phone}
                           </p>
 
                           <p>
-                            <strong>Fault:</strong>{" "}
-                            {s.fault}
+                            <strong>Fault:</strong> {s.fault}
                           </p>
 
                           <p>
-                            <strong>Address:</strong>{" "}
-                            {s.address}, {s.city}
+                            <strong>Address:</strong> {s.address}, {s.city}
                           </p>
 
                           {s.notes && (
                             <p>
-                              <strong>Notes:</strong>{" "}
-                              {s.notes}
+                              <strong>Notes:</strong> {s.notes}
                             </p>
                           )}
 
                           <p>
-                            <strong>
-                              Payment Reference:
-                            </strong>{" "}
+                            <strong>Payment Reference:</strong>{" "}
                             {s.payment_reference}
                           </p>
 
                           <p>
-                            <strong>
-                              Payment Status:
-                            </strong>{" "}
-                            {s.payment_status}
+                            <strong>Payment Status:</strong> {s.payment_status}
                           </p>
                         </div>
                       </td>
@@ -282,9 +236,7 @@ export default function UserShipments() {
           </table>
 
           {filtered.length === 0 && (
-            <p style={{ padding: 16 }}>
-              No shipments found.
-            </p>
+            <p style={{ padding: 16 }}>No shipments found.</p>
           )}
         </div>
       )}

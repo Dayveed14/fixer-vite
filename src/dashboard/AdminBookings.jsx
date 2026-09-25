@@ -3,7 +3,9 @@ import axios from "axios";
 import { FaCalendarAlt, FaUserTie } from "react-icons/fa";
 import "./AdminBookings.css";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -19,7 +21,7 @@ const AdminBookings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [allBookings, setAllBookings] = useState([]);
-  
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -87,60 +89,63 @@ const AdminBookings = () => {
 
   return (
     <div className="admin-bookings">
-
       <section className="admin-bookings-header">
         <div>
           <h1>Pending Bookings</h1>
-          <p>Assign a technician to confirm each booking and create its repair ticket.</p>
+          <p>
+            Assign a technician to confirm each booking and create its repair
+            ticket.
+          </p>
         </div>
       </section>
 
       {error && <p className="admin-bookings-error">{error}</p>}
 
       {bookings.length === 0 ? (
-
         <p className="dashboard-empty">No pending bookings right now.</p>
-
       ) : (
-
         <div className="admin-bookings-list">
-
           {bookings.map((booking) => (
-
             <div className="admin-booking-card" key={booking.id}>
-
               <div className="admin-booking-info">
-
                 <FaCalendarAlt className="admin-booking-icon" />
 
                 <div>
                   <h3>{booking.customer_name}</h3>
 
                   <p>
-                    {SUPPORT_TYPE_LABELS[booking.support_type] || booking.support_type}
+                    {SUPPORT_TYPE_LABELS[booking.support_type] ||
+                      booking.support_type}
                     {" • "}
                     {booking.booking_date} at {booking.booking_time}
                   </p>
 
-                  {booking.device && <p className="admin-booking-device">Device: {booking.device}</p>}
-
-                  {booking.issue_summary && (
-                    <p className="admin-booking-issue">"{booking.issue_summary}"</p>
+                  {booking.device && (
+                    <p className="admin-booking-device">
+                      Device: {booking.device}
+                    </p>
                   )}
 
-                  <span className="admin-booking-ref">{booking.booking_reference}</span>
-                </div>
+                  {booking.issue_summary && (
+                    <p className="admin-booking-issue">
+                      "{booking.issue_summary}"
+                    </p>
+                  )}
 
+                  <span className="admin-booking-ref">
+                    {booking.booking_reference}
+                  </span>
+                </div>
               </div>
 
               <div className="admin-booking-actions">
-
                 <div className="admin-booking-select-wrap">
                   <FaUserTie />
                   <select
                     value={selectedTechByBooking[booking.id] || ""}
-                    onChange={(e) => handleTechSelect(booking.id, e.target.value)}
-                  >
+                    onChange={(e) =>
+                      handleTechSelect(booking.id, e.target.value)
+                    }>
                     <option value="" disabled>
                       Select technician
                     </option>
@@ -155,35 +160,28 @@ const AdminBookings = () => {
                 <button
                   className="admin-booking-assign-btn"
                   onClick={() => handleAssign(booking.id)}
-                  disabled={!selectedTechByBooking[booking.id] || assigningId === booking.id}
-                >
+                  disabled={
+                    !selectedTechByBooking[booking.id] ||
+                    assigningId === booking.id
+                  }>
                   {assigningId === booking.id ? "Assigning..." : "Assign"}
                 </button>
-
               </div>
-
             </div>
-
           ))}
-
         </div>
-
       )}
 
-
-            <hr className="admin-bookings-divider" />
+      <hr className="admin-bookings-divider" />
 
       <section className="admin-bookings-table-section">
-
         <div className="admin-bookings-table-header">
           <h2>All Bookings</h2>
           <p>View every booking in the system.</p>
         </div>
 
         <div className="admin-bookings-table-wrapper">
-
           <table>
-
             <thead>
               <tr>
                 <th>Reference</th>
@@ -198,11 +196,8 @@ const AdminBookings = () => {
             </thead>
 
             <tbody>
-
               {allBookings.map((booking) => (
-
                 <tr key={booking.id}>
-
                   <td>{booking.booking_reference}</td>
 
                   <td>{booking.customer_name}</td>
@@ -218,9 +213,7 @@ const AdminBookings = () => {
 
                   <td>
                     {booking.technician_name || (
-                      <span className="pending-tech">
-                        Unassigned
-                      </span>
+                      <span className="pending-tech">Unassigned</span>
                     )}
                   </td>
 
@@ -228,33 +221,23 @@ const AdminBookings = () => {
                     <span
                       className={`booking-status ${booking.status
                         .replace(/\s+/g, "")
-                        .toLowerCase()}`}
-                    >
+                        .toLowerCase()}`}>
                       {booking.status}
                     </span>
                   </td>
 
                   <td>
                     <span
-                      className={`payment-status ${booking.payment_status
-                        ?.toLowerCase()}`}
-                    >
+                      className={`payment-status ${booking.payment_status?.toLowerCase()}`}>
                       {booking.payment_status || "Pending"}
                     </span>
                   </td>
-
                 </tr>
-
               ))}
-
             </tbody>
-
           </table>
-
         </div>
-
       </section>
-
     </div>
   );
 };

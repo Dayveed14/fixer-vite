@@ -1,9 +1,28 @@
-
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {FaBars,FaTimes,FaTachometerAlt,FaTicketAlt,FaRobot,FaBoxOpen,FaComments,FaCog,FaBell,FaSearch,FaSignOutAlt,FaUserCircle,FaChevronDown,FaUsers,FaUserCog,
-  FaCalendarAlt,FaTruck, FaNewspaper, FaVideo, FaMoneyBillWave, FaQuestionCircle
+import {
+  FaBars,
+  FaTimes,
+  FaTachometerAlt,
+  FaTicketAlt,
+  FaRobot,
+  FaBoxOpen,
+  FaComments,
+  FaCog,
+  FaBell,
+  FaSearch,
+  FaSignOutAlt,
+  FaUserCircle,
+  FaChevronDown,
+  FaUsers,
+  FaUserCog,
+  FaCalendarAlt,
+  FaTruck,
+  FaNewspaper,
+  FaVideo,
+  FaMoneyBillWave,
+  FaQuestionCircle,
 } from "react-icons/fa";
 
 import logo from "../components/img/logo.png";
@@ -21,7 +40,9 @@ const AdminLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://fixer-backend-7mng.onrender.com";
+  const API_BASE_URL =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://fixer-backend-7mng.onrender.com";
 
   const loadNotifications = async () => {
     if (!user?.id) return;
@@ -91,114 +112,102 @@ const AdminLayout = () => {
     navigate("/login");
   };
 
-const menuItems = [
-  {
-    name: "Dashboard",
-    path: "/admindashboard",
-    icon: <FaTachometerAlt />,
-  },
-  {
-    name: "Users",
-    path: "/admin/users",
-    icon: <FaUsers />,
-  },
-  {
-    name: "Technicians",
-    path: "/admin/technicians",
-    icon: <FaUserCog />,
-  },
-  {
-    name: "Bookings",
-    path: "/admin/bookings",
-    icon: <FaCalendarAlt />,
-  },
-  {
-    name: "Support Tickets",
-    path: "/admintickets",
-    icon: <FaTicketAlt />,
-  },
-  {
-    name: "Shipments",
-    path: "/adminshipments",
-    icon: <FaTruck />,
-  },
-  {
-    name: "Articles",
-    path: "/adminarticles",
-    icon: <FaNewspaper />,
-  },
-  {
-    name: "DIY Videos",
-    path: "/adminvideos",
-    icon: <FaVideo />,
-  },
-  {
-    name: "Smart Diagnosis",
-    path: "/admin/diagnosis",
-    icon: <FaRobot />,
-  },
-  {
-    name: "Pricing",
-    path: "/adminpricing",
-    icon: <FaMoneyBillWave />,
-  },
-  {
-    name: "FAQ",
-    path: "/adminfaq",
-    icon: <FaQuestionCircle />,
-  },
-  {
-    name: "Settings",
-    path: "/admin/settings",
-    icon: <FaCog />,
-  },
-];
+  const menuItems = [
+    {
+      name: "Dashboard",
+      path: "/admindashboard",
+      icon: <FaTachometerAlt />,
+    },
+    {
+      name: "Users",
+      path: "/admin/users",
+      icon: <FaUsers />,
+    },
+    {
+      name: "Technicians",
+      path: "/admin/technicians",
+      icon: <FaUserCog />,
+    },
+    {
+      name: "Bookings",
+      path: "/admin/bookings",
+      icon: <FaCalendarAlt />,
+    },
+    {
+      name: "Support Tickets",
+      path: "/admintickets",
+      icon: <FaTicketAlt />,
+    },
+    {
+      name: "Shipments",
+      path: "/adminshipments",
+      icon: <FaTruck />,
+    },
+    {
+      name: "Articles",
+      path: "/adminarticles",
+      icon: <FaNewspaper />,
+    },
+    {
+      name: "DIY Videos",
+      path: "/adminvideos",
+      icon: <FaVideo />,
+    },
+    {
+      name: "Smart Diagnosis",
+      path: "/admin/diagnosis",
+      icon: <FaRobot />,
+    },
+    {
+      name: "Pricing",
+      path: "/adminpricing",
+      icon: <FaMoneyBillWave />,
+    },
+    {
+      name: "FAQ",
+      path: "/adminfaq",
+      icon: <FaQuestionCircle />,
+    },
+    {
+      name: "Settings",
+      path: "/admin/settings",
+      icon: <FaCog />,
+    },
+  ];
 
   return (
     <div className="layout">
-
       {/* Sidebar */}
 
-      <aside
-        className={`sidebar ${
-          sidebarOpen ? "show-sidebar" : ""
-        }`}
-      >
+      <aside className={`sidebar ${sidebarOpen ? "show-sidebar" : ""}`}>
         <div className="logo">
+          <Link to="/">
+            {" "}
+            <img src={logo} alt="Fixer Logo" className="logo" />
+          </Link>
 
-         <Link to="/" > <img src={logo} alt="Fixer Logo" className="logo" /></Link>
-
-        <button
-          className="menu-btn"
-          onClick={() => setSidebarOpen(prev => !prev)}>
-          {sidebarOpen ? <FaTimes /> : <FaBars />}
-        </button>
-
+          <button
+            className="menu-btn"
+            onClick={() => setSidebarOpen((prev) => !prev)}>
+            {sidebarOpen ? <FaTimes /> : <FaBars />}
+          </button>
         </div>
 
         <nav>
-
           {menuItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               className={`nav-link ${
-                location.pathname === item.path
-                  ? "active-link"
-                  : ""
-              }`}
-            >
+                location.pathname === item.path ? "active-link" : ""
+              }`}>
               {item.icon}
               <span>{item.name}</span>
             </Link>
           ))}
-
         </nav>
 
-        <button
-          className="logout-btn"
-          onClick={logout}
-        >
+        <button className="logout-btn" onClick={logout}>
           <FaSignOutAlt />
           Logout
         </button>
@@ -207,48 +216,39 @@ const menuItems = [
       {/* Main */}
 
       <div className="main">
-
         {/* Topbar */}
 
         <header className="topbar">
-
-          <button
-            className="menu-btn"
-            onClick={() =>
-              setSidebarOpen(true)
-            }
-          >
+          <button className="menu-btn" onClick={() => setSidebarOpen(true)}>
             <FaBars />
           </button>
 
           {/* Search */}
 
           <div className="search-box">
-
             <FaSearch />
 
             <input
               type="text"
               placeholder="Search users, articles, tickets..."
             />
-
           </div>
 
           {/* Right */}
 
           <div className="top-right">
-
             <div className="notif-wrapper">
               <button
                 className="icon-btn"
                 onClick={() => {
                   setNotifOpen((prev) => !prev);
                   setProfileMenu(false);
-                }}
-              >
+                }}>
                 <FaBell />
                 {unreadCount > 0 && (
-                  <span className="badge">{unreadCount > 9 ? "9+" : unreadCount}</span>
+                  <span className="badge">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
                 )}
               </button>
 
@@ -264,7 +264,10 @@ const menuItems = [
                   </div>
 
                   {notifFetchError ? (
-                    <p className="notif-empty notif-error">Couldn't load notifications. Check your connection and try again.</p>
+                    <p className="notif-empty notif-error">
+                      Couldn't load notifications. Check your connection and try
+                      again.
+                    </p>
                   ) : notifications.length === 0 ? (
                     <p className="notif-empty">No notifications yet.</p>
                   ) : (
@@ -273,8 +276,7 @@ const menuItems = [
                         <button
                           key={notif.id}
                           className={`notif-item ${notif.is_read ? "" : "unread"}`}
-                          onClick={() => markOneRead(notif)}
-                        >
+                          onClick={() => markOneRead(notif)}>
                           <span className="notif-title">{notif.title}</span>
                           <span className="notif-message">{notif.message}</span>
                           <span className="notif-time">
@@ -293,8 +295,7 @@ const menuItems = [
               onClick={() => {
                 setProfileMenu(!profileMenu);
                 setNotifOpen(false);
-              }}
-            >
+              }}>
               <FaUserCircle className="avatar" />
 
               <div className="profile-info">
@@ -306,26 +307,15 @@ const menuItems = [
 
               {profileMenu && (
                 <div className="dropdown">
+                  <Link to="/profile">My Profile</Link>
 
-                  <Link to="/profile">
-                    My Profile
-                  </Link>
+                  <Link to="/admin/settings">Settings</Link>
 
-                  <Link to="/admin/settings">
-                    Settings
-                  </Link>
-
-                  <button onClick={logout}>
-                    Logout
-                  </button>
-
+                  <button onClick={logout}>Logout</button>
                 </div>
               )}
-
             </div>
-
           </div>
-
         </header>
 
         {/* Page Content */}
@@ -335,9 +325,7 @@ const menuItems = [
             <Outlet />
           </RouteErrorBoundary>
         </main>
-
       </div>
-
     </div>
   );
 };
