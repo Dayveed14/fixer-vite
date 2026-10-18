@@ -1,0 +1,115 @@
+/* Technician job lists */
+.tj-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.tj-chip {
+  border: 1px solid var(--border, #e5e7f0);
+  background: #fff;
+  color: var(--text, #1a1d2e);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tj-chip[aria-pressed="true"] {
+  background: var(--blue, #4f6af0);
+  border-color: var(--blue, #4f6af0);
+  color: #fff;
+}
+
+.tj-chip .count { opacity: 0.7; margin-left: 4px; }
+
+.tj-chip:focus-visible { outline: 3px solid rgba(79, 106, 240, 0.4); outline-offset: 2px; }
+
+.tj-table { width: 100%; }
+
+.tj-row--done td,
+.tj-row--closed td { opacity: 0.72; }
+
+.tj-kind {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 2px 8px;
+  margin-bottom: 4px;
+}
+
+.tj-kind--appointment { background: #eef1fe; color: #3451d1; }
+.tj-kind--repair { background: #fff3dc; color: #8a5400; }
+.tj-kind--ticket { background: #eef2f6; color: #475569; }
+
+/* (Not ".badge": the layouts use .badge for the notification counter.) */
+.tj-status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+.tj-status--active { background: #eef1fe; color: #3451d1; }
+.tj-status--done { background: #e8f7f0; color: #1f7a54; }
+.tj-status--closed { background: #f3f4f7; color: #5a5f7a; }
+
+/* Some page stylesheets style every <thead> globally; keep ours plain. */
+.tj-table thead,
+.tj-table thead tr {
+  background: transparent;
+}
+
+.tj-table thead th {
+  background: transparent;
+  color: #5a5f7a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border, #e5e7f0);
+}
+
+.tj-table td { vertical-align: top; padding: 14px 12px; }
+.tj-table td:last-child { min-width: 260px; }
+
+.tj-actions { display: flex; flex-direction: column; gap: 8px; }
+
+.tj-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: #f5f7ff;
+  border: 1px solid #dfe5fd;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.86rem;
+}
+
+.tj-panel--column { flex-direction: column; align-items: stretch; }
+
+.tj-panel textarea {
+  font: inherit;
+  border: 1px solid var(--border, #e5e7f0);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.tj-phone {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.tj-link { word-break: break-all; }
+
+.tj-repair-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted, #5a5f7a);
+  white-space: pre-line;
+}

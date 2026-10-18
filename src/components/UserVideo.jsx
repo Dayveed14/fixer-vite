@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../api/client";
+import api, { getStoredUser } from "../api/client";
+import { toRichHtml } from "../utils/richText";
 import "../dashboard/Article.css";
 import Navbar from "./components/Navbar";
 import SEO from "./SEO";
@@ -27,7 +28,14 @@ export default function UserVideo() {
   useEffect(() => {
     const loadVideo = async () => {
       try {
-        const { data } = await api.get(`${API}/${slug}`);
+        let data;
+        try {
+          ({ data } = await api.get(`${API}/${encodeURIComponent(slug)}`));
+        } catch (publicError) {
+          // Drafts aren't public. Admins can still preview them here.
+          if (publicError.status !== 404 || getStoredUser()?.role !== "admin") throw publicError;
+          ({ data } = await api.get(`/api/diy-videos/manage/${encodeURIComponent(slug)}`));
+        }
         setVideo(data);
       } catch (err) {
         console.error(err);
@@ -112,7 +120,7 @@ export default function UserVideo() {
             <div
               className="article-body"
               dangerouslySetInnerHTML={{
-                __html: video.content,
+                __html: toRichHtml(video.content),
               }}
             />
           </div>

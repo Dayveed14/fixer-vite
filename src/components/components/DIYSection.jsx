@@ -2,6 +2,7 @@ import "../css/DIYSection.css";
 import { useState, useEffect } from "react";
 import api from "../../api/client";
 import { Link } from "react-router-dom";
+import CoverImage from "../decor/CoverImage";
 
 const IconBook = () => (
   <svg
@@ -130,10 +131,13 @@ export default function DIYSection() {
         <div className="diy__layout">
           <Link to={linkTo(featured)} className="diy__featured">
             <div className="diy__featured-img-wrap">
-              <img
+              <CoverImage
                 src={thumbOf(featured)}
                 alt={featured.title}
                 className="diy__featured-img"
+                coverClassName="diy__featured-img"
+                category={featured.category}
+                title={featured.title}
               />
               {tab === "videos" && (
                 <div className="diy__play-btn">
@@ -163,10 +167,13 @@ export default function DIYSection() {
             {related.map((item) => (
               <div className="diy__related-item" key={item.id}>
                 <div className="diy__related-img-wrap">
-                  <img
+                  <CoverImage
                     src={thumbOf(item)}
                     alt={item.title}
                     className="diy__related-img"
+                    coverClassName="diy__related-img tech-cover--mini"
+                    category={item.category}
+                    title={item.title}
                   />
                   {tab === "videos" && (
                     <div className="diy__play-btn diy__play-btn--sm">

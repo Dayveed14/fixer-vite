@@ -6,6 +6,7 @@ import {
   sendQuote,
   updateShipmentStatus,
 } from "../api/shipments.api";
+import api from "../api/client";
 import ShipmentTimeline from "../components/shipments/ShipmentTimeline";
 import { SHIPMENT_STEPS, naira, statusLabel } from "../utils/shipmentStatus";
 import "./AdminArticles.css";
@@ -16,7 +17,7 @@ const ACTION_LABELS = {
   courier_assigned: "Courier assigned",
   device_collected: "Device collected",
   diagnosis: "Start diagnosis",
-  repair: "Start repair",
+  repair: "Assign technician & start repair",
   quality_check: "Quality check",
   ready_for_delivery: "Ready for delivery",
   delivered: "Mark delivered",
@@ -110,6 +111,68 @@ function QuoteModal({ shipment, onClose, onSent }) {
   );
 }
 
+/* ---------- Start repair: choose the technician ---------- */
+function AssignTechnicianModal({ shipment, technicians, onClose, onAssigned }) {
+  const [technicianId, setTechnicianId] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!technicianId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await updateShipmentStatus(shipment.id, "repair", { technician_id: Number(technicianId) });
+      onAssigned();
+    } catch (err) {
+      setError(err.message);
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="shp-modal-backdrop" onClick={(e) => e.target === e.currentTarget && !busy && onClose()}>
+      <form className="shp-modal" role="dialog" aria-modal="true" aria-labelledby="assign-title" onSubmit={submit}>
+        <h2 id="assign-title">Start repair — {shipment.reference}</h2>
+        <p>
+          The technician gets it in their Repairs list and marks it repaired when done. You can then
+          move it to quality check.
+        </p>
+        <div className="shp-field">
+          <label htmlFor="assign-tech">Technician</label>
+          <select
+            id="assign-tech"
+            value={technicianId}
+            onChange={(e) => setTechnicianId(e.target.value)}
+            autoFocus>
+            <option value="">Choose a technician</option>
+            {technicians.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.first_name} {t.last_name}
+              </option>
+            ))}
+          </select>
+          {technicians.length === 0 && <small>No technicians found. Add one under Technicians.</small>}
+        </div>
+        {error && (
+          <p className="shp-error" role="alert">
+            {error}
+          </p>
+        )}
+        <div className="shp-actions">
+          <button type="submit" className="shp-btn" disabled={!technicianId || busy}>
+            {busy ? "Assigning…" : "Assign and start repair"}
+          </button>
+          <button type="button" className="shp-btn shp-btn--ghost" onClick={onClose} disabled={busy}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
 function StatusActions({ shipment, busy, onMove, onQuote }) {
   const actions = shipment.next_actions || { statuses: [] };
 
@@ -130,6 +193,10 @@ function StatusActions({ shipment, busy, onMove, onQuote }) {
         </button>
       ))}
       {actions.awaiting_customer && <small>Waiting for the customer to answer the quote.</small>}
+      {actions.awaiting_technician && <small>Waiting for the technician to mark it repaired.</small>}
+      {shipment.status === "repair" && shipment.repair_outcome === "unrepairable" && (
+        <small>The technician couldn't repair it — send it back.</small>
+      )}
     </div>
   );
 }
@@ -145,6 +212,8 @@ export default function AdminShipments() {
   const [details, setDetails] = useState({}); // id -> shipment with events
   const [busyId, setBusyId] = useState(null);
   const [quoteFor, setQuoteFor] = useState(null);
+  const [assignFor, setAssignFor] = useState(null);
+  const [technicians, setTechnicians] = useState([]);
   const [actionError, setActionError] = useState(null);
 
   const load = useCallback(async () => {
@@ -169,7 +238,16 @@ export default function AdminShipments() {
 
   useEffect(() => {
     load();
+    api
+      .get("/api/users/technicians")
+      .then(({ data }) => setTechnicians(Array.isArray(data) ? data : []))
+      .catch(() => setTechnicians([]));
   }, [load]);
+
+  const technicianName = (id) => {
+    const t = technicians.find((x) => Number(x.id) === Number(id));
+    return t ? `${t.first_name} ${t.last_name}` : id ? `#${id}` : "—";
+  };
 
   useEffect(() => {
     const fromLink = Number(searchParams.get("open"));
@@ -195,6 +273,10 @@ export default function AdminShipments() {
   };
 
   const move = async (shipment, next) => {
+    if (next === "repair") {
+      setAssignFor(shipment);
+      return;
+    }
     if (next === "cancelled" && !window.confirm(`Cancel pickup ${shipment.reference}?`)) return;
     setBusyId(shipment.id);
     setActionError(null);
@@ -345,6 +427,17 @@ export default function AdminShipments() {
                                     </dd>
                                   </>
                                 )}
+                                {s.technician_id && (
+                                  <>
+                                    <dt>Technician</dt>
+                                    <dd>
+                                      {technicianName(s.technician_id)}
+                                      {s.repair_outcome &&
+                                        ` · ${s.repair_outcome === "repaired" ? "marked repaired" : "couldn't repair"}`}
+                                      {s.repair_note && ` — ${s.repair_note}`}
+                                    </dd>
+                                  </>
+                                )}
                                 {s.delivery_confirm_by && s.status === "ready_for_delivery" && (
                                   <>
                                     <dt>Auto-confirms</dt>
@@ -372,6 +465,19 @@ export default function AdminShipments() {
           </table>
           {filtered.length === 0 && <p style={{ padding: 16 }}>No shipments found.</p>}
         </div>
+      )}
+
+      {assignFor && (
+        <AssignTechnicianModal
+          shipment={assignFor}
+          technicians={technicians}
+          onClose={() => setAssignFor(null)}
+          onAssigned={async () => {
+            const id = assignFor.id;
+            setAssignFor(null);
+            await refresh(id);
+          }}
+        />
       )}
 
       {quoteFor && (

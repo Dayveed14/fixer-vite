@@ -22,9 +22,10 @@ export const getShipment = (idOrReference) =>
     .get(`/api/shipments/${encodeURIComponent(idOrReference)}`)
     .then((r) => r.data);
 
-export const updateShipmentStatus = (id, status) =>
+/** Admin: next status. Starting a repair needs { technician_id }. */
+export const updateShipmentStatus = (id, status, extra = {}) =>
   api
-    .patch(`/api/shipments/${encodeURIComponent(id)}/status`, { status })
+    .patch(`/api/shipments/${encodeURIComponent(id)}/status`, { status, ...extra })
     .then((r) => r.data);
 
 /** Staff: send the diagnosis + repair cost (moves to waiting for approval). */

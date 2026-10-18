@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import api from "../api/client";
+import api, { getStoredUser } from "../api/client";
+import { toRichHtml } from "../utils/richText";
+import CoverImage from "./decor/CoverImage";
+import ReadingProgress from "./decor/ReadingProgress";
 import "../dashboard/Article.css";
 import Navbar from "./components/Navbar";
 import SEO from "./SEO";
@@ -30,7 +33,14 @@ export default function UserArticle() {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        const { data } = await api.get(`${API}/${slug}`);
+        let data;
+        try {
+          ({ data } = await api.get(`${API}/${encodeURIComponent(slug)}`));
+        } catch (publicError) {
+          // Drafts aren't public. Admins can still preview them here.
+          if (publicError.status !== 404 || getStoredUser()?.role !== "admin") throw publicError;
+          ({ data } = await api.get(`/api/articles/manage/${encodeURIComponent(slug)}`));
+        }
         setArticle(data);
       } catch (err) {
         console.error(err);
@@ -91,16 +101,20 @@ export default function UserArticle() {
         }}
       />
       <Navbar />
+      <ReadingProgress />
       <div className="article-page">
         <Link to="/blog" className="back-btn">
           ← Back to Articles
         </Link>
 
         <div className="article-container">
-          <img
+          <CoverImage
             src={article.hero_image}
-            alt={article.title}
+            alt={article.image_alt || article.title}
             className="hero-image"
+            coverClassName="article-cover"
+            category={article.category}
+            title={article.title}
           />
 
           <div className="article-content">
@@ -117,7 +131,7 @@ export default function UserArticle() {
             <div
               className="article-body"
               dangerouslySetInnerHTML={{
-                __html: article.content,
+                __html: toRichHtml(article.content),
               }}
             />
           </div>

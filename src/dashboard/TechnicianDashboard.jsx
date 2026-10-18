@@ -14,6 +14,7 @@ import "./TechnicianDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
+import CircuitArt from "../components/decor/CircuitArt";
 
 
 const SUPPORT_TYPE_LABELS = {
@@ -148,6 +149,7 @@ const TechnicianDashboard = () => {
       {/* Banner */}
 
       <section className="tech-banner">
+        <CircuitArt tone="light" className="banner-circuit" />
         <div>
           <h1>
             Welcome Back{user?.first_name ? `, ${user.first_name}` : ""} 👨‍🔧

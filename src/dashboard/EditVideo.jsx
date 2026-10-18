@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api, { TIMEOUTS } from "../api/client";
 import "./ArticleForm.css";
-import { Editor } from "@tinymce/tinymce-react";
 
 const API = "/api/diy-videos";
 
@@ -31,7 +30,8 @@ export default function EditVideo() {
 
   const loadVideo = async () => {
     try {
-      const { data } = await api.get(`${API}/${id}`);
+      // Admin endpoint: any status, looked up by id.
+      const { data } = await api.get(`${API}/manage/${encodeURIComponent(id)}`);
 
       setForm({
         title: data.title,
@@ -167,30 +167,30 @@ export default function EditVideo() {
           <div className="form-group">
             <label>Excerpt</label>
 
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+            <textarea
+              id="excerpt"
+              name="excerpt"
               value={form.excerpt}
-              onEditorChange={(excerpt) =>
-                setForm((prev) => ({
-                  ...prev,
-                  excerpt,
-                }))
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, excerpt: e.target.value }))
               }
+              rows={4}
+              placeholder="A short summary shown in the video list..."
             />
           </div>
 
           <div className="form-group">
             <label>Description / Instructions</label>
 
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+            <textarea
+              id="content"
+              name="content"
               value={form.content}
-              onEditorChange={(content) =>
-                setForm((prev) => ({
-                  ...prev,
-                  content,
-                }))
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, content: e.target.value }))
               }
+              rows={12}
+              placeholder="Step-by-step instructions to go with the video.\n\nUse blank lines to separate paragraphs."
             />
           </div>
 

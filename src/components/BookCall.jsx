@@ -112,6 +112,7 @@ export default function BookCall() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [bookingReference, setBookingReference] = useState(null);
+  const [meetingUrl, setMeetingUrl] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -214,6 +215,7 @@ export default function BookCall() {
       });
 
       setBookingReference(result.booking_reference);
+      setMeetingUrl(result.meeting_url || null);
       setSubmitted(true);
     } catch (err) {
       // The payment is safe on the server: retrying with the same
@@ -289,6 +291,7 @@ export default function BookCall() {
   const resetForm = () => {
     setSubmitted(false);
     setBookingReference(null);
+    setMeetingUrl(null);
     setStep(1);
     setSelectedDate(null);
     setSelectedTime(null);
@@ -347,26 +350,31 @@ export default function BookCall() {
         <div className="bookcall__action-box">
           {supportType === "voice" && (
             <>
-              <h4>📞 Action Required: Call Us at Appointment Time</h4>
+              <h4>📞 We'll call you</h4>
               <p>
-                Please dial our support number: <strong>+2348093625430</strong>.
-                Your session pin is your registered phone/email.
+                At your appointment time, your technician will call the phone
+                number on your Fixer account (by phone or WhatsApp). Keep your
+                phone nearby.
               </p>
             </>
           )}
           {supportType === "video" && (
             <>
-              <h4>🎥 Google Meet Link Generated</h4>
-              <p>
-                Your secure meeting space:{" "}
-                <a
-                  href="https://meet.google.com/abc-defg-hij"
-                  target="_blank"
-                  rel="noreferrer">
-                  meet.google.com/abc-defg-hij
-                </a>
-                . This link has also been added to your calendar event.
-              </p>
+              <h4>🎥 Your video call link</h4>
+              {meetingUrl ? (
+                <p>
+                  Join here at your appointment time:{" "}
+                  <a href={meetingUrl} target="_blank" rel="noreferrer">
+                    {meetingUrl.replace(/^https?:\/\//, "")}
+                  </a>
+                  . We've emailed it to you too, and it's on your appointment page.
+                </p>
+              ) : (
+                <p>
+                  Your video link will appear on your appointment page before
+                  the session.
+                </p>
+              )}
             </>
           )}
           {supportType === "remote" && (

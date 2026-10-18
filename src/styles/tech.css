@@ -1,0 +1,323 @@
+/* ═════════════════════════════════════════════════════════════════
+   Fixer — techie accents
+   One idea throughout: Fixer is a repair workbench. Blueprint dot
+   grids, circuit-board traces and solder pads in Fixer blue, with a
+   cyan "signal" (FixBot's eye colour) as the only moving accent.
+   ═════════════════════════════════════════════════════════════════ */
+
+:root {
+  --fx-blue: #4f6af0;
+  --fx-blue-deep: #2c3fbf;
+  --fx-navy: #16205e;
+  --fx-cyan: #8fe3ff;
+  --fx-ink: #1a1d2e;
+  --fx-mist: #eef1fe;
+  --fx-grid: radial-gradient(rgba(255, 255, 255, 0.16) 1.2px, transparent 1.2px);
+  --fx-grid-blue: radial-gradient(rgba(79, 106, 240, 0.16) 1.2px, transparent 1.2px);
+
+  /* Small circuit corner (blue) — used on stat cards */
+  --fx-trace-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='80' viewBox='0 0 120 80'%3E%3Cg fill='none' stroke='%234f6af0' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' opacity='.22'%3E%3Cpath d='M120 18H78L64 32H40'/%3E%3Cpath d='M120 46H92V66H70'/%3E%3Cpath d='M106 80V58'/%3E%3C/g%3E%3Cg fill='%234f6af0' opacity='.3'%3E%3Ccircle cx='40' cy='32' r='3'/%3E%3Ccircle cx='70' cy='66' r='3'/%3E%3Ccircle cx='106' cy='58' r='3'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* Circuit strip (white) — used at the foot of the sidebars */
+  --fx-trace-strip: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='200' viewBox='0 0 260 200'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' opacity='.16'%3E%3Cpath d='M0 40H70L90 60H170V30H260'/%3E%3Cpath d='M0 110H40L60 90H120V140H200L220 120H260'/%3E%3Cpath d='M30 200V170H110L130 190H190'/%3E%3Crect x='150' y='150' width='40' height='30' rx='5'/%3E%3C/g%3E%3Cg fill='%23ffffff' opacity='.22'%3E%3Ccircle cx='70' cy='40' r='3.5'/%3E%3Ccircle cx='170' cy='30' r='3.5'/%3E%3Ccircle cx='60' cy='90' r='3.5'/%3E%3Ccircle cx='200' cy='140' r='3.5'/%3E%3Ccircle cx='110' cy='170' r='3.5'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── Circuit art (SVG component) ─────────────────────────────────── */
+.circuit-art { display: block; pointer-events: none; }
+.circuit-art--light { color: rgba(255, 255, 255, 0.55); }
+.circuit-art--brand { color: rgba(79, 106, 240, 0.42); }
+
+.circuit-art__chip rect,
+.circuit-art__chip line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.circuit-art__chip .circuit-art__core {
+  fill: none;
+  stroke: var(--fx-cyan);
+  stroke-width: 2;
+  opacity: 0.9;
+}
+
+.circuit-art--brand .circuit-art__chip .circuit-art__core { stroke: var(--fx-blue); }
+
+.circuit-art__pads circle { fill: currentColor; }
+
+.circuit-art__signal {
+  stroke: var(--fx-cyan);
+  stroke-dasharray: 8 92;
+  stroke-dashoffset: 100;
+  filter: drop-shadow(0 0 4px rgba(143, 227, 255, 0.9));
+  animation: fx-signal 3.6s linear infinite;
+}
+
+.circuit-art--brand .circuit-art__signal {
+  stroke: var(--fx-blue);
+  filter: drop-shadow(0 0 4px rgba(79, 106, 240, 0.6));
+}
+
+.circuit-art__signal--late { animation-delay: 1.8s; }
+
+@keyframes fx-signal {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── Dashboard welcome banners ───────────────────────────────────── */
+.admin-banner,
+.welcome-banner,
+.tech-banner {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.admin-banner::before,
+.welcome-banner::before,
+.tech-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--fx-grid);
+  background-size: 18px 18px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 10%, #000 70%);
+  mask-image: linear-gradient(90deg, transparent 10%, #000 70%);
+  z-index: -1;
+}
+
+.banner-circuit {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(520px, 60%);
+  z-index: -1;
+  opacity: 0.75;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 35%);
+}
+
+/* keep the banner's button readable over the traces */
+.admin-banner button,
+.welcome-banner button,
+.tech-banner button,
+.admin-banner a,
+.welcome-banner a,
+.tech-banner a {
+  box-shadow: 0 8px 24px rgba(10, 20, 80, 0.25);
+}
+
+.admin-banner > *:not(.banner-circuit),
+.welcome-banner > *:not(.banner-circuit),
+.tech-banner > *:not(.banner-circuit) {
+  position: relative;
+}
+
+/* ── Stat cards: a faint circuit corner ──────────────────────────── */
+.admin-stat-card,
+.stat-card,
+.tech-stat-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-stat-card::after,
+.stat-card::after,
+.tech-stat-card::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 84px;
+  height: 46px;
+  background: var(--fx-trace-corner) no-repeat right bottom / 120px 80px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.admin-stat-card > *,
+.stat-card > *,
+.tech-stat-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Sidebars: circuit traces fading in at the bottom ────────────── */
+.sidebar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 220px;
+  background: var(--fx-trace-strip) no-repeat left bottom / 100% auto;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sidebar > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Page titles: a small trace marker under every dashboard title ─ */
+.tech-page-header h1,
+.admin-articles-header h1,
+.shp-page__head h1 {
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.tech-page-header h1::after,
+.admin-articles-header h1::after,
+.shp-page__head h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 56px;
+  height: 8px;
+  background:
+    radial-gradient(circle at 52px 4px, var(--fx-blue) 3.5px, transparent 4px),
+    linear-gradient(var(--fx-blue), var(--fx-blue)) 0 3px / 46px 2px no-repeat;
+}
+
+/* ── Panels get a hairline of brand blue on top ──────────────────── */
+.tech-panel,
+.dashboard-card,
+.pricing-section {
+  border-top: 2px solid var(--fx-mist);
+}
+
+/* ── Home hero: blueprint grid + circuit behind the visual ───────── */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--fx-grid-blue);
+  background-size: 22px 22px;
+  -webkit-mask-image: radial-gradient(ellipse 55% 75% at 78% 45%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(ellipse 55% 75% at 78% 45%, #000 20%, transparent 75%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-circuit {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: min(760px, 58vw);
+  height: auto;
+  aspect-ratio: 420 / 220;
+  z-index: -1;
+  opacity: 0.9;
+}
+
+.hero__title-accent {
+  text-shadow: 0 0 28px rgba(79, 106, 240, 0.25);
+}
+
+/* Section titles on the home page get the same trace marker */
+.about__eyebrow,
+.services__title,
+.diy__title,
+.faq__title {
+  position: relative;
+}
+
+/* ── Blog + articles ─────────────────────────────────────────────── */
+.tech-cover {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  background-color: var(--fx-blue);
+  background-image: var(--fx-grid), linear-gradient(135deg, var(--fx-blue) 0%, var(--fx-blue-deep) 100%);
+  background-size: 18px 18px, cover;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.tech-cover__art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tech-cover__label {
+  position: relative;
+  margin: 18px;
+  font-family: "Sora", sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.1rem, 2.4vw, 1.8rem);
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.tech-cover--mini { min-height: 0; }
+.tech-cover--mini .tech-cover__label { font-size: 0.7rem; margin: 6px; }
+
+.article-cover {
+  height: clamp(220px, 34vw, 380px);
+  border-radius: 16px 16px 0 0;
+}
+
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 2000;
+  background: transparent;
+  pointer-events: none;
+}
+
+.reading-progress span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--fx-blue), var(--fx-cyan));
+  transform-origin: left center;
+  box-shadow: 0 0 10px rgba(79, 106, 240, 0.5);
+}
+
+.article-body blockquote {
+  margin: 1.4em 0;
+  padding: 12px 18px;
+  border-left: 3px solid var(--fx-blue);
+  background: var(--fx-mist);
+  border-radius: 0 10px 10px 0;
+}
+
+.article-body a { color: var(--fx-blue); }
+
+.article-body code {
+  background: var(--fx-mist);
+  color: var(--fx-blue-deep);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 0.92em;
+}
+
+.article-category {
+  background: var(--fx-blue) !important;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .circuit-art__signal { animation: none; stroke-dasharray: none; opacity: 0.35; }
+}
+
+@media (max-width: 700px) {
+  .banner-circuit { opacity: 0.45; width: 80%; }
+  .hero-circuit { display: none; }
+}

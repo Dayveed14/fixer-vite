@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import SEO from "./SEO";
 import { Link } from "react-router-dom";
 import api from "../api/client";
+import CoverImage from "./decor/CoverImage";
 
 const CATEGORIES = [
   "All",
@@ -148,10 +149,12 @@ export default function Blog() {
 
                   <div className="blog-card__img-wrap">
 
-                    <img
+                    <CoverImage
                       src={post.hero_image}
                       alt={post.image_alt || post.title}
                       className="blog-card__img"
+                      category={post.category}
+                      title={post.title}
                     />
 
                     <span className="blog-card__category">

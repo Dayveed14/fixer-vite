@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import api from "../api/client";
+import { toRichHtml } from "../utils/richText";
+import CoverImage from "../components/decor/CoverImage";
 import "./Article.css";
 
 const API = "/api/articles";
@@ -14,7 +16,7 @@ export default function Article() {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        const { data } = await api.get(`${API}/${slug}`);
+        const { data } = await api.get(`${API}/manage/${encodeURIComponent(slug)}`);
         setArticle(data);
       } catch (err) {
         console.error(err);
@@ -49,11 +51,14 @@ export default function Article() {
   return (
     <div className="article-page">
       <div className="article-container">
-        <img
-          src={article.hero_image}
-          alt={article.title}
-          className="hero-image"
-        />
+        <CoverImage
+            src={article.hero_image}
+            alt={article.image_alt || article.title}
+            className="hero-image"
+            coverClassName="article-cover"
+            category={article.category}
+            title={article.title}
+          />
 
         <div className="article-content">
           <span className="article-category">{article.category}</span>
@@ -69,7 +74,7 @@ export default function Article() {
           <div
             className="article-body"
             dangerouslySetInnerHTML={{
-              __html: article.content,
+              __html: toRichHtml(article.content),
             }}
           />
         </div>

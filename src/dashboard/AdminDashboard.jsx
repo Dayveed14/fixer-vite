@@ -12,6 +12,7 @@ import "./AdminDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
+import CircuitArt from "../components/decor/CircuitArt";
 
 
 const AdminDashboard = () => {
@@ -123,6 +124,7 @@ const AdminDashboard = () => {
       {/* Hero */}
 
       <section className="admin-banner">
+        <CircuitArt tone="light" className="banner-circuit" />
         <div>
           <h1>Admin{user?.first_name ? ` ${user.first_name}` : ""}</h1>
 

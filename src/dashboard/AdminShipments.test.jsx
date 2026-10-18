@@ -12,6 +12,10 @@ vi.mock("../api/shipments.api", () => ({
 }));
 import { listShipments, getShipment, sendQuote, updateShipmentStatus } from "../api/shipments.api";
 
+vi.mock("../api/client", () => ({
+  default: { get: vi.fn().mockResolvedValue({ data: [{ id: 5, first_name: "Tee", last_name: "Tech" }] }) },
+}));
+
 const row = (o) => ({
   id: 3,
   reference: "FXR-1003",
@@ -83,5 +87,28 @@ describe("admin shipments", () => {
     renderPage();
     await user.click(await screen.findByRole("button", { name: "Start diagnosis" }));
     expect(await screen.findByRole("alert")).toHaveTextContent(/FXR-1003: Waiting for the customer/);
+  });
+
+  it("starting a repair asks which technician", async () => {
+    listShipments.mockResolvedValue([
+      row({ status: "waiting_approval", approval_status: "approved", next_actions: { statuses: ["repair"], needs_technician: true } }),
+    ]);
+    updateShipmentStatus.mockResolvedValueOnce({});
+    const user = userEvent.setup();
+    renderPage();
+
+    await user.click(await screen.findByRole("button", { name: /assign technician & start repair/i }));
+    expect(updateShipmentStatus).not.toHaveBeenCalled();
+    await user.selectOptions(screen.getByLabelText("Technician"), "5");
+    await user.click(screen.getByRole("button", { name: /assign and start repair/i }));
+    expect(updateShipmentStatus).toHaveBeenCalledWith(3, "repair", { technician_id: 5 });
+  });
+
+  it("shows when the technician hasn't finished", async () => {
+    listShipments.mockResolvedValue([
+      row({ status: "repair", technician_id: 5, next_actions: { statuses: [], awaiting_technician: true } }),
+    ]);
+    renderPage();
+    expect(await screen.findByText(/waiting for the technician/i)).toBeInTheDocument();
   });
 });

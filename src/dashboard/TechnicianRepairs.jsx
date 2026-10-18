@@ -1,42 +1,102 @@
-// TechnicianRepairs.jsx
-// Repairs — reserved for mail-in devices tracked via shipments.
-// Intentionally a shell: the Shipment model doesn't exist in the backend yet
-// (routes/Shipment.route.js is commented out in app.js). Once it's built,
-// this page will list mail-in jobs the same way TechnicianJobs.jsx lists
-// tickets, filtered to the mail-in channel.
+// TechnicianRepairs.jsx — mail-in devices the admin assigned to this
+// technician. Mark each one repaired (or can't repair); the admin then
+// moves it to quality check and back to the customer.
 
-import { FaBoxOpen } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import ShipmentTimeline from "../components/shipments/ShipmentTimeline";
+import RepairActions from "../components/technician/RepairActions";
+import useTechnicianJobs from "../components/technician/useTechnicianJobs";
+import "../components/technician/technician.css";
 import "./TechnicianShared.css";
 
-const TechnicianRepairs = () => {
+export default function TechnicianRepairs() {
+  const { repairs, loading, errors, reload } = useTechnicianJobs({ appointments: false, tickets: false });
+  const [showDone, setShowDone] = useState(false);
+  const [openId, setOpenId] = useState(null);
+
+  const visible = repairs.filter((r) => showDone || (r.status === "repair" && !r.repair_outcome));
+
   return (
     <div className="tech-page">
-
       <div className="tech-page-header">
         <div>
           <h1>Repairs</h1>
-          <p>Mail-in devices shipped to us for repair.</p>
+          <p>Mail-in devices assigned to you. The customer has already approved and paid.</p>
         </div>
       </div>
 
-      <div className="tech-shell">
-        <span className="badge">Coming Soon</span>
-        <div className="tech-shell-icon">
-          <FaBoxOpen />
-        </div>
-        <h2>Mail-in tracking isn't built yet</h2>
-        <p>
-          Once shipment tracking goes live, devices customers mail in will
-          show up here — with tracking number, carrier, and received date —
-          separate from your remote-support appointments. Until then, any
-          mail-in jobs you're assigned will appear in{" "}
-          <Link to="/technician/jobs">Assigned Jobs</Link>.
+      <div className="tj-filters">
+        <button className="tj-chip" aria-pressed={showDone} onClick={() => setShowDone((v) => !v)}>
+          Show finished repairs
+        </button>
+      </div>
+
+      {errors.map((e) => (
+        <p key={e} className="dashboard-error">
+          {e}
         </p>
-      </div>
+      ))}
 
+      <div className="tech-panel">
+        {loading ? (
+          <p className="dashboard-loading">Loading your repairs…</p>
+        ) : visible.length === 0 ? (
+          <p className="dashboard-empty">No repairs waiting for you.</p>
+        ) : (
+          <table className="tj-table">
+            <thead>
+              <tr>
+                <th>Device</th>
+                <th>What to fix</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map((r) => (
+                <tr key={r.id}>
+                  <td>
+                    <span className="tj-kind tj-kind--repair">Repair</span>
+                    <div className="cell-primary">
+                      {r.brand} {r.device}
+                    </div>
+                    <div className="cell-sub">
+                      {r.reference} · {r.name}
+                    </div>
+                    <button className="shp-link" onClick={() => setOpenId(openId === r.id ? null : r.id)}>
+                      {openId === r.id ? "Hide history" : "History"}
+                    </button>
+                    {openId === r.id && <ShipmentTimeline shipment={r} compact />}
+                  </td>
+                  <td>
+                    <div className="tj-repair-meta">
+                      <strong>Customer said:</strong> {r.fault}
+                      {r.diagnosis_summary && (
+                        <>
+                          <br />
+                          <strong>Diagnosis:</strong> {r.diagnosis_summary}
+                        </>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`tj-status tj-status--${r.repair_outcome ? "done" : "active"}`}>
+                      {r.repair_outcome === "repaired"
+                        ? "repaired"
+                        : r.repair_outcome === "unrepairable"
+                          ? "can't repair"
+                          : String(r.status).replace(/_/g, " ")}
+                    </span>
+                  </td>
+                  <td>
+                    <RepairActions repair={r} onChanged={reload} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
-};
-
-export default TechnicianRepairs;
+}

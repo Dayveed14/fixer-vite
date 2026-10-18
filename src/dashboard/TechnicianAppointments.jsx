@@ -1,151 +1,25 @@
-// TechnicianAppointments.jsx
-// Appointments — the technician's scheduled support calls (bookings table).
-// Distinct from Assigned Jobs: this is the calendar of remote sessions,
-// not the repair work order itself.
+// TechnicianAppointments.jsx — booked calls assigned to this technician:
+// voice calls, video calls and remote support.
 
-import { useEffect, useMemo, useState } from "react";
-import api from "../api/client";
+import { useState } from "react";
+import JobTable from "../components/technician/JobTable";
+import useTechnicianJobs from "../components/technician/useTechnicianJobs";
+import { appointmentToJob, CALL_TYPES } from "../components/technician/jobs";
 import "./TechnicianShared.css";
 
-const MESHCENTRAL_WEB_URL = import.meta.env.VITE_MESHCENTRAL_WEB_URL || "";
+const TYPES = [{ key: "all", label: "All calls" }, ...Object.entries(CALL_TYPES).map(([key, t]) => ({ key, label: t.label }))];
 
-const SUPPORT_TYPE_LABELS = {
-  voice: "Voice Call",
-  video: "Video Call",
-  remote_desktop: "Remote Support",
-};
+export default function TechnicianAppointments() {
+  const { appointments, loading, errors, reload } = useTechnicianJobs({ repairs: false, tickets: false });
+  const [type, setType] = useState("all");
+  const [showDone, setShowDone] = useState(false);
 
-const TABS = [
-  { key: "All", label: "All" },
-  { key: "pending", label: "Pending" },
-  { key: "confirmed", label: "Confirmed" },
-  { key: "completed", label: "Completed" },
-  { key: "cancelled", label: "Cancelled" },
-  { key: "missed", label: "Missed" },
-];
+  const jobs = appointments
+    .map(appointmentToJob)
+    .filter((j) => (type === "all" || j.raw.support_type === type) && (showDone || j.state === "active"));
 
-const TechnicianAppointments = () => {
-  let user = null;
-  try {
-    user = JSON.parse(localStorage.getItem("user"));
-  } catch {
-    user = null;
-  }
-
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("All");
-  const [updatingId, setUpdatingId] = useState(null);
-
-  const [sessionLinks, setSessionLinks] = useState({});
-  const [startingSessionId, setStartingSessionId] = useState(null);
-  const [sessionError, setSessionError] = useState({});
-
-  const loadBookings = async () => {
-    if (!user?.id) {
-      setError("You need to be logged in to view your appointments.");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await api.get(`/api/bookings`, {
-        params: { technician_id: user.id },
-      });
-
-      setBookings(res.data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load your appointments. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const counts = useMemo(() => {
-    const c = { All: bookings.length };
-    for (const b of bookings) {
-      c[b.status] = (c[b.status] || 0) + 1;
-    }
-    return c;
-  }, [bookings]);
-
-  const filtered = useMemo(() => {
-    if (activeTab === "All") return bookings;
-    return bookings.filter((b) => b.status === activeTab);
-  }, [bookings, activeTab]);
-
-  const updateStatus = async (booking, status) => {
-    setUpdatingId(booking.id);
-
-    try {
-      await api.patch(`/api/bookings/${booking.id}/status`, {
-        status,
-      });
-
-      setBookings((prev) =>
-        prev.map((b) => (b.id === booking.id ? { ...b, status } : b)),
-      );
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setUpdatingId(null);
-    }
-  };
-
-  const startSession = async (booking) => {
-    setStartingSessionId(booking.id);
-    setSessionError((prev) => ({ ...prev, [booking.id]: null }));
-
-    try {
-      const res = await api.post(
-        `/api/bookings/${booking.id}/remote-session`,
-      );
-
-      setSessionLinks((prev) => ({
-        ...prev,
-        [booking.id]: res.data.inviteLink,
-      }));
-    } catch (err) {
-      console.error(err);
-      setSessionError((prev) => ({
-        ...prev,
-        [booking.id]:
-          err.response?.data?.message ||
-          "Couldn't start a remote session. Please try again.",
-      }));
-    } finally {
-      setStartingSessionId(null);
-    }
-  };
-
-  const copyLink = (link) => {
-    navigator.clipboard?.writeText(link);
-  };
-  if (loading) {
-    return (
-      <div className="tech-page">
-        <p className="dashboard-loading">Loading your appointments...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="tech-page">
-        <p className="dashboard-error">{error}</p>
-      </div>
-    );
-  }
+  const count = (key) =>
+    appointments.filter((b) => (key === "all" || b.support_type === key) && (showDone || b.status !== "completed")).length;
 
   return (
     <div className="tech-page">
@@ -153,141 +27,37 @@ const TechnicianAppointments = () => {
         <div>
           <h1>Appointments</h1>
           <p>
-            Your scheduled voice, video and remote-support sessions, booked by
-            customers.
+            Calls customers booked and the admin assigned to you. Remote support opens MeshCentral,
+            voice calls show the customer's number, video calls open the meeting link.
           </p>
         </div>
       </div>
 
-      <div className="tech-tabs">
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            className={`tech-tab ${activeTab === tab.key ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.key)}>
-            {tab.label}
-            <span className="count">({counts[tab.key] || 0})</span>
+      <div className="tj-filters" role="group" aria-label="Call type">
+        {TYPES.map((t) => (
+          <button key={t.key} className="tj-chip" aria-pressed={type === t.key} onClick={() => setType(t.key)}>
+            {t.label}
+            <span className="count">{count(t.key)}</span>
           </button>
         ))}
+        <button className="tj-chip" aria-pressed={showDone} onClick={() => setShowDone((v) => !v)}>
+          Show finished
+        </button>
       </div>
 
+      {errors.map((e) => (
+        <p key={e} className="dashboard-error">
+          {e}
+        </p>
+      ))}
+
       <div className="tech-panel">
-        {filtered.length === 0 ? (
-          <p className="dashboard-empty">No appointments in this category.</p>
+        {loading ? (
+          <p className="dashboard-loading">Loading your appointments…</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Reference</th>
-                <th>Customer</th>
-                <th>Type</th>
-                <th>Date / Time</th>
-                <th>Issue</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((appt) => (
-                <>
-                  <tr key={appt.id}>
-                    <td className="cell-primary">{appt.booking_reference}</td>
-                    <td>{appt.customer_name}</td>
-                    <td>
-                      {SUPPORT_TYPE_LABELS[appt.support_type] ||
-                        appt.support_type}
-                    </td>
-                    <td>
-                      {appt.booking_date}
-                      <div className="cell-sub">
-                        {appt.booking_time} · {appt.duration} min
-                      </div>
-                    </td>
-                    <td>
-                      {appt.issue_summary || "—"}
-                      {appt.device && (
-                        <div className="cell-sub">{appt.device}</div>
-                      )}
-                    </td>
-                    <td>
-                      <span className={`badge ${appt.status}`}>
-                        {appt.status}
-                      </span>
-                    </td>
-                    <td>
-                      {appt.status === "confirmed" ? (
-                        <div className="row-actions">
-                          <button
-                            className="tech-action-btn primary"
-                            disabled={startingSessionId === appt.id}
-                            onClick={() => startSession(appt)}>
-                            {startingSessionId === appt.id
-                              ? "Starting..."
-                              : "Start Session"}
-                          </button>
-                          <button
-                            className="tech-action-btn"
-                            disabled={updatingId === appt.id}
-                            onClick={() => updateStatus(appt, "completed")}>
-                            Mark Completed
-                          </button>
-                          <button
-                            className="tech-action-btn danger"
-                            disabled={updatingId === appt.id}
-                            onClick={() => updateStatus(appt, "missed")}>
-                            Mark Missed
-                          </button>
-                        </div>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                  </tr>
-
-                  {(sessionLinks[appt.id] || sessionError[appt.id]) && (
-                    <tr className="manage-row" key={`${appt.id}-session`}>
-                      <td colSpan={7}>
-                        {sessionError[appt.id] ? (
-                          <p className="manage-error">
-                            {sessionError[appt.id]}
-                          </p>
-                        ) : (
-                          <div className="session-panel">
-                            <div className="manage-field full-width">
-                              {/* <label>Send this link to the customer to start the session</label>
-                              <div className="session-link-row">
-                                <input type="text" readOnly value={sessionLinks[appt.id]} />
-                                <button
-                                  className="tech-action-btn"
-                                  onClick={() => copyLink(sessionLinks[appt.id])}
-                                >
-                                  Copy
-                                </button>
-                              </div> */}
-                            </div>
-
-                            {MESHCENTRAL_WEB_URL && (
-                              <a
-                                href={MESHCENTRAL_WEB_URL}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="tech-action-btn primary">
-                                Open MeshCentral Dashboard
-                              </a>
-                            )}
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  )}
-                </>
-              ))}
-            </tbody>
-          </table>
+          <JobTable jobs={jobs} onChanged={reload} emptyText="No appointments here." />
         )}
       </div>
     </div>
   );
-};
-
-export default TechnicianAppointments;
+}

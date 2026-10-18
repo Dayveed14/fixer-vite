@@ -142,6 +142,26 @@ const UserAppointmentDetail = () => {
             <strong>{booking.booking_date}</strong>
           </div>
 
+          {booking.support_type === "video" && (
+            <div className="detail-row">
+              <span>Video link</span>
+              {booking.meeting_url ? (
+                <a href={booking.meeting_url} target="_blank" rel="noreferrer" className="tech-action-btn primary">
+                  Join video call
+                </a>
+              ) : (
+                <strong>Coming soon</strong>
+              )}
+            </div>
+          )}
+
+          {booking.support_type === "voice" && (
+            <div className="detail-row">
+              <span>How it works</span>
+              <strong>Your technician will call you</strong>
+            </div>
+          )}
+
           <div className="detail-row">
             <span>Time</span>
             <strong>{booking.booking_time}</strong>

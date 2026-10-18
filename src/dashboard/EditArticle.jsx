@@ -31,8 +31,9 @@ export default function EditArticle() {
 
     const loadArticle = async () => {
       try {
+        // Admin endpoint: drafts and articles without a status too.
         const { data } = await api.get(
-          `${API}/${encodeURIComponent(slug)}`
+          `${API}/manage/${encodeURIComponent(slug)}`
         );
 
         if (!active) return;

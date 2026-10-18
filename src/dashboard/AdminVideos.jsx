@@ -122,7 +122,7 @@ export default function AdminVideos() {
 
                   <td>
                     <div className="article-actions">
-                      <Link className="article-view" to={`/uservideo/${v.id}`}>
+                      <Link className="article-view" to={`/uservideo/${v.slug}`}>
                         View
                       </Link>
 

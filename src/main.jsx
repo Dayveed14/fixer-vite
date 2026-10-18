@@ -5,6 +5,7 @@ import { HelmetProvider } from 'react-helmet-async';
 // All backend calls go through src/api/client.js (base URL, cookies,
 // CSRF header, timeouts, error normalisation).
 import './App.css';
+import './styles/tech.css';
 import App from './App';
 import ErrorBoundary from './components/components/ErrorBoundary';
 ReactDOM.createRoot(document.getElementById('root')).render(

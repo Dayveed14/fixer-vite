@@ -80,7 +80,7 @@ const TechnicianHistory = () => {
         <div>
           <h1>History</h1>
           <p>
-            Completed jobs — {tickets.length} total, ${totalEarned.toFixed(2)}{" "}
+            Completed jobs — {tickets.length} total, ₦{totalEarned.toLocaleString()}{" "}
             earned.
           </p>
         </div>
@@ -112,7 +112,7 @@ const TechnicianHistory = () => {
                   </td>
                   <td>{new Date(job.updated_at).toLocaleDateString()}</td>
                   <td>
-                    {job.amount ? `$${Number(job.amount).toFixed(2)}` : "—"}
+                    {job.amount ? `₦${Number(job.amount).toLocaleString()}` : "—"}
                   </td>
                   <td>
                     {job.existing_rating ? (

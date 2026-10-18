@@ -1,313 +1,86 @@
-// TechnicianJobs.jsx
-// Assigned Jobs — the technician's repair work queue (tickets table).
-// This is the "action" page: update status, mark a job complete with a final amount.
+// TechnicianJobs.jsx — Assigned jobs: everything assigned to this
+// technician in one place — booked calls (appointments), mail-in repairs
+// and any other tickets.
 
-import { useEffect, useMemo, useState } from "react";
-import api from "../api/client";
+import { useMemo, useState } from "react";
+import JobTable from "../components/technician/JobTable";
+import useTechnicianJobs from "../components/technician/useTechnicianJobs";
 import "./TechnicianShared.css";
 
-
-const STATUS_OPTIONS = ["Open", "In Progress", "Pending", "Completed"];
-
-const TABS = [
-  { key: "All", label: "All" },
-  { key: "Open", label: "Open" },
-  { key: "In Progress", label: "In Progress" },
-  { key: "Pending", label: "Pending" },
-  { key: "Completed", label: "Completed" },
+const KINDS = [
+  { key: "all", label: "All" },
+  { key: "appointment", label: "Appointments" },
+  { key: "repair", label: "Repairs" },
+  { key: "ticket", label: "Other tickets" },
 ];
 
-function statusClass(status) {
-  return status.replace(/\s+/g, "").toLowerCase();
-}
+const STATES = [
+  { key: "active", label: "To do" },
+  { key: "done", label: "Done" },
+  { key: "all", label: "Everything" },
+];
 
-const TechnicianJobs = () => {
-  let user = null;
-  try {
-    user = JSON.parse(localStorage.getItem("user"));
-  } catch {
-    user = null;
-  }
-
-  const [tickets, setTickets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("All");
-
-  const [openRowId, setOpenRowId] = useState(null);
-  const [formStatus, setFormStatus] = useState("Open");
-  const [formAmount, setFormAmount] = useState("");
-  const [formError, setFormError] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  const loadTickets = async () => {
-    if (!user?.id) {
-      setError("You need to be logged in to view your jobs.");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await api.get(`/api/tickets`, {
-        params: { technician_id: user.id },
-      });
-
-      setTickets(res.data);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load your jobs. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadTickets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+export default function TechnicianJobs() {
+  const { jobs, loading, errors, reload } = useTechnicianJobs();
+  const [kind, setKind] = useState("all");
+  const [state, setState] = useState("active");
 
   const counts = useMemo(() => {
-    const c = { All: tickets.length };
-    for (const t of tickets) {
-      c[t.status] = (c[t.status] || 0) + 1;
-    }
+    const c = { all: 0, appointment: 0, repair: 0, ticket: 0 };
+    jobs.forEach((j) => {
+      if (state === "all" || j.state === state || (state === "done" && j.state === "closed")) {
+        c.all += 1;
+        c[j.kind] += 1;
+      }
+    });
     return c;
-  }, [tickets]);
+  }, [jobs, state]);
 
-  const filtered = useMemo(() => {
-    if (activeTab === "All") return tickets;
-    return tickets.filter((t) => t.status === activeTab);
-  }, [tickets, activeTab]);
-
-  const openManage = (ticket) => {
-    if (openRowId === ticket.id) {
-      setOpenRowId(null);
-      return;
-    }
-    setOpenRowId(ticket.id);
-    setFormStatus(ticket.status);
-    setFormAmount(ticket.amount ?? "");
-    setFormError("");
-  };
-
-  const handleSave = async (ticket) => {
-    if (
-      formStatus === "Completed" &&
-      (formAmount === "" || Number(formAmount) < 0)
-    ) {
-      setFormError("Enter a valid amount to mark this job as completed.");
-      return;
-    }
-
-    setSaving(true);
-    setFormError("");
-
-    try {
-      await api.patch(`/api/tickets/${ticket.id}/status`, {
-        status: formStatus,
-        amount: formAmount === "" ? null : Number(formAmount),
-      });
-
-      setTickets((prev) =>
-        prev.map((t) =>
-          t.id === ticket.id
-            ? {
-                ...t,
-                status: formStatus,
-                amount: formAmount === "" ? null : Number(formAmount),
-              }
-            : t,
-        ),
-      );
-
-      setOpenRowId(null);
-    } catch (err) {
-      console.error(err);
-      setFormError("Couldn't save that update. Please try again.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const quickComplete = (ticket) => {
-    setOpenRowId(ticket.id);
-    setFormStatus("Completed");
-    setFormAmount(ticket.amount ?? "");
-    setFormError("");
-  };
-
-  if (loading) {
-    return (
-      <div className="tech-page">
-        <p className="dashboard-loading">Loading your jobs...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="tech-page">
-        <p className="dashboard-error">{error}</p>
-      </div>
-    );
-  }
+  const visible = jobs.filter(
+    (j) =>
+      (kind === "all" || j.kind === kind) &&
+      (state === "all" || j.state === state || (state === "done" && j.state === "closed")),
+  );
 
   return (
     <div className="tech-page">
       <div className="tech-page-header">
         <div>
-          <h1>Assigned Jobs</h1>
-          <p>
-            Every repair ticket assigned to you. Update the status as you work,
-            and mark a job complete once it's done.
-          </p>
+          <h1>Assigned jobs</h1>
+          <p>Everything assigned to you: booked calls, mail-in repairs and other tickets.</p>
         </div>
       </div>
 
-      <div className="tech-tabs">
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            className={`tech-tab ${activeTab === tab.key ? "active" : ""}`}
-            onClick={() => setActiveTab(tab.key)}>
-            {tab.label}
-            <span className="count">({counts[tab.key] || 0})</span>
+      <div className="tj-filters" role="group" aria-label="Show">
+        {STATES.map((s) => (
+          <button key={s.key} className="tj-chip" aria-pressed={state === s.key} onClick={() => setState(s.key)}>
+            {s.label}
           </button>
         ))}
       </div>
 
+      <div className="tj-filters" role="group" aria-label="Job type">
+        {KINDS.map((k) => (
+          <button key={k.key} className="tj-chip" aria-pressed={kind === k.key} onClick={() => setKind(k.key)}>
+            {k.label}
+            <span className="count">{counts[k.key]}</span>
+          </button>
+        ))}
+      </div>
+
+      {errors.map((e) => (
+        <p key={e} className="dashboard-error">
+          {e}
+        </p>
+      ))}
+
       <div className="tech-panel">
-        {filtered.length === 0 ? (
-          <p className="dashboard-empty">No jobs in this category.</p>
+        {loading ? (
+          <p className="dashboard-loading">Loading your jobs…</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Ticket</th>
-                <th>Customer</th>
-                <th>Device / Issue</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Amount</th>
-                <th>Rating</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((job) => (
-                <>
-                  <tr key={job.id}>
-                    <td className="cell-primary">{job.ticket_code}</td>
-                    <td>
-                      {job.customer_name}
-                      {job.customer_phone && (
-                        <div className="cell-sub">{job.customer_phone}</div>
-                      )}
-                    </td>
-                    <td>
-                      {job.device || "—"}
-                      {job.issue && <div className="cell-sub">{job.issue}</div>}
-                    </td>
-                    <td>
-                      <span className={`badge ${job.priority.toLowerCase()}`}>
-                        {job.priority}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`badge ${statusClass(job.status)}`}>
-                        {job.status}
-                      </span>
-                    </td>
-                    <td>
-                      {job.amount ? `$${Number(job.amount).toFixed(2)}` : "—"}
-                    </td>
-                    <td>
-                      {job.existing_rating ? (
-                        <span className="rating-stars">
-                          {"★".repeat(job.existing_rating)}
-                          {"☆".repeat(5 - job.existing_rating)}
-                        </span>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td>
-                      <div className="row-actions">
-                        <button
-                          className="tech-action-btn"
-                          onClick={() => openManage(job)}>
-                          {openRowId === job.id ? "Close" : "Manage"}
-                        </button>
-                        {job.status !== "Completed" && (
-                          <button
-                            className="tech-action-btn primary"
-                            onClick={() => quickComplete(job)}>
-                            Mark Complete
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-
-                  {openRowId === job.id && (
-                    <tr className="manage-row" key={`${job.id}-manage`}>
-                      <td colSpan={8}>
-                        <div className="manage-form">
-                          <div className="manage-field">
-                            <label>Status</label>
-                            <select
-                              value={formStatus}
-                              onChange={(e) => setFormStatus(e.target.value)}>
-                              {STATUS_OPTIONS.map((s) => (
-                                <option key={s} value={s}>
-                                  {s}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          <div className="manage-field">
-                            <label>
-                              Amount ($)
-                              {formStatus === "Completed"
-                                ? " — required"
-                                : " — optional"}
-                            </label>
-                            <input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              value={formAmount}
-                              onChange={(e) => setFormAmount(e.target.value)}
-                              placeholder="0.00"
-                            />
-                          </div>
-
-                          <button
-                            className="tech-action-btn primary"
-                            disabled={saving}
-                            onClick={() => handleSave(job)}>
-                            {saving ? "Saving..." : "Save Update"}
-                          </button>
-
-                          {formError && (
-                            <p className="manage-error">{formError}</p>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </>
-              ))}
-            </tbody>
-          </table>
+          <JobTable jobs={visible} onChanged={reload} emptyText="No jobs here — you're all caught up." />
         )}
       </div>
     </div>
   );
-};
-
-export default TechnicianJobs;
+}

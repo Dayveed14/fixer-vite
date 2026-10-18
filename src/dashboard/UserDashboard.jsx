@@ -13,6 +13,7 @@ import "./UserDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
+import CircuitArt from "../components/decor/CircuitArt";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -190,6 +191,7 @@ const UserDashboard = () => {
     <div className="user-dashboard">
       {/* Welcome Banner */}
       <section className="welcome-banner">
+        <CircuitArt tone="light" className="banner-circuit" />
         <div>
           <h1>Welcome Back, {user?.first_name} 👋</h1>
           <p>

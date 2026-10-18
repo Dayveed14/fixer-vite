@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "../css/Hero.css";
 import { runDiagnosis } from "../../api/diagnosis.api";
 import FixBotMascot from "../fixbot/FixBotMascot";
+import CircuitArt from "../decor/CircuitArt";
 import { diagnosisKind, noMatchMessage, formatEstimatedRepair } from "../../utils/diagnosis";
 
 const STATS = [
@@ -714,6 +715,7 @@ export default function Hero() {
       className="hero"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}>
+      <CircuitArt tone="brand" className="hero-circuit" />
       <div className="hero__slideshow">
         <div
           className="hero__track"
