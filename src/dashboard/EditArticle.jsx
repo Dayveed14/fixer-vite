@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api, { TIMEOUTS } from "../api/client";
 import "./ArticleForm.css";
-import { Editor } from "@tinymce/tinymce-react";
 
 const API = "/api/articles";
 
 export default function EditArticle() {
   const { slug } = useParams();
   const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
+    slug: "",
     category: "",
     content: "",
     status: "draft",
@@ -26,51 +27,89 @@ export default function EditArticle() {
   const [image, setImage] = useState(null);
 
   useEffect(() => {
+    let active = true;
+
+    const loadArticle = async () => {
+      try {
+        const { data } = await api.get(
+          `${API}/${encodeURIComponent(slug)}`
+        );
+
+        if (!active) return;
+
+        setForm({
+          title: data.title ?? "",
+          slug: data.slug ?? slug ?? "",
+          category: data.category ?? "",
+          content: data.content ?? "",
+          status: data.status ?? "draft",
+          excerpt: data.excerpt ?? "",
+          image_alt: data.image_alt ?? "",
+          tags: data.tags ?? "",
+        });
+
+        // hero_image is already a full Cloudinary URL.
+        setPreview(data.hero_image ?? "");
+      } catch (err) {
+        if (!active) return;
+
+        console.error("Failed to load article:", err);
+        alert("Unable to load article.");
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+
     loadArticle();
-  }, []);
 
-  const loadArticle = async () => {
-    try {
-      const { data } = await api.get(`${API}/${slug}`);
-
-      setForm({
-        title: data.title,
-        category: data.category,
-        content: data.content,
-        status: data.status,
-        excerpt: data.excerpt,
-        image_alt: data.image_alt,
-        tags: data.tags,
-      });
-
-      // hero_image is now a full Cloudinary URL — no prefix needed.
-      setPreview(data.hero_image);
-    } catch (err) {
-      console.error(err);
-      alert("Unable to load article.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, [slug]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
 
   const handleImage = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
 
     if (!file) return;
 
     setImage(file);
-    setPreview(URL.createObjectURL(file));
+
+    // Revoke the previous local preview URL, if applicable.
+    setPreview((previous) => {
+      if (previous.startsWith("blob:")) {
+        URL.revokeObjectURL(previous);
+      }
+
+      return URL.createObjectURL(file);
+    });
   };
+
+  useEffect(() => {
+    return () => {
+      if (preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!form.content.trim()) {
+      alert("Please enter the article content.");
+      return;
+    }
 
     setSaving(true);
 
@@ -89,21 +128,29 @@ export default function EditArticle() {
         formData.append("hero_image", image);
       }
 
-      await api.put(`${API}/${slug}`, formData, { timeout: TIMEOUTS.upload });
+      await api.put(
+        `${API}/${encodeURIComponent(slug)}`,
+        formData,
+        { timeout: TIMEOUTS.upload }
+      );
 
       alert("Article updated successfully.");
 
       navigate("/adminarticles");
     } catch (err) {
-      console.error(err);
-      alert("Failed to update article.");
+      console.error("Failed to update article:", err);
+
+      alert(
+        err.response?.data?.message ||
+          "Failed to update article. Please try again."
+      );
     } finally {
       setSaving(false);
     }
   };
 
   if (loading) {
-    return <h2 style={{ padding: 30 }}>Loading...</h2>;
+    return <h2 style={{ padding: 30 }}>Loading article...</h2>;
   }
 
   return (
@@ -113,120 +160,168 @@ export default function EditArticle() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Title</label>
+            <label htmlFor="title">Title</label>
 
             <input
+              id="title"
               type="text"
               name="title"
               value={form.title}
               onChange={handleChange}
+              maxLength={255}
               required
             />
           </div>
 
           <div className="form-group">
-            <label>Slug</label>
+            <label htmlFor="slug">Slug</label>
 
-            <input type="text" name="slug" value={form.slug} readOnly />
+            <input
+              id="slug"
+              type="text"
+              name="slug"
+              value={form.slug}
+              readOnly
+            />
+
+            <small>
+              The existing article URL is preserved when editing.
+            </small>
           </div>
 
           <div className="form-group">
-            <label>Tags</label>
+            <label htmlFor="tags">Tags</label>
 
             <input
+              id="tags"
               type="text"
               name="tags"
               value={form.tags}
               onChange={handleChange}
+              placeholder="e.g. laptop repair, Windows, troubleshooting"
               required
             />
           </div>
 
           <div className="form-group">
-            <label>Category</label>
+            <label htmlFor="category">Category</label>
 
             <select
+              id="category"
               name="category"
               value={form.category}
               onChange={handleChange}
-              required>
+              required
+            >
               <option value="">Select Category</option>
-
               <option value="Hardware">Hardware</option>
-
               <option value="Software">Software</option>
-
               <option value="Networking">Networking</option>
-
               <option value="Security">Security</option>
-
               <option value="Maintenance">Maintenance</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label>Status</label>
+            <label htmlFor="status">Status</label>
 
-            <select name="status" value={form.status} onChange={handleChange}>
+            <select
+              id="status"
+              name="status"
+              value={form.status}
+              onChange={handleChange}
+            >
               <option value="draft">Draft</option>
-              <option value="published" selected>Published</option>
+              <option value="published">Published</option>
             </select>
           </div>
-          <div className="form-group">
-            <label>Excerpt</label>
 
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+          <div className="form-group">
+            <label htmlFor="excerpt">Article Excerpt</label>
+
+            <textarea
+              id="excerpt"
+              name="excerpt"
               value={form.excerpt}
-              onEditorChange={(excerpt) =>
-                setForm((prev) => ({
-                  ...prev,
-                  excerpt,
-                }))
-              }
+              onChange={handleChange}
+              placeholder="Write a short summary of the article..."
+              rows={4}
+              maxLength={1000}
             />
+
+            <small>
+              {form.excerpt.length}/1000 characters
+            </small>
           </div>
 
           <div className="form-group">
-            <label>Content</label>
+            <label htmlFor="content">Article Content</label>
 
-            <Editor
-              apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+            <textarea
+              id="content"
+              name="content"
               value={form.content}
-              onEditorChange={(content) =>
-                setForm((prev) => ({
-                  ...prev,
-                  content,
-                }))
+              onChange={handleChange}
+              placeholder={
+                "Edit your article here...\n\n" +
+                "Use blank lines to separate paragraphs."
               }
+              rows={16}
+              required
             />
+
+            <small>
+              {form.content.length} characters ·{" "}
+              {form.content.trim()
+                ? form.content.trim().split(/\s+/).length
+                : 0}{" "}
+              words
+            </small>
           </div>
 
           <div className="form-group">
-            <label>Hero Image</label>
+            <label htmlFor="hero_image">Hero Image</label>
 
-            <input type="file" accept="image/*" onChange={handleImage} />
+            <input
+              id="hero_image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleImage}
+            />
+
+            <small>
+              Leave empty to keep the current image.
+            </small>
           </div>
 
           {preview && (
             <div className="image-preview">
-              <img src={preview} alt="Preview" />
+              <img
+                src={preview}
+                alt={form.image_alt || "Article hero image preview"}
+              />
             </div>
           )}
 
           <div className="form-group">
-            <label>Image Description</label>
+            <label htmlFor="image_alt">Image Description</label>
 
             <input
+              id="image_alt"
               type="text"
               name="image_alt"
               value={form.image_alt}
               onChange={handleChange}
+              placeholder="Describe the image for accessibility"
               required
             />
           </div>
 
-          <button className="submit-btn" disabled={saving}>
+          <button
+            type="submit"
+            className="submit-btn"
+            disabled={saving}
+          >
             {saving ? "Updating..." : "Update Article"}
           </button>
         </form>

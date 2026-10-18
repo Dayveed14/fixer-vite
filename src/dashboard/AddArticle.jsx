@@ -2,13 +2,11 @@ import { useState } from "react";
 import api, { TIMEOUTS } from "../api/client";
 import { useNavigate } from "react-router-dom";
 import "./AddArticle.css";
-import { Editor } from "@tinymce/tinymce-react";
 
 const AddArticle = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-
   const [image, setImage] = useState(null);
 
   const [form, setForm] = useState({
@@ -27,7 +25,8 @@ const AddArticle = () => {
       .toLowerCase()
       .trim()
       .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-");
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,6 +52,7 @@ const AddArticle = () => {
       setLoading(true);
 
       let user = null;
+
       try {
         user = JSON.parse(localStorage.getItem("user"));
       } catch {
@@ -65,6 +65,11 @@ const AddArticle = () => {
         return;
       }
 
+      if (!form.content.trim()) {
+        alert("Please enter the article content.");
+        return;
+      }
+
       const data = new FormData();
 
       Object.entries(form).forEach(([key, value]) => {
@@ -74,17 +79,23 @@ const AddArticle = () => {
       if (image) {
         data.append("hero_image", image);
       }
+
       data.append("author_id", user.id);
       data.append("featured", 1);
 
-      await api.post(`/api/articles`, data, { timeout: TIMEOUTS.upload });
+      await api.post("/api/articles", data, {
+        timeout: TIMEOUTS.upload,
+      });
 
       alert("Article created successfully.");
-
       navigate("/adminarticles");
     } catch (err) {
-      console.error(err);
-      alert("Unable to create article.");
+      console.error("Article creation error:", err);
+
+      alert(
+        err.response?.data?.message ||
+          "Unable to create article. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -101,113 +112,154 @@ const AddArticle = () => {
 
       <form className="article-form" onSubmit={submit}>
         <div className="form-group">
-          <label>Hero Image</label>
+          <label htmlFor="hero_image">Hero Image</label>
 
           <input
+            id="hero_image"
             type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(e) => setImage(e.target.files?.[0] || null)}
           />
+
+          {image && (
+            <small>
+              Selected: {image.name} (
+              {(image.size / 1024).toFixed(1)} KB)
+            </small>
+          )}
         </div>
+
         <div className="form-group">
-          <label>Image Description</label>
+          <label htmlFor="image_alt">Image Description</label>
 
           <input
+            id="image_alt"
             type="text"
             name="image_alt"
             value={form.image_alt}
             onChange={handleChange}
+            placeholder="Describe the image for accessibility"
             required
           />
         </div>
+
         <div className="form-group">
-          <label>Title</label>
+          <label htmlFor="title">Title</label>
 
           <input
+            id="title"
             type="text"
             name="title"
             value={form.title}
             onChange={handleChange}
+            placeholder="Enter article title"
+            maxLength={255}
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Slug</label>
+          <label htmlFor="slug">Slug</label>
 
-          <input type="text" name="slug" value={form.slug} readOnly />
+          <input
+            id="slug"
+            type="text"
+            name="slug"
+            value={form.slug}
+            readOnly
+          />
+
+          <small>
+            This URL-friendly slug is generated automatically from the title.
+          </small>
         </div>
 
         <div className="form-group">
-          <label>Tags</label>
+          <label htmlFor="tags">Tags</label>
 
           <input
+            id="tags"
             type="text"
             name="tags"
             value={form.tags}
             onChange={handleChange}
+            placeholder="e.g. laptop repair, Windows, troubleshooting"
             required
           />
         </div>
 
         <div className="form-group">
-          <label>Category</label>
+          <label htmlFor="category">Category</label>
 
           <select
+            id="category"
             name="category"
             value={form.category}
             onChange={handleChange}
-            required>
+            required
+          >
             <option value="">Select Category</option>
-
             <option value="Hardware">Hardware</option>
-
             <option value="Software">Software</option>
-
             <option value="Networking">Networking</option>
-
             <option value="Security">Security</option>
-
             <option value="Maintenance">Maintenance</option>
           </select>
         </div>
 
         <div className="form-group">
-          <label>Excerpt</label>
+          <label htmlFor="excerpt">Article Excerpt</label>
 
-          <Editor
-            apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+          <textarea
+            id="excerpt"
+            name="excerpt"
             value={form.excerpt}
-            onEditorChange={(excerpt) =>
-              setForm((prev) => ({
-                ...prev,
-                excerpt,
-              }))
-            }
+            onChange={handleChange}
+            placeholder="Write a short summary of the article..."
+            rows={4}
+            maxLength={1000}
           />
+
+          <small>
+            {form.excerpt.length}/1000 characters
+          </small>
         </div>
 
         <div className="form-group">
-          <label>Article Content</label>
+          <label htmlFor="content">Article Content</label>
 
-          <Editor
-            apiKey={import.meta.env.VITE_TINYMCE_API_KEY}
+          <textarea
+            id="content"
+            name="content"
             value={form.content}
-            onEditorChange={(content) =>
-              setForm((prev) => ({
-                ...prev,
-                content,
-              }))
+            onChange={handleChange}
+            placeholder={
+              "Write your full article here...\n\n" +
+              "Use blank lines to separate paragraphs."
             }
+            rows={16}
+            required
           />
+
+          <small>
+            {form.content.length} characters ·{" "}
+            {form.content.trim()
+              ? form.content.trim().split(/\s+/).length
+              : 0}{" "}
+            words
+          </small>
         </div>
 
         <div className="form-group">
-          <label>Status</label>
+          <label htmlFor="status">Status</label>
 
-          <select name="status" value={form.status} onChange={handleChange}>
+          <select
+            id="status"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+          >
             <option value="draft">Draft</option>
-
             <option value="published">Published</option>
           </select>
         </div>
@@ -216,12 +268,22 @@ const AddArticle = () => {
           <button
             type="button"
             className="cancel-btn"
-            onClick={() => navigate("/adminarticles")}>
+            onClick={() => navigate("/adminarticles")}
+            disabled={loading}
+          >
             Cancel
           </button>
 
-          <button type="submit" className="save-btn" disabled={loading}>
-            {loading ? "Saving..." : "Publish Article"}
+          <button
+            type="submit"
+            className="save-btn"
+            disabled={loading}
+          >
+            {loading
+              ? "Saving..."
+              : form.status === "published"
+                ? "Publish Article"
+                : "Save Draft"}
           </button>
         </div>
       </form>

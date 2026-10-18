@@ -173,6 +173,56 @@
     object-fit: cover;
 }
 
+
+.article-form .form-group textarea {
+  display: block;
+  width: 100%;
+  min-height: 110px;
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f2937;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.7;
+  resize: vertical;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-form .form-group textarea:focus {
+  outline: none;
+  border-color: #b45309;
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.12);
+}
+
+.article-form .form-group textarea::placeholder {
+  color: #9ca3af;
+}
+
+.article-form .form-group textarea[name="content"] {
+  min-height: 350px;
+}
+
+.article-form .form-group small {
+  display: block;
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.article-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .article-form .form-group textarea[name="content"] {
+    min-height: 260px;
+  }
+}
+
 /* ===========================
    Responsive
 =========================== */
