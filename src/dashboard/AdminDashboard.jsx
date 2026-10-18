@@ -173,7 +173,8 @@ const AdminDashboard = () => {
                 <FaArrowRight />
               </button>
             </div>
-
+{/* Wrapper enables horizontal scroll on small screens */}
+            <div className="table-wrapper">
             {tickets.length === 0 ? (
               <p className="admin-empty">No tickets yet.</p>
             ) : (
@@ -212,6 +213,7 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             )}
+            </div>
           </div>
 
           {/* System Health */}
