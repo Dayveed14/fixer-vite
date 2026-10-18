@@ -79,7 +79,7 @@ const UserDashboard = () => {
   const [device, setDevice] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+const [activities, setActivities] = useState([]);
   useEffect(() => {
     if (!user?.id) {
       setError("You need to be logged in to view your dashboard.");
@@ -94,7 +94,7 @@ const UserDashboard = () => {
       setError(null);
 
       try {
-        const [statsRes, ticketsRes, appointmentRes, deviceRes] =
+        const [statsRes, ticketsRes, appointmentRes, deviceRes, activityRes] =
           await Promise.all([
             api.get(`/api/stats/user/${user.id}`),
             api.get(`/api/tickets`, {
@@ -106,6 +106,9 @@ const UserDashboard = () => {
             api.get(`/api/devices`, {
               params: { customer_id: user.id, limit: 1 },
             }),
+            api.get("/api/notifications", {
+              params: { limit: 5 },
+            }),
           ]);
 
         if (!cancelled) {
@@ -114,6 +117,7 @@ const UserDashboard = () => {
           setNextAppointment(appointmentRes.data[0] || null);
           setDevice(deviceRes.data[0] || null);
           console.log(deviceRes.data[0] || null);
+          setActivities(activityRes.data.notifications || []);
         }
       } catch (err) {
         console.error(err);
@@ -282,22 +286,37 @@ const UserDashboard = () => {
             </div>
           </div>
 
-          {/* Activity */}
-          <div className="dashboard-card">
-            <h2>Recent Activity</h2>
-            <div className="activity-item">
-              <FaClock />
-              <p>Technician accepted your repair request.</p>
+          {/* Recent Activity */}
+            <div className="dashboard-card">
+              <h2>Recent Activity</h2>
+
+              {activities.length === 0 ? (
+                <p className="dashboard-empty">
+                  No recent activity yet.
+                </p>
+              ) : (
+                <div className="activity-list">
+                  {activities.map((activity) => (
+                    <div className="activity-item" key={activity.id}>
+                      <FaClock />
+
+                      <div className="activity-content">
+                        <h4>{activity.title}</h4>
+
+                        <p>{activity.message}</p>
+
+                        <small>
+                          {new Date(activity.created_at).toLocaleString("en-NG", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })}
+                        </small>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div className="activity-item">
-              <FaClock />
-              <p>AI completed diagnosis for your laptop.</p>
-            </div>
-            <div className="activity-item">
-              <FaClock />
-              <p>Your mail-in shipment has been received.</p>
-            </div>
-          </div>
         </div>
 
         {/* Right */}

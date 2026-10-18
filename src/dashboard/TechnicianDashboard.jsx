@@ -198,7 +198,7 @@ const TechnicianDashboard = () => {
               <FaArrowRight />
             </button>
           </div>
-          <div className="tech-card">
+          <div className="tech-card table-wrapper">
             {jobs.length === 0 ? (
               <p className="dashboard-empty">No jobs assigned yet.</p>
             ) : (

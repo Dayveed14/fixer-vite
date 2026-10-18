@@ -106,17 +106,16 @@
 }
 
 /* ==========================================
-   GRID
+   GRID LAYOUT — FIX OVERFLOW
 ========================================== */
 
 .tech-grid {
-    display: flex;
-    /* grid-template-columns: 2fr 1fr; */
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
     gap: 25px;
-}
-
-.left-tech {
-    width: 75%;
+    width: 100%;
+    min-width: 0;
+    align-items: start;
 }
 
 .left-tech,
@@ -124,7 +123,17 @@
     display: flex;
     flex-direction: column;
     gap: 25px;
+
+    min-width: 0;
+    width: 100%;
 }
+
+.left-tech > *,
+.right-tech > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
 
 /* ==========================================
    CARD
@@ -167,6 +176,12 @@
 /* ==========================================
    TABLE
 ========================================== */
+.table-wrapper {
+  background: #fff;
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
 
 table {
     width: 100%;
