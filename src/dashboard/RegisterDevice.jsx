@@ -1,12 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaLaptop } from "react-icons/fa";
-import axios from "axios";
+import api from "../api/client";
 import "./RegisterDevice.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const RegisterDevice = () => {
   const navigate = useNavigate();
@@ -50,7 +47,7 @@ const RegisterDevice = () => {
     setError(null);
 
     try {
-      await axios.post(`${API_BASE_URL}/api/devices`, {
+      await api.post(`/api/devices`, {
         customer_id: user.id,
         device_name: form.device_name.trim(),
         brand: form.brand.trim() || null,

@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import { Link } from "react-router-dom";
 import "./AdminArticles.css";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/diy-videos";
+const API = "/api/diy-videos";
 
 export default function AdminVideos() {
   const [videos, setVideos] = useState([]);
@@ -15,7 +15,7 @@ export default function AdminVideos() {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(API);
+      const { data } = await api.get(API);
 
       setVideos(data);
     } finally {
@@ -40,7 +40,7 @@ export default function AdminVideos() {
 
   const del = async (id) => {
     if (window.confirm("Delete video?")) {
-      await axios.delete(`${API}/${id}`);
+      await api.delete(`${API}/${id}`);
       load();
     }
   };

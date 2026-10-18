@@ -13,11 +13,8 @@ import {
 import "./TechnicianDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -57,18 +54,18 @@ const TechnicianDashboard = () => {
 
       try {
         const [statsRes, jobsRes, scheduleRes, activeRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/stats/technician/${user.id}`),
-          axios.get(`${API_BASE_URL}/api/tickets`, {
+          api.get(`/api/stats/technician/${user.id}`),
+          api.get(`/api/tickets`, {
             params: { technician_id: user.id, limit: 3 },
           }),
-          axios.get(`${API_BASE_URL}/api/bookings`, {
+          api.get(`/api/bookings`, {
             params: {
               technician_id: user.id,
               today: true,
               status: "confirmed",
             },
           }),
-          axios.get(`${API_BASE_URL}/api/tickets/active/${user.id}`),
+          api.get(`/api/tickets/active/${user.id}`),
         ]);
 
         if (!cancelled) {
@@ -115,30 +112,31 @@ const TechnicianDashboard = () => {
 
   const stats = [
     {
-      title: "Assigned Jobs",
-      value: techStats.assignedJobs,
-      icon: <FaTicketAlt />,
-      color: "#2563EB",
+    title: "Assigned Jobs",
+    value: techStats?.assignedJobs ?? 0,
+    icon: <FaTicketAlt />,
+    color: "#2563EB",
     },
     {
-      title: "Completed Today",
-      value: techStats.completedToday,
-      icon: <FaCheckCircle />,
-      color: "#16A34A",
+    title: "Completed Today",
+    value: techStats?.completedToday ?? 0,
+    icon: <FaCheckCircle />,
+    color: "#16A34A",
     },
     {
-      title: "Pending Repairs",
-      value: techStats.pendingRepairs,
-      icon: <FaClock />,
-      color: "#F59E0B",
+    title: "Pending Repairs",
+    value: techStats?.pendingRepairs ?? 0,
+    icon: <FaClock />,
+    color: "#F59E0B",
     },
     {
-      title: "Devices Repaired",
-      value: techStats.devicesRepaired,
-      icon: <FaLaptop />,
-      color: "#9333EA",
+    title: "Devices Repaired",
+    value: techStats?.devicesRepaired ?? 0,
+    icon: <FaLaptop />,
+    color: "#9333EA",
     },
-  ];
+    ];
+
 
   const performanceLabel =
     techStats.performancePercent === null

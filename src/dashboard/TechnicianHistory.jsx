@@ -2,12 +2,9 @@
 // History — completed jobs, for reference (amount charged, customer rating/comment).
 
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import "./TechnicianShared.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const TechnicianHistory = () => {
   let user = null;
@@ -32,7 +29,7 @@ const TechnicianHistory = () => {
 
     const load = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/api/tickets`, {
+        const res = await api.get(`/api/tickets`, {
           params: { technician_id: user.id },
         });
 

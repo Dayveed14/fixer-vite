@@ -5,13 +5,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const STATUS_OPTIONS = ["Open", "In Progress", "Pending", "Completed"];
 const PRIORITY_OPTIONS = ["Low", "Medium", "High"];
@@ -49,8 +46,8 @@ const AdminTicketEdit = () => {
 
       try {
         const [ticketRes, techRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/tickets/${id}`),
-          axios.get(`${API_BASE_URL}/api/users/technicians`),
+          api.get(`/api/tickets/${id}`),
+          api.get(`/api/users/technicians`),
         ]);
 
         if (cancelled) return;
@@ -100,7 +97,7 @@ const AdminTicketEdit = () => {
     setSaveError("");
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/tickets/${id}`, {
+      await api.patch(`/api/tickets/${id}`, {
         customer_name: form.customer_name.trim(),
         issue: form.issue.trim(),
         device: form.device.trim() || null,

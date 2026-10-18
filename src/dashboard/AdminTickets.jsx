@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "./AdminTickets.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const AdminTickets = () => {
   const navigate = useNavigate();
@@ -19,7 +16,7 @@ const AdminTickets = () => {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(`${API_BASE_URL}/api/tickets`);
+      const { data } = await api.get(`/api/tickets`);
 
       setTickets(data);
     } catch (err) {
@@ -38,7 +35,7 @@ const AdminTickets = () => {
     if (!window.confirm("Delete this ticket?")) return;
 
     try {
-      await axios.delete(`${API_BASE_URL}/api/tickets/${id}`);
+      await api.delete(`/api/tickets/${id}`);
 
       setTickets((prev) => prev.filter((ticket) => ticket.id !== id));
     } catch (err) {

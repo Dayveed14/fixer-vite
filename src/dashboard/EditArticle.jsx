@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import api, { TIMEOUTS } from "../api/client";
 import "./ArticleForm.css";
 import { Editor } from "@tinymce/tinymce-react";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "/api/articles";
 
 export default function EditArticle() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,7 +31,7 @@ export default function EditArticle() {
 
   const loadArticle = async () => {
     try {
-      const { data } = await axios.get(`${API}/${id}`);
+      const { data } = await api.get(`${API}/${slug}`);
 
       setForm({
         title: data.title,
@@ -89,11 +89,7 @@ export default function EditArticle() {
         formData.append("hero_image", image);
       }
 
-      await axios.put(`${API}/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await api.put(`${API}/${slug}`, formData, { timeout: TIMEOUTS.upload });
 
       alert("Article updated successfully.");
 
@@ -173,7 +169,7 @@ export default function EditArticle() {
 
             <select name="status" value={form.status} onChange={handleChange}>
               <option value="draft">Draft</option>
-              <option value="published">Published</option>
+              <option value="published" selected>Published</option>
             </select>
           </div>
           <div className="form-group">

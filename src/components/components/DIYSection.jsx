@@ -1,6 +1,6 @@
 import "../css/DIYSection.css";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../../api/client";
 import { Link } from "react-router-dom";
 
 const IconBook = () => (
@@ -49,10 +49,10 @@ export default function DIYSection() {
       try {
         const endpoint =
           tab === "articles"
-            ? "https://fixer-backend-7mng.onrender.com/api/articles/published"
-            : "https://fixer-backend-7mng.onrender.com/api/diy-videos/published";
+            ? "/api/articles/published"
+            : "/api/diy-videos/published";
 
-        const response = await axios.get(endpoint);
+        const response = await api.get(endpoint);
 
         if (!cancelled) {
           if (tab === "articles") {

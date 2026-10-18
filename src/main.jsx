@@ -2,9 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-// Must be imported before any component that calls axios: it attaches
-// the auth token to every request via a global interceptor.
-import './config/axios';
+// All backend calls go through src/api/client.js (base URL, cookies,
+// CSRF header, timeouts, error normalisation).
 import './App.css';
 import App from './App';
 import ErrorBoundary from './components/components/ErrorBoundary';

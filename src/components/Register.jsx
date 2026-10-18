@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { register } from "../api/auth.api";
 import logo from "./img/logo.png";
 import {
   FaArrowLeft,
@@ -37,6 +37,11 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    if (formData.password.length < 8) {
+      alert("Password must be at least 8 characters.");
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match.");
       return;
@@ -45,22 +50,19 @@ const Register = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "https://fixer-backend-7mng.onrender.com/api/users/register",
-        {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          email: formData.email,
-          phone: formData.phone,
-          password: formData.password,
-        },
-      );
+      const result = await register({
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      });
 
-      alert(response.data.message);
+      alert(result.message);
 
       navigate("/login");
     } catch (err) {
-      alert(err.response?.data?.message || "Registration Failed");
+      alert(err.message || "Registration Failed");
     } finally {
       setLoading(false);
     }

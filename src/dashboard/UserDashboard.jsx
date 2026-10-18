@@ -12,11 +12,8 @@ import {
 import "./UserDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
   video: "Video Call",
@@ -33,7 +30,7 @@ const StarRating = ({ ticket, onSubmitted }) => {
     setSubmitting(true);
 
     try {
-      await axios.post(`${API_BASE_URL}/api/ratings`, {
+      await api.post(`/api/ratings`, {
         ticket_id: ticket.id,
         technician_id: ticket.technician_id,
         rating: value,
@@ -98,14 +95,14 @@ const UserDashboard = () => {
       try {
         const [statsRes, ticketsRes, appointmentRes, deviceRes] =
           await Promise.all([
-            axios.get(`${API_BASE_URL}/api/stats/user/${user.id}`),
-            axios.get(`${API_BASE_URL}/api/tickets`, {
+            api.get(`/api/stats/user/${user.id}`),
+            api.get(`/api/tickets`, {
               params: { customer_id: user.id, limit: 3 },
             }),
-            axios.get(`${API_BASE_URL}/api/bookings`, {
+            api.get(`/api/bookings`, {
               params: { user_id: user.id, upcoming: true, limit: 1 },
             }),
-            axios.get(`${API_BASE_URL}/api/devices`, {
+            api.get(`/api/devices`, {
               params: { customer_id: user.id, limit: 1 },
             }),
           ]);
@@ -162,31 +159,32 @@ const UserDashboard = () => {
   }
 
   const stats = [
-    {
+      {
       title: "Appointments",
-      value: userStats.appointmentsCount,
+      value: userStats?.appointmentsCount ?? 0,
       icon: <FaTicketAlt />,
       color: "#0B63CE",
-    },
-    {
+      },
+      {
       title: "Repairs in Progress",
-      value: userStats.repairsInProgress,
+      value: userStats?.repairsInProgress ?? 0,
       icon: <FaTools />,
       color: "#F59E0B",
-    },
-    {
+      },
+      {
       title: "Registered Devices",
-      value: userStats.registeredDevices,
+      value: userStats?.registeredDevices ?? 0,
       icon: <FaLaptop />,
       color: "#16A34A",
-    },
-    {
+      },
+      {
       title: "AI Diagnoses",
-      value: userStats.aiDiagnoses,
+      value: userStats?.aiDiagnoses ?? 0,
       icon: <FaRobot />,
       color: "#9333EA",
-    },
-  ];
+      },
+      ];
+
 
   return (
     <div className="user-dashboard">

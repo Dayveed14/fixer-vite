@@ -1,6 +1,6 @@
 import "./css/Login.css";
 import { useState } from "react";
-import axios from "axios";
+import { login } from "../api/auth.api";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "./img/logo.png";
 
@@ -34,12 +34,7 @@ const Login = () => {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "https://fixer-backend-7mng.onrender.com/api/users/login",
-        loginData,
-      );
-
-      const user = response.data;
+      const user = await login(loginData);
 
       localStorage.setItem("user", JSON.stringify(user));
 
@@ -51,7 +46,7 @@ const Login = () => {
         navigate("../dashboard");
       }
     } catch (err) {
-      alert(err.response?.data?.message || "Login Failed");
+      alert(err.message || "Login Failed");
     } finally {
       setLoading(false);
     }

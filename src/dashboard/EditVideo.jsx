@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import api, { TIMEOUTS } from "../api/client";
 import "./ArticleForm.css";
 import { Editor } from "@tinymce/tinymce-react";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/diy-videos";
+const API = "/api/diy-videos";
 
 export default function EditVideo() {
   const { id } = useParams();
@@ -31,7 +31,7 @@ export default function EditVideo() {
 
   const loadVideo = async () => {
     try {
-      const { data } = await axios.get(`${API}/${id}`);
+      const { data } = await api.get(`${API}/${id}`);
 
       setForm({
         title: data.title,
@@ -87,11 +87,7 @@ export default function EditVideo() {
         formData.append("video", video);
       }
 
-      await axios.put(`${API}/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await api.put(`${API}/${id}`, formData, { timeout: TIMEOUTS.upload });
 
       alert("Video updated successfully.");
 

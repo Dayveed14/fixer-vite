@@ -11,11 +11,8 @@ import {
 import "./AdminDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -42,9 +39,9 @@ const AdminDashboard = () => {
       try {
         const [statsRes, ticketsRes, techniciansRes, deviceRes] =
           await Promise.all([
-            axios.get(`${API_BASE_URL}/api/stats/dashboard`),
-            axios.get(`${API_BASE_URL}/api/tickets`, { params: { limit: 4 } }),
-            axios.get(`${API_BASE_URL}/api/users/technicians`),
+            api.get(`/api/stats/dashboard`),
+            api.get(`/api/tickets`, { params: { limit: 4 } }),
+            api.get(`/api/users/technicians`),
           ]);
 
         if (!cancelled) {
@@ -229,13 +226,13 @@ const AdminDashboard = () => {
             <div className="health-item">
               <FaTools />
               <span>Repairs Today</span>
-              <strong>46</strong>
+              <strong>{statsData.repairsToday ?? 0}</strong>
             </div>
 
             <div className="health-item">
               <FaExclamationTriangle />
               <span>Pending Approvals</span>
-              <strong>{statsData.unassignedCalls}</strong>
+              <strong>{statsData.pendingApprovals ?? statsData.unassignedCalls ?? 0}</strong>
             </div>
           </div>
         </div>

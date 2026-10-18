@@ -5,13 +5,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 function badgeClass(status) {
   switch (status) {
@@ -53,7 +50,7 @@ const UserJobDetail = () => {
     setError(null);
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/tickets/${id}`);
+      const res = await api.get(`/api/tickets/${id}`);
       setTicket(res.data);
     } catch (err) {
       console.error(err);
@@ -82,7 +79,7 @@ const UserJobDetail = () => {
     setRatingError("");
 
     try {
-      await axios.post(`${API_BASE_URL}/api/ratings`, {
+      await api.post(`/api/ratings`, {
         ticket_id: ticket.id,
         technician_id: ticket.technician_id,
         customer_id: user?.id,

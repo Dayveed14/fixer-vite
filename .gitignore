@@ -27,3 +27,23 @@ yarn-error.log*
 .env
 .env.*".env" 
 
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Node.js dependencies
+node_modules/
+
+# Vite production build
+dist/
+
+# Android build outputs and caches
+android/.gradle/
+android/**/build/
+
+# Local Android Studio configuration
+android/.idea/
+
+# Large Gradle distribution downloads
+android/gradle/wrapper/gradle-*-all.zip

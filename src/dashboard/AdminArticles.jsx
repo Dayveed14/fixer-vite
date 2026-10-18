@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import { Link } from "react-router-dom";
 import "./AdminArticles.css";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "/api/articles";
 
 export default function AdminArticles() {
   const [articles, setArticles] = useState([]);
@@ -15,7 +15,7 @@ export default function AdminArticles() {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(API);
+      const { data } = await api.get(API);
 
       setArticles(data);
     } finally {
@@ -40,7 +40,7 @@ export default function AdminArticles() {
 
   const del = async (id) => {
     if (window.confirm("Delete article?")) {
-      await axios.delete(`${API}/${id}`);
+      await api.delete(`${API}/${id}`);
       load();
     }
   };
@@ -122,13 +122,10 @@ export default function AdminArticles() {
 
                   <td>
                     <div className="article-actions">
-                      <Link className="article-view" to={`/article/${a.id}`}>
-                        View
-                      </Link>
-
+                      <Link className="article-view" to={`/article/${a.slug}`}> View </Link>
                       <Link
                         className="article-edit"
-                        to={`/admin/editarticle/${a.id}`}>
+                        to={`/admin/editarticle/${a.slug}`}>
                         Edit
                       </Link>
 

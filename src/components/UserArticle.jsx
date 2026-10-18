@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "../dashboard/Article.css";
 import Navbar from "./components/Navbar";
 import SEO from "./SEO";
 import { SITE_URL } from "../config/seo";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "/api/articles";
 
 // The API doesn't return a dedicated excerpt/meta_description field yet
 // (see article.content below) — until it does, this strips the HTML body
@@ -30,7 +30,7 @@ export default function UserArticle() {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        const { data } = await axios.get(`${API}/${slug}`);
+        const { data } = await api.get(`${API}/${slug}`);
         setArticle(data);
       } catch (err) {
         console.error(err);

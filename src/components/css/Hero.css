@@ -963,3 +963,115 @@ ol.diag-step-list li span{
     padding: 6px 9px;
   }
 }
+/* ══ FixBot redesign ═════════════════════════════════════════════
+   FixBot stands on a Fixer-blue "workbench" (a blueprint dot grid)
+   and speaks in white bubbles. Results are bubbles too. */
+.diag-modal__panel {
+  border-radius: 28px;
+  box-shadow: 0 30px 80px rgba(17, 26, 84, 0.35);
+}
+
+.diag-modal__left {
+  background-color: var(--blue);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+  border-radius: 28px 0 0 28px;
+  justify-content: flex-start;
+  padding: 28px 24px 32px;
+}
+
+.diag-modal__left .diag-modal__result {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  border: 0;
+  border-radius: 22px;
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(17, 26, 84, 0.25);
+  animation: fixbot-pop 0.35s cubic-bezier(0.3, 1.5, 0.6, 1);
+}
+
+.diag-modal__left .diag-modal__result::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  margin-left: -11px;
+  border: 11px solid transparent;
+  border-top: 0;
+  border-bottom-color: #fff;
+}
+
+.diag-modal__left .diag-modal__result-sub {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.diag-modal__left .diag-modal__result-title,
+.diag-modal__left h4,
+.diag-modal__left strong {
+  color: var(--text);
+}
+
+.diag-modal__left .diag-modal__causes li,
+.diag-modal__left li,
+.diag-modal__left p {
+  color: var(--text);
+}
+
+.diag-modal__left .diag-modal__rec {
+  background: #eef1fe;
+  color: var(--text);
+}
+
+.diag-modal__left .diag-modal__result--error {
+  background: #fff;
+}
+
+.diag-modal__left .diag-modal__result--error p {
+  color: #b42318;
+}
+
+.diag-modal__left .diag-modal__result--error .diag-modal__res-btn--ghost {
+  color: var(--blue);
+}
+
+.diag-modal__left .diag-modal__res-btn--ghost {
+  color: var(--blue);
+  border-color: #d5dcfc;
+}
+
+/* Bubbly form controls on the right */
+.diag-modal__right .diag-modal__input,
+.diag-modal__right .diag-modal__textarea,
+.diag-modal__right .diag-modal__select {
+  border-radius: 16px;
+}
+
+.diag-modal__chip {
+  border-radius: 999px;
+}
+
+.diag-modal__btn--run {
+  border-radius: 999px;
+}
+
+@media (max-width: 760px) {
+  .diag-modal__panel { grid-template-columns: 1fr; }
+  .diag-modal__left { border-radius: 28px 28px 0 0; }
+  .fixbot-stage__spot { width: 170px; height: 170px; }
+}
+
+.diag-modal__left .diag-modal__result li,
+.diag-modal__left .diag-modal__result li span,
+.diag-modal__left .diag-modal__result p {
+  color: var(--text);
+}
+
+.diag-modal__left .diag-modal__result .diag-modal__result-sub {
+  color: var(--text-muted);
+  margin-top: 6px;
+}

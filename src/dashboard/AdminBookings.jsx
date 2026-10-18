@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import { FaCalendarAlt, FaUserTie } from "react-icons/fa";
 import "./AdminBookings.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -28,11 +25,11 @@ const AdminBookings = () => {
 
     try {
       const [bookingsRes, techniciansRes, allRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/bookings`, {
+        api.get(`/api/bookings`, {
           params: { status: "pending" },
         }),
-        axios.get(`${API_BASE_URL}/api/users/technicians`),
-        axios.get(`${API_BASE_URL}/api/bookings`),
+        api.get(`/api/users/technicians`),
+        api.get(`/api/bookings`),
       ]);
 
       setBookings(bookingsRes.data);
@@ -65,7 +62,7 @@ const AdminBookings = () => {
     setAssigningId(bookingId);
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/bookings/${bookingId}/assign`, {
+      await api.patch(`/api/bookings/${bookingId}/assign`, {
         technician_id: technicianId,
       });
 

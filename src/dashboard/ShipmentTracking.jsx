@@ -1,11 +1,8 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import "./AdminArticles.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
-const API = `${API_BASE_URL}/api/shipment`;
+const API = `/api/shipments`;
 
 // Slugs match the stages shown on the customer-facing tracking timeline
 // (Shipment.jsx). status is a free-form VARCHAR on the backend, so this is
@@ -34,7 +31,7 @@ export default function AdminShipments() {
     try {
       setLoading(true);
 
-      const { data } = await axios.get(API);
+      const { data } = await api.get(API);
 
       setShipments(data);
     } finally {
@@ -63,7 +60,7 @@ export default function AdminShipments() {
     try {
       setUpdatingId(id);
 
-      await axios.patch(`${API}/${id}/status`, { status: newStatus });
+      await api.patch(`${API}/${id}/status`, { status: newStatus });
 
       setShipments((prev) =>
         prev.map((s) => (s.id === id ? { ...s, status: newStatus } : s)),

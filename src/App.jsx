@@ -24,6 +24,7 @@ import TechnicianHistory from "./dashboard/TechnicianHistory";
 import TechnicianSettings from "./dashboard/TechnicianSettings";
 import UserSettings from "./dashboard/UserSettings";
 import AdminSettings from "./dashboard/AdminSettings";
+import AdminPricing from "./dashboard/AdminPricing";
 import AdminArticles from "./dashboard/AdminArticles";
 import UserLayout from "./dashboard/UserLayout";
 import AdminLayout from "./dashboard/AdminLayout";
@@ -109,24 +110,24 @@ function App() {
               <Route path="/admindashboard" element={<AdminDashboard />} />
               <Route path="/adminarticles" element={<AdminArticles />} />
               <Route path="/admin/bookings" element={<AdminBookings />} />
-          <Route path="/admin/technicians" element={<AdminTechnicians />} />
-          <Route path="/admin/diagnosis" element={<AdminDiagnosis />} />
-          <Route path="/admintickets" element={<AdminTickets />} />
-          <Route path="/admin/tickets/:id" element={<AdminTicketDetail />} />
-          <Route path="/admin/tickets/edit/:id" element={<AdminTicketEdit />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/dashboard/admin/articles/new" element={<AddArticle />} />
-          <Route path="/admin/users/new" element={<AddUsers />} />
-          <Route path="/article/:id" element={<Article />} />
+              <Route path="/admin/technicians" element={<AdminTechnicians />} />
+              <Route path="/admin/diagnosis" element={<AdminDiagnosis />} />
+              <Route path="/admintickets" element={<AdminTickets />} />
+              <Route path="/admin/tickets/:id" element={<AdminTicketDetail />} />
+              <Route path="/admin/tickets/edit/:id" element={<AdminTicketEdit />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/dashboard/admin/articles/new" element={<AddArticle />} />
+              <Route path="/admin/users/new" element={<AddUsers />} />
+              <Route path="/article/:slug" element={<Article />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
-          <Route path="/admin/editarticle/:id" element={<EditArticle />} />
-          <Route path="/adminvideos" element={<AdminVideos />} />
-          <Route path="/adminshipments" element={<AdminShipments />} />
-          <Route path="/adminvideos/new" element={<AddVideo />} />
-          <Route path="/admin/editvideo/:id" element={<EditVideo />} />
+              <Route path="/adminpricing" element={<AdminPricing />} />
+              <Route path="/admin/editarticle/:slug" element={<EditArticle />} />
+              <Route path="/adminvideos" element={<AdminVideos />} />
+              <Route path="/adminshipments" element={<AdminShipments />} />
+              <Route path="/adminvideos/new" element={<AddVideo />} />
+              <Route path="/admin/editvideo/:id" element={<EditVideo />} />
           </Route>
-</Route>
-
+          </Route>
         </Routes>
       </>
   );

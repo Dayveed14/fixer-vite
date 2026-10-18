@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
+import { notificationLink } from "../utils/notificationLink";
 import {
   FaBars,
   FaTimes,
@@ -32,15 +33,12 @@ const UserLayout = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://fixer-backend-7mng.onrender.com";
 
   const loadNotifications = async () => {
     if (!user?.id) return;
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/notifications`, {
+      const res = await api.get(`/api/notifications`, {
         params: { user_id: user.id, role: user.role },
       });
 
@@ -66,7 +64,7 @@ const UserLayout = () => {
     if (notif.is_read) return;
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/notifications/${notif.id}/read`);
+      await api.patch(`/api/notifications/${notif.id}/read`);
 
       setNotifications((prev) =>
         prev.map((n) => (n.id === notif.id ? { ...n, is_read: 1 } : n)),
@@ -79,7 +77,7 @@ const UserLayout = () => {
 
   const markAllRead = async () => {
     try {
-      await axios.patch(`${API_BASE_URL}/api/notifications/read-all`, {
+      await api.patch(`/api/notifications/read-all`, {
         user_id: user.id,
         role: user.role,
       });
@@ -97,7 +95,7 @@ const UserLayout = () => {
     // local cleanup/redirect even if that call fails, so a flaky
     // network doesn't strand someone on a screen they can't use.
     try {
-      await axios.post(`${API_BASE_URL}/api/users/logout`);
+      await api.post(`/api/users/logout`);
     } catch {
       // ignore — we're logging out either way
     }
@@ -241,7 +239,14 @@ const UserLayout = () => {
                         <button
                           key={notif.id}
                           className={`notif-item ${notif.is_read ? "" : "unread"}`}
-                          onClick={() => markOneRead(notif)}>
+                          onClick={() => {
+                            markOneRead(notif);
+                            const link = notificationLink(notif, "user");
+                            if (link) {
+                              setNotifOpen(false);
+                              navigate(link);
+                            }
+                          }}>
                           <span className="notif-title">{notif.title}</span>
                           <span className="notif-message">{notif.message}</span>
                           <span className="notif-time">

@@ -1,6 +1,9 @@
 import { useState, useEffect, Fragment } from "react";
 import { Link } from "react-router-dom";
 import "../css/Hero.css";
+import { runDiagnosis } from "../../api/diagnosis.api";
+import FixBotMascot from "../fixbot/FixBotMascot";
+import { diagnosisKind, noMatchMessage, formatEstimatedRepair } from "../../utils/diagnosis";
 
 const STATS = [
   { value: "X", label: "Articles" },
@@ -84,38 +87,36 @@ function DiagnosisModal({ onClose }) {
     setError(null);
 
     try {
-      const response = await fetch(
-        "https://fixer-backend-7mng.onrender.com/api/diagnosis/run",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            deviceType,
-            brand,
-            primaryFault,
-            selectedSymptoms,
-            description,
-          }),
-        },
-      );
+      let data;
+      try {
+        data = await runDiagnosis({
+          deviceType,
+          brand,
+          primaryFault,
+          selectedSymptoms,
+          description,
+        });
+      } catch (apiError) {
+        // ApiError messages are already customer-friendly (validation,
+        // rate limiting, timeouts, outages).
+        setError(apiError.message);
+        return;
+      }
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        const status = response.status;
-        const upstreamMsg = data?.error?.message || data?.message;
-
-        const friendly =
-          status === 503
-            ? "Our diagnostic AI is currently experiencing high demand. Please try again in a moment."
-            : status === 429
-              ? "We're receiving a lot of requests right now. Please wait a moment and try again."
-              : upstreamMsg ||
-                "Something went wrong while running the diagnosis. Please try again.";
-
-        setError(friendly);
+      // No confident knowledge-base match and no AI answer — still give
+      // the customer a way forward.
+      if (diagnosisKind(data) === "no_match") {
+        setDiagnosis({
+          source: "no_match",
+          requestId: data.requestId,
+          likelyProblem: "We need a technician's eyes on this",
+          severity: "medium",
+          estimatedRepair: "Assessment required",
+          causes: [],
+          steps: [noMatchMessage(data)],
+          bookTechnician: true,
+          mailInRepair: true,
+        });
         return;
       }
 
@@ -164,11 +165,12 @@ if (data.source === "knowledge_base" && Array.isArray(data.results)) {
     alternatives: data.results.slice(1),
   });
 } else {
-  // AI response — keep the existing structure
-  setDiagnosis(data);
+  // AI response
+  setDiagnosis({
+    ...data,
+    estimatedRepair: formatEstimatedRepair(data.estimatedRepair),
+  });
 }
-
-console.log("Diagnosis result:", data);
     } catch (err) {
       console.error(err);
       setError(
@@ -215,21 +217,37 @@ console.log("Diagnosis result:", data);
 
           {/* Left column */}
           <div className="diag-modal__left">
-            <h2 className="diag-modal__title">Meet FixBot 🤖</h2>
-            <p className="diag-modal__body">
-              Tell us what's wrong with your computer, and our AI will guide you
-              through possible solutions in under two minutes.
-            </p>
-
-            {loading && (
-              <div className="diag-modal__result diag-modal__result--loading">
-                <div className="diag-modal__spinner" />
-                <p>Analyzing your device symptoms…</p>
+            <div className="fixbot-stage">
+              <div className="fixbot-stage__spot">
+                <FixBotMascot
+                  mood={
+                    loading
+                      ? "thinking"
+                      : error
+                        ? "oops"
+                        : diagnosis?.source === "no_match"
+                          ? "puzzled"
+                          : diagnosis
+                            ? "happy"
+                            : "idle"
+                  }
+                  size={150}
+                />
               </div>
-            )}
+
+              {!diagnosis && !error && (
+                <div className="fixbot-bubble" aria-live="polite">
+                  <span className="fixbot-bubble__name">FixBot</span>
+                  {loading
+                    ? "Let me take a look… I'm checking your symptoms against our repair notes."
+                    : "Hi! Tell me what's wrong with your computer and I'll suggest fixes in under two minutes."}
+                </div>
+              )}
+            </div>
 
             {error && !loading && (
-              <div className="diag-modal__result diag-modal__result--error">
+              <div className="diag-modal__result diag-modal__result--error" role="alert">
+                <span className="fixbot-bubble__name">FixBot</span>
                 <p>{error}</p>
                 <button
                   className="diag-modal__res-btn diag-modal__res-btn--ghost"
@@ -241,7 +259,14 @@ console.log("Diagnosis result:", data);
 
             {diagnosis && !loading && !error && (
               <div className="diag-modal__result">
-                <p className="diag-modal__result-sub">AI diagnosis</p>
+                <p className="diag-modal__result-sub">
+                  <span className="fixbot-bubble__name">FixBot</span>
+                  {diagnosis.source === "knowledge_base"
+                    ? "Found it in our repair notes:"
+                    : diagnosis.source === "no_match"
+                      ? "I couldn't pin this one down."
+                      : "Here's my best diagnosis:"}
+                </p>
 
                 <div className="diag-result">
                   {/* Diagnosis + severity */}

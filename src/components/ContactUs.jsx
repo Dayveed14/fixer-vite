@@ -1,12 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
 import SEO from "./SEO";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const CHANNELS = [
   {
@@ -52,7 +49,7 @@ export default function ContactUs() {
     setError(null);
 
     try {
-      await axios.post(`${API_BASE_URL}/api/contact`, form);
+      await api.post(`/api/contact`, form);
       setSent(true);
     } catch (err) {
       console.error(err);

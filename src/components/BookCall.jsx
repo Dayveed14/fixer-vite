@@ -1,11 +1,18 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
 import { usePaystackPayment } from "react-paystack";
 import "./css/BookCall.css";
+import { getStoredUser } from "../api/client";
+import { initializePayment as initializeServerPayment } from "../api/payments.api";
+import { createBooking, getSupportTypes } from "../api/bookings.api";
+import {
+  availableSlots,
+  formatSlot,
+  isDateBookable,
+  nowInBusinessTz,
+  parseTime,
+  toDateString,
+} from "../utils/schedule";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 const PAYSTACK_PUBLIC_KEY = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
 
 const MONTHS = [
@@ -24,39 +31,6 @@ const MONTHS = [
 ];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// Updated working hours: 8:00 AM to 10:00 PM
-const TIME_SLOTS = [
-  "8:00 AM",
-  "8:30 AM",
-  "9:00 AM",
-  "9:30 AM",
-  "10:00 AM",
-  "10:30 AM",
-  "11:00 AM",
-  "11:30 AM",
-  "12:00 PM",
-  "12:30 PM",
-  "1:00 PM",
-  "1:30 PM",
-  "2:00 PM",
-  "2:30 PM",
-  "3:00 PM",
-  "3:30 PM",
-  "4:00 PM",
-  "4:30 PM",
-  "5:00 PM",
-  "5:30 PM",
-  "6:00 PM",
-  "6:30 PM",
-  "7:00 PM",
-  "7:30 PM",
-  "8:00 PM",
-  "8:30 PM",
-  "9:00 PM",
-  "9:30 PM",
-  "10:00 PM",
-];
-
 const DEVICE_TYPES = [
   "Smartphone",
   "Laptop",
@@ -67,31 +41,31 @@ const DEVICE_TYPES = [
   "Other",
 ];
 
-// amount is in Naira — must match backend's SUPPORT_TYPE_MAP exactly, since
-// the server independently verifies the Paystack payment against it.
-const SUPPORT_TYPES = [
+// Display copy. Prices shown here are refreshed from the server
+// (GET /api/bookings/support-types) and the amount actually charged is
+// always the one the server returns when the payment is initialised.
+const DEFAULT_SUPPORT_TYPES = [
   {
     id: "voice",
     title: "Voice Call",
     desc: "Speak directly with an expert via phone line.",
-    cost: "₦5000",
     amount: 5000,
   },
   {
     id: "video",
     title: "Video Call",
     desc: "Face-to-face assistance via Google Meet.",
-    cost: "₦7000",
     amount: 7000,
   },
   {
     id: "remote",
     title: "Remote Support",
     desc: "Secure remote desktop access via TeamViewer/AnyDesk.",
-    cost: "₦10000",
     amount: 10000,
   },
 ];
+
+const naira = (amount) => `₦${Number(amount).toLocaleString()}`;
 
 function getDaysInMonth(year, month) {
   return new Date(year, month + 1, 0).getDate();
@@ -100,32 +74,35 @@ function getFirstDay(year, month) {
   return new Date(year, month, 1).getDay();
 }
 
-// Convert "8:00 AM" -> "08:00:00" for the backend's TIME column.
-function to24Hour(timeLabel) {
-  const [time, period] = timeLabel.split(" ");
-  let [hours, minutes] = time.split(":").map(Number);
-
-  if (period === "PM" && hours !== 12) hours += 12;
-  if (period === "AM" && hours === 12) hours = 0;
-
-  return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00`;
-}
-
 export default function BookCall() {
-  const today = new Date();
+  // "now" ticks every minute so today's slots disappear as time passes.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const todayAbuja = nowInBusinessTz(now).date;
+  const [todayYear, todayMonth] = todayAbuja.split("-").map(Number);
+
+  const storedUser = getStoredUser();
+
   const [step, setStep] = useState(1);
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+  const [year, setYear] = useState(todayYear);
+  const [month, setMonth] = useState(todayMonth - 1);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null); // "HH:MM"
 
   // Flow State
   const [form, setForm] = useState({
-    name: "",
-    email: "",
+    name: storedUser
+      ? `${storedUser.first_name || ""} ${storedUser.last_name || ""}`.trim()
+      : "",
+    email: storedUser?.email || "",
     device: "",
     issue: "",
   });
+  const [supportTypes, setSupportTypes] = useState(DEFAULT_SUPPORT_TYPES);
   const [supportType, setSupportType] = useState("");
   const [paymentReference, setPaymentReference] = useState(null);
   const [paying, setPaying] = useState(false);
@@ -136,12 +113,51 @@ export default function BookCall() {
   const [submitError, setSubmitError] = useState(null);
   const [bookingReference, setBookingReference] = useState(null);
 
+  useEffect(() => {
+    let cancelled = false;
+    getSupportTypes()
+      .then((types) => {
+        if (cancelled || !Array.isArray(types)) return;
+        setSupportTypes((current) =>
+          current.map((t) => {
+            const server = types.find((s) => s.id === t.id);
+            return server ? { ...t, amount: server.amount } : t;
+          }),
+        );
+      })
+      .catch(() => {
+        /* keep defaults; the server still decides the charge */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const dateString = selectedDate ? toDateString(year, month, selectedDate) : null;
+
+  const slots = useMemo(
+    () => (dateString ? availableSlots(dateString, "booking", now) : []),
+    [dateString, now],
+  );
+
+  // If the chosen time slips into the past while the customer is on
+  // this step, drop it so they can't continue with it.
+  useEffect(() => {
+    if (step === 1 && selectedTime && !slots.includes(selectedTime)) {
+      setSelectedTime(null);
+    }
+  }, [slots, selectedTime, step]);
+
+  const isCurrentMonth = year === todayYear && month === todayMonth - 1;
+
   const prevMonth = () => {
+    if (isCurrentMonth) return;
     if (month === 0) {
       setMonth(11);
       setYear((y) => y - 1);
     } else setMonth((m) => m - 1);
     setSelectedDate(null);
+    setSelectedTime(null);
   };
   const nextMonth = () => {
     if (month === 11) {
@@ -149,50 +165,111 @@ export default function BookCall() {
       setYear((y) => y + 1);
     } else setMonth((m) => m + 1);
     setSelectedDate(null);
+    setSelectedTime(null);
   };
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDay(year, month);
 
-  const isPast = (day) => {
-    const d = new Date(year, month, day);
-    d.setHours(0, 0, 0, 0);
-    const t = new Date();
-    t.setHours(0, 0, 0, 0);
-    return d < t;
-  };
+  // A day is unavailable if it's past, too far ahead, or (today) has no
+  // slots left — e.g. after 9 PM.
+  const isUnavailable = (day) =>
+    !isDateBookable(toDateString(year, month, day), "booking", now);
 
   const selectedLabel = selectedDate
     ? `${DAYS[new Date(year, month, selectedDate).getDay()]}, ${MONTHS[month]} ${selectedDate}, ${year}`
     : "";
+  const selectedTimeLabel = selectedTime ? formatSlot(selectedTime) : "";
 
   const handleNextStep = () => {
+    setSubmitError(null);
     if (step === 1 && selectedDate && selectedTime) setStep(2);
     else if (step === 2 && form.name && form.email) setStep(3);
     else if (step === 3 && supportType) setStep(4);
   };
 
   const handleBackStep = () => {
+    setSubmitError(null);
     if (step > 1) setStep((prev) => prev - 1);
   };
 
-  const selectedType = SUPPORT_TYPES.find((t) => t.id === supportType);
+  const selectedType = supportTypes.find((t) => t.id === supportType);
 
-  const initializePayment = usePaystackPayment({
+  const openPaystack = usePaystackPayment({
     publicKey: PAYSTACK_PUBLIC_KEY,
   });
 
-  const payAndContinue = () => {
+  const confirmBooking = async (reference) => {
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const result = await createBooking({
+        support_type: supportType,
+        booking_date: dateString,
+        booking_time: selectedTime,
+        issue_summary: form.issue || null,
+        device: form.device || null,
+        payment_reference: reference,
+      });
+
+      setBookingReference(result.booking_reference);
+      setSubmitted(true);
+    } catch (err) {
+      // The payment is safe on the server: retrying with the same
+      // reference either creates the booking or returns the one that
+      // already exists — never a second charge or a duplicate.
+      setSubmitError(
+        `${err.message} Your payment reference is ${reference}. You can retry below, or contact support with it.`,
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const payAndBook = async () => {
     if (!selectedType) return;
 
+    if (!getStoredUser()) {
+      setSubmitError("You need to be logged in to book a call.");
+      return;
+    }
+
+    // Re-check the slot right before charging.
+    if (!availableSlots(dateString, "booking", new Date()).includes(selectedTime)) {
+      setSubmitError(
+        "That time is no longer available. Please pick another time.",
+      );
+      setSelectedTime(null);
+      setStep(1);
+      return;
+    }
+
+    setSubmitError(null);
     setPaying(true);
 
-    initializePayment({
+    let intent;
+    try {
+      // The server prices the call and registers the payment against
+      // this account and slot before Paystack is opened.
+      intent = await initializeServerPayment({
+        purpose: "booking",
+        support_type: supportType,
+        booking_date: dateString,
+        booking_time: selectedTime,
+      });
+    } catch (err) {
+      setPaying(false);
+      setSubmitError(err.message);
+      return;
+    }
+
+    openPaystack({
       config: {
-        email: form.email,
-        amount: selectedType.amount * 100, // Paystack expects kobo
-        currency: "NGN",
-        reference: `BK_${Date.now()}_${Math.floor(Math.random() * 1e6)}`,
+        email: intent.email,
+        amount: intent.amount_kobo,
+        currency: intent.currency,
+        reference: intent.reference,
         metadata: {
           name: form.name,
           support_type: supportType,
@@ -200,61 +277,13 @@ export default function BookCall() {
       },
       onSuccess: (response) => {
         setPaying(false);
-        setPaymentReference(response.reference);
-        setStep(5);
+        setPaymentReference(response.reference || intent.reference);
+        confirmBooking(response.reference || intent.reference);
       },
       onClose: () => {
         setPaying(false);
       },
     });
-  };
-
-  const handleSubmit = async () => {
-    let user = null;
-    try {
-      user = JSON.parse(localStorage.getItem("user"));
-    } catch {
-      user = null;
-    }
-
-    if (!user?.id) {
-      setSubmitError("You need to be logged in to book a call.");
-      return;
-    }
-
-    if (!paymentReference) {
-      setSubmitError(
-        "Payment was not completed. Please go back and pay first.",
-      );
-      return;
-    }
-
-    setSubmitting(true);
-    setSubmitError(null);
-
-    try {
-      const res = await axios.post(`${API_BASE_URL}/api/bookings`, {
-        user_id: user.id,
-        support_type: supportType,
-        booking_date: `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`,
-        booking_time: to24Hour(selectedTime),
-        duration: 30,
-        issue_summary: form.issue || null,
-        device: form.device || null,
-        payment_reference: paymentReference,
-      });
-
-      setBookingReference(res.data.booking_reference);
-      setSubmitted(true);
-    } catch (err) {
-      console.error(err);
-      setSubmitError(
-        err.response?.data?.message ||
-          "Failed to confirm booking. Please try again.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   const resetForm = () => {
@@ -264,13 +293,22 @@ export default function BookCall() {
     setSelectedDate(null);
     setSelectedTime(null);
     setSupportType("");
-    setForm({ name: "", email: "", device: "", issue: "" });
+    setForm((f) => ({ ...f, device: "", issue: "" }));
     setPaymentReference(null);
+    setSubmitError(null);
+  };
+
+  // Abuja is UTC+1 year-round, so the UTC start is one hour earlier.
+  const icsStart = () => {
+    const minutes = parseTime(selectedTime) - 60;
+    const hh = String(Math.floor(minutes / 60)).padStart(2, "0");
+    const mm = String(minutes % 60).padStart(2, "0");
+    return `${dateString.replace(/-/g, "")}T${hh}${mm}00Z`;
   };
 
   // Helper to generate dynamic Google Calendar invite file
   const downloadCalendarInvite = () => {
-    const eventDetails = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Device Repair Call (${supportType.toUpperCase()})\nDESCRIPTION:Expert troubleshooting appointment.\nDTSTART:${year}${String(month + 1).padStart(2, "0")}${String(selectedDate).padStart(2, "0")}T120000Z\nDURATION:PT30M\nEND:VEVENT\nEND:VCALENDAR`;
+    const eventDetails = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:Device Repair Call (${supportType.toUpperCase()})\nDESCRIPTION:Expert troubleshooting appointment.\nDTSTART:${icsStart()}\nDURATION:PT30M\nEND:VEVENT\nEND:VCALENDAR`;
     const blob = new Blob([eventDetails], {
       type: "text/calendar;charset=utf-8;",
     });
@@ -295,10 +333,10 @@ export default function BookCall() {
         <p>
           Your{" "}
           <strong>
-            {SUPPORT_TYPES.find((t) => t.id === supportType)?.title}
+            {selectedType?.title}
           </strong>{" "}
           is scheduled for <strong>{selectedLabel}</strong> at{" "}
-          <strong>{selectedTime}</strong>.
+          <strong>{selectedTimeLabel}</strong> (Abuja time).
         </p>
         <p>
           A receipt and confirmation link have been sent to{" "}
@@ -382,12 +420,7 @@ export default function BookCall() {
             <div className="bookcall__step-line" />
             <div className={`bookcall__step ${step >= 4 ? "active" : ""}`}>
               <span className="bookcall__step-num">4</span>
-              <span className="bookcall__step-label">Payment</span>
-            </div>
-            <div className="bookcall__step-line" />
-            <div className={`bookcall__step ${step >= 5 ? "active" : ""}`}>
-              <span className="bookcall__step-num">5</span>
-              <span className="bookcall__step-label">Confirm</span>
+              <span className="bookcall__step-label">Review & Pay</span>
             </div>
           </div>
         </div>
@@ -396,15 +429,18 @@ export default function BookCall() {
         {step > 1 && (
           <div className="bookcall__confirm-banner">
             <span className="banner-item">
-              📅 {selectedLabel} @ {selectedTime}
+              📅 {selectedLabel} @ {selectedTimeLabel}
             </span>
             {supportType && (
               <span className="banner-item">
                 {" "}
-                • ⚙️ {SUPPORT_TYPES.find((t) => t.id === supportType)?.title}
+                • ⚙️ {selectedType?.title}
               </span>
             )}
-            <button className="bookcall__change" onClick={() => setStep(1)}>
+            <button
+              className="bookcall__change"
+              onClick={() => setStep(1)}
+              disabled={paying || submitting || Boolean(paymentReference)}>
               Restart
             </button>
           </div>
@@ -415,7 +451,11 @@ export default function BookCall() {
           <div className="bookcall__body">
             <div className="bookcall__calendar-wrap">
               <div className="bookcall__cal-nav">
-                <button className="bookcall__cal-arrow" onClick={prevMonth}>
+                <button
+                  className="bookcall__cal-arrow"
+                  onClick={prevMonth}
+                  disabled={isCurrentMonth}
+                  aria-label="Previous month">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
                       d="M10 3L5 8l5 5"
@@ -429,7 +469,10 @@ export default function BookCall() {
                 <span className="bookcall__cal-month">
                   {MONTHS[month]} {year}
                 </span>
-                <button className="bookcall__cal-arrow" onClick={nextMonth}>
+                <button
+                  className="bookcall__cal-arrow"
+                  onClick={nextMonth}
+                  aria-label="Next month">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
                       d="M6 3l5 5-5 5"
@@ -453,13 +496,17 @@ export default function BookCall() {
                 ))}
                 {Array.from({ length: daysInMonth }).map((_, i) => {
                   const day = i + 1;
-                  const past = isPast(day);
+                  const past = isUnavailable(day);
                   const sel = selectedDate === day;
                   return (
                     <button
                       key={day}
                       className={`bookcall__cal-day ${past ? "past" : ""} ${sel ? "selected" : ""}`}
-                      onClick={() => !past && setSelectedDate(day)}
+                      onClick={() => {
+                        if (past) return;
+                        setSelectedDate(day);
+                        setSelectedTime(null);
+                      }}
                       disabled={past}>
                       {day}
                     </button>
@@ -471,17 +518,22 @@ export default function BookCall() {
             <div className="bookcall__time-wrap">
               <h3 className="bookcall__time-title">
                 {selectedDate
-                  ? `Available Times (8:00 AM - 10:00 PM)`
+                  ? "Available times (8:00 AM – 10:00 PM, Abuja time)"
                   : "Select a date to see available times"}
               </h3>
-              {selectedDate && (
+              {selectedDate && slots.length === 0 && (
+                <p className="bookcall__no-slots">
+                  No times left on this day. Please choose another date.
+                </p>
+              )}
+              {selectedDate && slots.length > 0 && (
                 <div className="bookcall__time-grid">
-                  {TIME_SLOTS.map((t) => (
+                  {slots.map((t) => (
                     <button
                       key={t}
                       className={`bookcall__time-slot ${selectedTime === t ? "selected" : ""}`}
                       onClick={() => setSelectedTime(t)}>
-                      {t}
+                      {formatSlot(t)}
                     </button>
                   ))}
                 </div>
@@ -593,7 +645,7 @@ export default function BookCall() {
           <div className="bookcall__body">
             <h3>Choose Support Type</h3>
             <div className="bookcall__support-list">
-              {SUPPORT_TYPES.map((type) => (
+              {supportTypes.map((type) => (
                 <div
                   key={type.id}
                   className={`bookcall__support-card ${supportType === type.id ? "selected" : ""}`}
@@ -602,7 +654,7 @@ export default function BookCall() {
                     <h4>{type.title}</h4>
                     <p>{type.desc}</p>
                   </div>
-                  <div className="support-card__cost">{type.cost}</div>
+                  <div className="support-card__cost">{naira(type.amount)}</div>
                 </div>
               ))}
             </div>
@@ -624,42 +676,10 @@ export default function BookCall() {
           </div>
         )}
 
-        {/* STEP 4 — Real Payment via Paystack */}
+        {/* STEP 4 — Review, pay via Paystack, booking confirmed automatically */}
         {step === 4 && (
-          <div className="bookcall__body bookcall__body--form">
-            <h3>Payment</h3>
-            <p className="payment-total">
-              Total Amount: <strong>{selectedType?.cost}</strong>
-            </p>
-            <div className="bookcall__form">
-              <p className="bookcall__payment-note">
-                You'll be securely redirected to Paystack to complete payment.
-                Your booking is only confirmed once payment succeeds.
-              </p>
-              <div className="bookcall__form-actions">
-                <button
-                  className="bookcall__btn bookcall__btn--ghost"
-                  onClick={handleBackStep}
-                  disabled={paying}>
-                  Back
-                </button>
-                <button
-                  className="bookcall__btn bookcall__btn--primary"
-                  onClick={payAndContinue}
-                  disabled={paying || !form.email}>
-                  {paying
-                    ? "Processing..."
-                    : `Pay ${selectedType?.cost} with Paystack`}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 5 — Review Booking & Submit */}
-        {step === 5 && (
           <div className="bookcall__body">
-            <h3>Review Your Booking</h3>
+            <h3>Review & Pay</h3>
             <div className="bookcall__review-panel">
               <div className="review-item">
                 <strong>Name:</strong> {form.name}
@@ -671,11 +691,11 @@ export default function BookCall() {
                 <strong>Device:</strong> {form.device || "N/A"}
               </div>
               <div className="review-item">
-                <strong>Service Type:</strong>{" "}
-                {SUPPORT_TYPES.find((t) => t.id === supportType)?.title}
+                <strong>Service Type:</strong> {selectedType?.title}
               </div>
               <div className="review-item">
-                <strong>Date & Time:</strong> {selectedLabel} at {selectedTime}
+                <strong>Date & Time:</strong> {selectedLabel} at{" "}
+                {selectedTimeLabel} (Abuja time)
               </div>
               {form.issue && (
                 <div className="review-item">
@@ -684,7 +704,20 @@ export default function BookCall() {
               )}
             </div>
 
-            {submitError && <p className="bookcall__error">{submitError}</p>}
+            <p className="payment-total">
+              Total Amount:{" "}
+              <strong>{selectedType ? naira(selectedType.amount) : ""}</strong>
+            </p>
+            <p className="bookcall__payment-note">
+              You'll be securely redirected to Paystack to complete payment.
+              Your booking is confirmed as soon as payment succeeds.
+            </p>
+
+            {submitError && (
+              <p className="bookcall__error" role="alert">
+                {submitError}
+              </p>
+            )}
 
             <div
               className="bookcall__form-actions"
@@ -692,15 +725,26 @@ export default function BookCall() {
               <button
                 className="bookcall__btn bookcall__btn--ghost"
                 onClick={handleBackStep}
-                disabled={submitting}>
+                disabled={paying || submitting || Boolean(paymentReference)}>
                 Back
               </button>
-              <button
-                className="bookcall__btn bookcall__btn--primary"
-                onClick={handleSubmit}
-                disabled={submitting}>
-                {submitting ? "Confirming..." : "Confirm Booking"}
-              </button>
+              {paymentReference ? (
+                <button
+                  className="bookcall__btn bookcall__btn--primary"
+                  onClick={() => confirmBooking(paymentReference)}
+                  disabled={submitting}>
+                  {submitting ? "Confirming..." : "Retry confirmation"}
+                </button>
+              ) : (
+                <button
+                  className="bookcall__btn bookcall__btn--primary"
+                  onClick={payAndBook}
+                  disabled={paying || submitting || !form.email}>
+                  {paying
+                    ? "Processing..."
+                    : `Pay ${selectedType ? naira(selectedType.amount) : ""} with Paystack`}
+                </button>
+              )}
             </div>
           </div>
         )}

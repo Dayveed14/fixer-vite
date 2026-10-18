@@ -1,12 +1,9 @@
 import { useState } from "react";
-import axios from "axios";
+import api, { TIMEOUTS } from "../api/client";
 import { useNavigate } from "react-router-dom";
 import "./AddArticle.css";
 import { Editor } from "@tinymce/tinymce-react";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const AddVideo = () => {
   const navigate = useNavigate();
@@ -83,11 +80,7 @@ const AddVideo = () => {
       data.append("author_id", user.id);
       data.append("featured", 1);
 
-      await axios.post(`${API_BASE_URL}/api/diy-videos`, data, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await api.post(`/api/diy-videos`, data, { timeout: TIMEOUTS.upload });
 
       alert("Video created successfully.");
 

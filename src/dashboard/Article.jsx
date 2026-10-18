@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "./Article.css";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/articles";
+const API = "/api/articles";
 
 export default function Article() {
-  const { id } = useParams();
+  const { slug } = useParams();
 
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,7 @@ export default function Article() {
   useEffect(() => {
     const loadArticle = async () => {
       try {
-        const { data } = await axios.get(`${API}/${id}`);
+        const { data } = await api.get(`${API}/${slug}`);
         setArticle(data);
       } catch (err) {
         console.error(err);
@@ -24,7 +24,7 @@ export default function Article() {
     };
 
     loadArticle();
-  }, [id]);
+  }, [slug]);
 
   if (loading) {
     return (
@@ -39,7 +39,7 @@ export default function Article() {
       <div className="article-page">
         <h2>Article not found.</h2>
 
-        <Link to="/knowledgebase" className="back-btn">
+        <Link to="/adminarticles" className="back-btn">
           ← Back to Articles
         </Link>
       </div>

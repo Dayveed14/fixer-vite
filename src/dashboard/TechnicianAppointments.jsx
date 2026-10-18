@@ -4,12 +4,9 @@
 // not the repair work order itself.
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import "./TechnicianShared.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 const MESHCENTRAL_WEB_URL = import.meta.env.VITE_MESHCENTRAL_WEB_URL || "";
 
 const SUPPORT_TYPE_LABELS = {
@@ -56,7 +53,7 @@ const TechnicianAppointments = () => {
     setError(null);
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/bookings`, {
+      const res = await api.get(`/api/bookings`, {
         params: { technician_id: user.id },
       });
 
@@ -91,7 +88,7 @@ const TechnicianAppointments = () => {
     setUpdatingId(booking.id);
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/bookings/${booking.id}/status`, {
+      await api.patch(`/api/bookings/${booking.id}/status`, {
         status,
       });
 
@@ -110,8 +107,8 @@ const TechnicianAppointments = () => {
     setSessionError((prev) => ({ ...prev, [booking.id]: null }));
 
     try {
-      const res = await axios.post(
-        `${API_BASE_URL}/api/bookings/${booking.id}/remote-session`,
+      const res = await api.post(
+        `/api/bookings/${booking.id}/remote-session`,
       );
 
       setSessionLinks((prev) => ({

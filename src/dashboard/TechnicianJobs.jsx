@@ -3,12 +3,9 @@
 // This is the "action" page: update status, mark a job complete with a final amount.
 
 import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import "./TechnicianShared.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const STATUS_OPTIONS = ["Open", "In Progress", "Pending", "Completed"];
 
@@ -54,7 +51,7 @@ const TechnicianJobs = () => {
     setError(null);
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/tickets`, {
+      const res = await api.get(`/api/tickets`, {
         params: { technician_id: user.id },
       });
 
@@ -109,7 +106,7 @@ const TechnicianJobs = () => {
     setFormError("");
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/tickets/${ticket.id}/status`, {
+      await api.patch(`/api/tickets/${ticket.id}/status`, {
         status: formStatus,
         amount: formAmount === "" ? null : Number(formAmount),
       });

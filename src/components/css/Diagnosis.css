@@ -730,3 +730,80 @@
     right: 12px;
   }
 }
+/* ── FixBot error message ── */
+.diag__error {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 4px 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* ══ FixBot redesign ═════════════════════════════════════════════ */
+.diag__left {
+  border: 0;
+  border-radius: 40px;
+  background-color: var(--blue);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.18) 1.2px, transparent 1.2px);
+  background-size: 18px 18px;
+  padding: 40px 44px 48px;
+  box-shadow: 0 24px 60px rgba(79, 106, 240, 0.28);
+  color: #fff;
+  text-align: center;
+}
+
+.diag__left .diag__title {
+  color: #fff;
+  margin: 8px 0 10px;
+}
+
+.diag__left .diag__body {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 34ch;
+  margin: 0 auto;
+}
+
+.fixbot-stage--page .fixbot-stage__spot {
+  width: 230px;
+  height: 230px;
+}
+
+/* Result modal: FixBot presents the answer */
+.diag-modal {
+  border-radius: 28px;
+}
+
+.diag-modal__bot {
+  margin: -8px auto 14px;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background-color: var(--blue);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.2) 1.2px, transparent 1.2px);
+  background-size: 14px 14px;
+  border: 5px solid #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 30px rgba(79, 106, 240, 0.35);
+}
+
+.diag-result {
+  border-radius: 20px;
+}
+
+.diag-action-btn {
+  border-radius: 999px;
+}
+
+.diag__btn,
+.diag__input,
+.diag__select,
+.diag__textarea {
+  border-radius: 16px;
+}
+
+@media (max-width: 900px) {
+  .diag__left { padding: 28px 22px 32px; }
+}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/client";
 import "./AddUsers.css";
 
 const AddUsers = () => {
@@ -29,8 +29,8 @@ const AddUsers = () => {
     setMessage("");
 
     try {
-      const res = await axios.post(
-        "https://fixer-backend-7mng.onrender.com/api/users/create",
+      const res = await api.post(
+        "/api/users/create",
         formData,
       );
 

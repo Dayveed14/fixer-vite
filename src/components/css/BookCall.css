@@ -740,3 +740,26 @@
     padding: 16px;
   }
 }
+/* ── Slot availability + payment errors ── */
+.bookcall__cal-arrow:disabled,
+.bookcall__change:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.bookcall__no-slots {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 12px 0;
+}
+
+.bookcall__error {
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

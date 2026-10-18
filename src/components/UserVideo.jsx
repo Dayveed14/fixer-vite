@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "../dashboard/Article.css";
 import Navbar from "./components/Navbar";
 import SEO from "./SEO";
 import { SITE_URL } from "../config/seo";
 
-const API = "https://fixer-backend-7mng.onrender.com/api/diy-videos";
+const API = "/api/diy-videos";
 
 function excerptFrom(html, maxLen = 160) {
   if (!html) return undefined;
@@ -27,7 +27,7 @@ export default function UserVideo() {
   useEffect(() => {
     const loadVideo = async () => {
       try {
-        const { data } = await axios.get(`${API}/${slug}`);
+        const { data } = await api.get(`${API}/${slug}`);
         setVideo(data);
       } catch (err) {
         console.error(err);

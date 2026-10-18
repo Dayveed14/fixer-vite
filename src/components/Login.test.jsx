@@ -4,14 +4,13 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 
-// Login.jsx imports the real "axios" package directly (not the shared
-// config/axios.js instance), so mocking the module is the clean way to
-// control what its login request resolves/rejects with, without needing
-// a network layer or touching the app's real interceptor setup.
-vi.mock("axios", () => ({
-  default: { post: vi.fn() },
+// Login.jsx calls login() from the auth API module (which wraps the
+// shared API client), so mocking that module controls what the request
+// resolves/rejects with without a network layer.
+vi.mock("../api/auth.api", () => ({
+  login: vi.fn(),
 }));
-import axios from "axios";
+import { login } from "../api/auth.api";
 
 function renderLogin() {
   render(
@@ -37,7 +36,7 @@ async function fillAndSubmit(user, { email = "ada@example.com", password = "corr
 
 describe("Login", () => {
   beforeEach(() => {
-    axios.post.mockReset();
+    login.mockReset();
   });
 
   it("renders the email and password fields", () => {
@@ -50,15 +49,13 @@ describe("Login", () => {
     const user = userEvent.setup();
     // Mirrors the real backend post-cookie-migration: the JWT is set as
     // an httpOnly cookie, never returned in the body.
-    axios.post.mockResolvedValueOnce({
-      data: {
+    login.mockResolvedValueOnce({
         id: 3,
         first_name: "Ada",
         last_name: "Lovelace",
         email: "ada@example.com",
         role: "user",
-      },
-    });
+      });
 
     renderLogin();
     await fillAndSubmit(user);
@@ -72,7 +69,7 @@ describe("Login", () => {
 
   it("navigates admins to the admin dashboard", async () => {
     const user = userEvent.setup();
-    axios.post.mockResolvedValueOnce({ data: { id: 1, role: "admin" } });
+    login.mockResolvedValueOnce({ id: 1, role: "admin" });
 
     renderLogin();
     await fillAndSubmit(user);
@@ -82,7 +79,7 @@ describe("Login", () => {
 
   it("navigates technicians to the technician dashboard", async () => {
     const user = userEvent.setup();
-    axios.post.mockResolvedValueOnce({ data: { id: 7, role: "technician" } });
+    login.mockResolvedValueOnce({ id: 7, role: "technician" });
 
     renderLogin();
     await fillAndSubmit(user);
@@ -93,9 +90,11 @@ describe("Login", () => {
   it("shows the server's error message via alert on a failed login, and stays on the page", async () => {
     const user = userEvent.setup();
     const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
-    axios.post.mockRejectedValueOnce({
-      response: { data: { message: "Incorrect password." } },
-    });
+    // The API client always rejects with an ApiError carrying the
+    // server's message.
+    login.mockRejectedValueOnce(
+      Object.assign(new Error("Incorrect password."), { status: 401 }),
+    );
 
     renderLogin();
     await fillAndSubmit(user, { password: "wrong-password" });
@@ -110,7 +109,7 @@ describe("Login", () => {
   it("disables the submit button and shows a loading label while the request is in flight", async () => {
     const user = userEvent.setup();
     let resolveLogin;
-    axios.post.mockReturnValueOnce(
+    login.mockReturnValueOnce(
       new Promise((resolve) => {
         resolveLogin = resolve;
       }),
@@ -123,7 +122,7 @@ describe("Login", () => {
 
     expect(screen.getByRole("button", { name: /signing in/i })).toBeDisabled();
 
-    resolveLogin({ data: { id: 3, role: "user" } });
+    resolveLogin({ id: 3, role: "user" });
     expect(await screen.findByText("Customer dashboard")).toBeInTheDocument();
   });
 });

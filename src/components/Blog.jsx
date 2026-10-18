@@ -4,6 +4,7 @@ import "./css/StaticPage.css";
 import Navbar from "./components/Navbar";
 import SEO from "./SEO";
 import { Link } from "react-router-dom";
+import api from "../api/client";
 
 const CATEGORIES = [
   "All",
@@ -23,15 +24,7 @@ export default function Blog() {
       try {
         setLoading(true);
         setError("");
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/articles/published`
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch articles");
-        }
-
-        const data = await response.json();
+        const { data } = await api.get("/api/articles/published");
 
         setPosts(data);
       } catch (err) {

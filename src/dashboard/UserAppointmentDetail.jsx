@@ -3,13 +3,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "./TechnicianShared.css";
 import "./UserAppointmentDetail.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -54,7 +51,7 @@ const UserAppointmentDetail = () => {
     setError(null);
 
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/bookings/${id}`);
+      const res = await api.get(`/api/bookings/${id}`);
       setBooking(res.data);
     } catch (err) {
       console.error(err);
@@ -79,7 +76,7 @@ const UserAppointmentDetail = () => {
     setCancelling(true);
 
     try {
-      await axios.patch(`${API_BASE_URL}/api/bookings/${id}/status`, {
+      await api.patch(`/api/bookings/${id}/status`, {
         status: "cancelled",
       });
       setBooking((prev) => ({ ...prev, status: "cancelled" }));

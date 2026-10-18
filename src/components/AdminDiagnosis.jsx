@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import "./css/Diagnosis.css";
 import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
+import { runDiagnosis } from "../api/diagnosis.api";
+import { diagnosisKind, formatEstimatedRepair } from "../utils/diagnosis";
+import DiagnosisNoMatch from "./DiagnosisNoMatch";
+import FixBotMascot from "./fixbot/FixBotMascot";
 const DEVICE_TYPES = ["Laptop", "Desktop PC", "Other"];
 
 const SYMPTOMS = [
@@ -57,33 +61,27 @@ export default function Diagnosis() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  const [error, setError] = useState(null);
+
   const handleRun = async () => {
+    setError(null);
     try {
       setLoading(true);
 
-      const response = await fetch(
-        "https://fixer-backend-7mng.onrender.com/api/diagnosis/run",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            deviceType,
-            brand,
-            primaryFault,
-            selectedSymptoms,
-            description,
-          }),
-        },
-      );
+      const data = await runDiagnosis({
+        deviceType,
+        brand,
+        primaryFault,
+        selectedSymptoms,
+        description,
+      });
 
-      const data = await response.json();
-      console.log(data);
       setDiagnosis(data);
       setShowModal(true);
     } catch (err) {
-      console.error(err);
+      // Validation (400), rate limit (429), timeouts and outages all
+      // arrive as an ApiError with a message that's safe to show.
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -105,7 +103,12 @@ export default function Diagnosis() {
       <div className="diag">
         {/* ── LEFT ── */}
         <div className="diag__left">
-          <h1 className="diag__title">Meet FixBot 🤖</h1>
+          <div className="fixbot-stage fixbot-stage--page">
+            <div className="fixbot-stage__spot">
+              <FixBotMascot mood={loading ? "thinking" : error ? "oops" : "idle"} size={170} />
+            </div>
+          </div>
+          <h1 className="diag__title">Meet FixBot</h1>
           <p className="diag__body">
             Tell us what's wrong with your computer, and our AI will guide you
             through possible solutions in under two minutes.
@@ -227,6 +230,12 @@ export default function Diagnosis() {
             />
           </div>
 
+          {error && (
+            <p className="diag__error" role="alert">
+              {error}
+            </p>
+          )}
+
           {/* Action buttons */}
           <div className="diag__actions">
             <button type="button" className="diag__btn diag__btn--skip">
@@ -259,6 +268,12 @@ export default function Diagnosis() {
               role="dialog"
               aria-modal="true"
               onClick={(e) => e.stopPropagation()}>
+              <div className="diag-modal__bot">
+                <FixBotMascot
+                  mood={diagnosisKind(diagnosis) === "no_match" ? "puzzled" : "happy"}
+                  size={96}
+                />
+              </div>
               <button
                 className="diag-close"
                 onClick={() => setShowModal(false)}
@@ -273,8 +288,7 @@ export default function Diagnosis() {
                 </svg>
               </button>
 
-              {diagnosis.source === "knowledge_base" &&
-              diagnosis.results?.length > 0 ? (
+              {diagnosisKind(diagnosis) === "knowledge_base" ? (
                 <>
                   <div className="diag-modal-header">
                     <div className="diag-modal-icon">
@@ -470,6 +484,12 @@ export default function Diagnosis() {
                     );
                   })}
                 </>
+              ) : diagnosisKind(diagnosis) === "no_match" ? (
+                <DiagnosisNoMatch
+                  diagnosis={diagnosis}
+                  onBook={() => navigate("/book")}
+                  onMailIn={() => navigate("/shipment")}
+                />
               ) : (
                 <div className="diag-ai-result">
                   <div className="diag-modal-header">
@@ -523,7 +543,7 @@ export default function Diagnosis() {
                           </span>
 
                           <span className="diag-stat-value">
-                            {diagnosis.estimatedRepair}
+                            {formatEstimatedRepair(diagnosis.estimatedRepair)}
                           </span>
                         </div>
                       </div>

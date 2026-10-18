@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "./AdminTechnicians.css";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ||
-  "https://fixer-backend-7mng.onrender.com";
 
 const AdminTechnicians = () => {
   const navigate = useNavigate();
@@ -16,16 +13,9 @@ const AdminTechnicians = () => {
 
   const fetchTechnicians = async () => {
     try {
-      const token = localStorage.getItem("token");
 
-      const { data } = await axios.get(
-        `${API_BASE_URL}/api/users/technicians`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const { data } = await api.get(
+        `/api/users/technicians`);
 
       setTechnicians(data);
     } catch (err) {
@@ -46,13 +36,8 @@ const AdminTechnicians = () => {
     if (!confirmDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
 
-      await axios.delete(`${API_BASE_URL}/api/users/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/api/users/${id}`);
 
       setTechnicians((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
