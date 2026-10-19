@@ -905,6 +905,7 @@ ol.diag-step-list li span{
 
   /* Close button */
   .diag-modal__close {
+    margin-top: 60px;
     top: 10px;
     right: 10px;
     width: 32px;
