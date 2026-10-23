@@ -58,6 +58,7 @@ export default function UserVideo() {
   if (!video) {
     return (
       <div className="article-page">
+        <SEO title="Video not found" path="/blog" noindex />
         <h2>Video not found.</h2>
 
         <Link to="/blog" className="back-btn">
@@ -75,6 +76,8 @@ export default function UserVideo() {
         title={video.title}
         description={description}
         path={`/uservideo/${video.slug}`}
+        // Admin previews of drafts must never be indexed.
+        noindex={Boolean(video.status) && video.status !== "published"}
         image={video.thumbnail_url}
         type="video.other"
         structuredData={{

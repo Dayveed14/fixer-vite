@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/client";
 import { FaCalendarAlt, FaUserTie } from "react-icons/fa";
 import "./AdminBookings.css";
-
+import BookingsDataTable from "../components/BookingsDataTable";
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -62,9 +62,11 @@ const AdminBookings = () => {
     setAssigningId(bookingId);
 
     try {
-      await api.patch(`/api/bookings/${bookingId}/assign`, {
-        technician_id: technicianId,
-      });
+     await api.patch(`/api/bookings/${bookingId}/assign`, {
+  technician_id: technicianId,
+});
+
+await fetchData();
 
       // Assigned bookings leave the "pending" list, so just drop it locally.
       setBookings((prev) => prev.filter((b) => b.id !== bookingId));
@@ -169,74 +171,16 @@ const AdminBookings = () => {
         </div>
       )}
 
-      <hr className="admin-bookings-divider" />
-
-      <section className="admin-bookings-table-section">
-        <div className="admin-bookings-table-header">
-          <h2>All Bookings</h2>
-          <p>View every booking in the system.</p>
-        </div>
-
-        <div className="admin-bookings-table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Reference</th>
-                <th>Customer</th>
-                <th>Support Type</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Technician</th>
-                <th>Status</th>
-                <th>Payment</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {allBookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td>{booking.booking_reference}</td>
-
-                  <td>{booking.customer_name}</td>
-
-                  <td>
-                    {SUPPORT_TYPE_LABELS[booking.support_type] ||
-                      booking.support_type}
-                  </td>
-
-                  <td>{booking.booking_date}</td>
-
-                  <td>{booking.booking_time}</td>
-
-                  <td>
-                    {booking.technician_name || (
-                      <span className="pending-tech">Unassigned</span>
-                    )}
-                  </td>
-
-                  <td>
-                    <span
-                      className={`booking-status ${booking.status
-                        .replace(/\s+/g, "")
-                        .toLowerCase()}`}>
-                      {booking.status}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span
-                      className={`payment-status ${booking.payment_status?.toLowerCase()}`}>
-                      {booking.payment_status || "Pending"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  );
-};
+      <hr className="admin-bookings-divider" /> 
+      <section className="admin-bookings-table-section"> 
+        <div className="admin-bookings-table-header"> 
+          <h2>All Bookings</h2> 
+          <p>Search, filter, sort, and manage your booking records.</p> 
+          </div> 
+          <BookingsDataTable bookings={allBookings} /> 
+      </section> 
+      </div> 
+      ); 
+    };
 
 export default AdminBookings;

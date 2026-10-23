@@ -63,6 +63,7 @@ export default function UserArticle() {
   if (!article) {
     return (
       <div className="article-page">
+        <SEO title="Article not found" path="/blog" noindex />
         <h2>Article not found.</h2>
 
         <Link to="/blog" className="back-btn">
@@ -80,6 +81,8 @@ export default function UserArticle() {
         title={article.title}
         description={description}
         path={`/userarticle/${article.slug}`}
+        // Admin previews of drafts must never be indexed.
+        noindex={Boolean(article.status) && article.status !== "published"}
         image={article.hero_image}
         type="article"
         structuredData={{

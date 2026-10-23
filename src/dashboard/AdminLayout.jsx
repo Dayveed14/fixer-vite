@@ -23,7 +23,7 @@ import {
   FaNewspaper,
   FaVideo,
   FaMoneyBillWave,
-  FaQuestionCircle,
+  FaCreditCard,
 } from "react-icons/fa";
 
 import logo from "../components/img/logo.png";
@@ -157,14 +157,14 @@ const AdminLayout = () => {
       icon: <FaRobot />,
     },
     {
+      name: "Payments",
+      path: "/admin/payments",
+      icon: <FaCreditCard />,
+    },
+    {
       name: "Pricing",
       path: "/adminpricing",
       icon: <FaMoneyBillWave />,
-    },
-    {
-      name: "FAQ",
-      path: "/adminfaq",
-      icon: <FaQuestionCircle />,
     },
     {
       name: "Settings",
@@ -312,9 +312,7 @@ const AdminLayout = () => {
 
               {profileMenu && (
                 <div className="dropdown">
-                  <Link to="/profile">My Profile</Link>
-
-                  <Link to="/admin/settings">Settings</Link>
+                  <Link to="/admin/settings">Profile & password</Link>
 
                   <button onClick={logout}>Logout</button>
                 </div>

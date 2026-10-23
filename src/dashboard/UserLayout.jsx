@@ -277,9 +277,7 @@ const UserLayout = () => {
 
               {profileMenu && (
                 <div className="dropdown">
-                  <Link to="/profile">My Profile</Link>
-
-                  <Link to="/user/settings">Settings</Link>
+                  <Link to="/user/settings">Profile & password</Link>
 
                   <button onClick={logout}>Logout</button>
                 </div>

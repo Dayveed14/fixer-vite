@@ -432,3 +432,21 @@ tbody tr:hover {
     }
 
 }
+.customer-contact {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.customer-contact a {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #eef1fe;
+  color: #2c3fbf;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.customer-contact a:hover { background: #dfe5fd; }

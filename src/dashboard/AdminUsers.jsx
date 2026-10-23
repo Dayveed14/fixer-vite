@@ -41,7 +41,7 @@ const AdminUsers = () => {
       setUsers((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
       console.error(err);
-      alert("Unable to delete user.");
+      alert(err.message || "Unable to delete user.");
     }
   };
 

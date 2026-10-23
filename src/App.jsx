@@ -38,6 +38,8 @@ import AdminTicketDetail from "./dashboard/AdminTicketDetail";
 import AdminTicketEdit from "./dashboard/AdminTicketEdit";
 import AddArticle from "./dashboard/AddArticle";
 import AddUsers from "./dashboard/AddUsers";
+import EditUser from "./dashboard/EditUser";
+import AdminPayments from "./dashboard/AdminPayments";
 import Article from "./dashboard/Article";
 import EditArticle from "./dashboard/EditArticle";
 import AdminVideos from "./dashboard/AdminVideos";
@@ -118,6 +120,9 @@ function App() {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/dashboard/admin/articles/new" element={<AddArticle />} />
               <Route path="/admin/users/new" element={<AddUsers />} />
+              <Route path="/admin/users/edit/:id" element={<EditUser />} />
+              <Route path="/admin/technicians/edit/:id" element={<EditUser />} />
+              <Route path="/admin/payments" element={<AdminPayments />} />
               <Route path="/article/:slug" element={<Article />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/adminpricing" element={<AdminPricing />} />

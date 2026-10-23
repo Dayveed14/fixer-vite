@@ -12,9 +12,17 @@ import {
 } from "react-icons/fa";
 import "./TechnicianDashboard.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/client";
 import CircuitArt from "../components/decor/CircuitArt";
+import { rowLink } from "../utils/rowLink";
+
+const digits = (phone) => String(phone || "").replace(/[^\d+]/g, "");
+// Nigerian numbers: 0803… → 234803… for WhatsApp links.
+const whatsappNumber = (phone) => {
+  const d = digits(phone).replace(/^\+/, "");
+  return d.startsWith("0") ? `234${d.slice(1)}` : d;
+};
 
 
 const SUPPORT_TYPE_LABELS = {
@@ -117,24 +125,28 @@ const TechnicianDashboard = () => {
     value: techStats?.assignedJobs ?? 0,
     icon: <FaTicketAlt />,
     color: "#2563EB",
+    to: "/technician/jobs",
     },
     {
     title: "Completed Today",
     value: techStats?.completedToday ?? 0,
     icon: <FaCheckCircle />,
     color: "#16A34A",
+    to: "/technician/history",
     },
     {
     title: "Pending Repairs",
     value: techStats?.pendingRepairs ?? 0,
     icon: <FaClock />,
     color: "#F59E0B",
+    to: "/technician/repairs",
     },
     {
     title: "Devices Repaired",
     value: techStats?.devicesRepaired ?? 0,
     icon: <FaLaptop />,
     color: "#9333EA",
+    to: "/technician/history",
     },
     ];
 
@@ -169,8 +181,8 @@ const TechnicianDashboard = () => {
       {/* Stats */}
 
       <section className="tech-stats">
-        {stats.map((item, index) => (
-          <div className="tech-stat-card" key={index}>
+        {stats.map((item) => (
+          <Link className="tech-stat-card" key={item.title} to={item.to}>
             <div className="tech-icon" style={{ background: item.color }}>
               {item.icon}
             </div>
@@ -179,7 +191,7 @@ const TechnicianDashboard = () => {
               <h2>{item.value}</h2>
               <p>{item.title}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </section>
 
@@ -215,7 +227,7 @@ const TechnicianDashboard = () => {
 
                 <tbody>
                   {jobs.map((job) => (
-                    <tr key={job.id}>
+                    <tr key={job.id} {...rowLink(navigate, "/technician/jobs")}>
                       <td>{job.ticket_code}</td>
 
                       <td>{job.customer_name}</td>
@@ -255,17 +267,20 @@ const TechnicianDashboard = () => {
               </p>
             ) : (
               schedule.map((appt) => (
-                <div className="schedule-item" key={appt.id}>
+                <Link
+                  className="schedule-item dash-link-card"
+                  key={appt.id}
+                  to="/technician/appointments">
                   <FaCalendarAlt />
                   <div>
                     <h4>
                       {SUPPORT_TYPE_LABELS[appt.support_type] || "Support Call"}
                     </h4>
                     <p>
-                      {appt.booking_time} - {appt.customer_name}
+                      {String(appt.booking_time || "").slice(0, 5)} · {appt.customer_name}
                     </p>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>
@@ -288,6 +303,18 @@ const TechnicianDashboard = () => {
                 <p>{activeTicket.device || "Device not specified"}</p>
 
                 <small>{activeTicket.issue}</small>
+
+                {activeTicket.customer_phone && (
+                  <div className="customer-contact">
+                    <a href={`tel:${digits(activeTicket.customer_phone)}`}>Call</a>
+                    <a
+                      href={`https://wa.me/${whatsappNumber(activeTicket.customer_phone)}`}
+                      target="_blank"
+                      rel="noreferrer">
+                      WhatsApp
+                    </a>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="dashboard-empty">No active job right now.</p>
@@ -329,9 +356,8 @@ const TechnicianDashboard = () => {
 
             <button
               className="tech-btn"
-              disabled
-              title="Coming soon — repair report uploads aren't built yet">
-              Upload Repair Report
+              onClick={() => navigate("/technician/repairs")}>
+              Report a Repair Result
             </button>
           </div>
 

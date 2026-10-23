@@ -25,23 +25,30 @@
     color: #fff;
     display: flex;
     flex-direction: column;
-    padding: 25px 20px;
-    transition: .3s ease;
-    position:fixed;
-    overflow: hidden; 
+    padding: 15px 16px;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    z-index: 9999;
 }
-
 .logo {
-    margin-bottom: 40px;
+    flex-shrink: 0;
+    margin-bottom: 20px;
+    padding: 0 4px;
 }
 
 .logo img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    max-height: 55px;
+    object-fit: contain;
+    object-position: left center;
     margin: unset;
 }
-
 .logo h2 {
     font-size: 28px;
     font-weight: 700;
@@ -63,23 +70,24 @@
 .sidebar nav {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 3px;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 0 4px 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.6) transparent;
 }
 
-.nav-link {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    text-decoration: none;
-    color: white;
-    padding: 14px 18px;
-    border-radius: 10px;
-    transition: .3s;
-    font-size: 15px;
+.sidebar nav::-webkit-scrollbar {
+    width: 6px;
 }
-
 .nav-link svg {
     font-size: 18px;
+    margin-right: 10px;
+    padding-top: 5px;
 }
 
 .nav-link:hover {
@@ -92,29 +100,44 @@
     font-weight: 600;
 }
 
+.sidebar nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 10px;
+}
+
+.sidebar nav .nav-link {
+    flex-shrink: 0;
+    padding: 11px 14px;
+    font-size: 16px;
+}
+
 /* ===================================
    LOGOUT
 =================================== */
 
 .logout-btn {
+    flex: 0 0 auto;
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px 15px;
+
     border: none;
-    background: rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
-    padding: 15px;
     border-radius: 10px;
+
     cursor: pointer;
     font-size: 15px;
+
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: .3s;
 }
 
 .logout-btn:hover {
     background: #ef4444;
 }
-
 /* ===================================
    MAIN
 =================================== */

@@ -1,16 +1,12 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../css/Hero.css";
 import { runDiagnosis } from "../../api/diagnosis.api";
 import FixBotMascot from "../fixbot/FixBotMascot";
-import CircuitArt from "../decor/CircuitArt";
+import { getSupportTypes } from "../../api/bookings.api";
+import { getDispatchZones } from "../../api/shipments.api";
+import "../css/HeroBench.css";
 import { diagnosisKind, noMatchMessage, formatEstimatedRepair } from "../../utils/diagnosis";
-
-const STATS = [
-  { value: "X", label: "Articles" },
-  { value: "X", label: "Repairs" },
-  { value: "X", label: "Daily users" },
-];
 
 const DEVICE_TYPES = ["Laptop", "Desktop PC", "Other"];
 const SYMPTOMS = [
@@ -50,11 +46,11 @@ const severityMap = {
 const getSeverity = (s) =>
   severityMap[(s || "").toLowerCase()] || severityMap.medium;
 
-function DiagnosisModal({ onClose }) {
-  const [deviceType, setDeviceType] = useState("");
+function DiagnosisModal({ onClose, initialDevice = "", initialSymptom = "" }) {
+  const [deviceType, setDeviceType] = useState(initialDevice);
   const [brand, setBrand] = useState("");
   const [primaryFault, setPrimaryFault] = useState("");
-  const [selectedSymptoms, setSymptoms] = useState([]);
+  const [selectedSymptoms, setSymptoms] = useState(initialSymptom ? [initialSymptom] : []);
   const [description, setDescription] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -624,269 +620,251 @@ if (data.source === "knowledge_base" && Array.isArray(data.results)) {
   );
 }
 
-// ── Slide 2 visual — FixBot "scanning" animation ──
-function FixBotVisual() {
-  const tags = [
-    "Overheating",
-    "Battery drains fast",
-    "Won't charge",
-    "Random restart",
-  ];
-  return (
-    <div className="fixbot-visual">
-      <div className="fixbot-visual__ring">
-        <span className="fixbot-visual__core">🤖</span>
-      </div>
-      <div className="fixbot-visual__scanbox">
-        <div className="fixbot-visual__scanline" />
-        <div className="fixbot-visual__tags">
-          {tags.map((t, i) => (
-            <span
-              key={t}
-              className="fixbot-visual__tag"
-              style={{ animationDelay: `${i * 0.55}s` }}>
-              {t}
-            </span>
-          ))}
-        </div>
-        <div className="fixbot-visual__result">
-          <span className="fixbot-visual__check">✓</span> Issue detected
-        </div>
-      </div>
-    </div>
-  );
+// ── The workbench hero ─────────────────────────────────────────────
+// Tap a symptom: the bench console runs a short scan and shows the
+// usual suspects, then FixBot opens already knowing what's wrong.
+
+const BENCH_SYMPTOMS = [
+  {
+    label: "Won't charge",
+    device: "Laptop",
+    causes: ["Worn charging port or DC jack", "Faulty charger or cable", "Dead battery cells"],
+  },
+  {
+    label: "Overheating",
+    device: "Laptop",
+    causes: ["Dust-blocked fan and vents", "Dried thermal paste", "Background apps maxing the CPU"],
+  },
+  {
+    label: "Battery drains fast",
+    device: "Laptop",
+    causes: ["Battery past its cycle life", "Power-hungry startup apps", "Screen brightness and settings"],
+  },
+  {
+    label: "Random restart",
+    device: "Desktop PC",
+    causes: ["Overheating protection kicking in", "Failing power supply", "Driver or update fault"],
+  },
+  {
+    label: "Lagging",
+    device: "Laptop",
+    causes: ["Hard drive near full or failing", "Too little memory for the workload", "Malware or bloatware"],
+  },
+  {
+    label: "Keyboard not working",
+    device: "Laptop",
+    causes: ["Liquid damage under the keys", "Loose keyboard ribbon cable", "Driver or BIOS setting"],
+  },
+];
+
+const naira = (n) => `₦${Number(n).toLocaleString("en-NG")}`;
+
+function useLivePrices() {
+  const [prices, setPrices] = useState({ call: null, pickup: null, zones: null });
+  useEffect(() => {
+    let alive = true;
+    Promise.allSettled([getSupportTypes(), getDispatchZones()]).then(([types, zones]) => {
+      if (!alive) return;
+      const amounts = types.status === "fulfilled" && Array.isArray(types.value)
+        ? types.value.map((t) => Number(t.amount)).filter((n) => n > 0)
+        : [];
+      const zoneList = zones.status === "fulfilled" ? zones.value?.zones || [] : [];
+      const fees = zoneList.map((z) => Number(z.fee)).filter((n) => n > 0);
+      setPrices({
+        call: amounts.length ? Math.min(...amounts) : null,
+        pickup: fees.length ? Math.min(...fees) : null,
+        zones: zoneList.length || null,
+      });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return prices;
 }
 
-// ── Slide 3 visual — repair pipeline timeline ──
-function RepairVisual() {
-  const steps = [
-    { icon: "🔍", label: "Diagnose" },
-    { icon: "🛠️", label: "Repair" },
-    { icon: "📦", label: "Deliver" },
-  ];
+function BenchIllustration({ scanning }) {
   return (
-    <div className="repair-visual">
-      {steps.map((s, i) => (
-        <Fragment key={s.label}>
-          <div
-            className="repair-visual__step"
-            style={{ animationDelay: `${i * 0.9}s` }}>
-            <span className="repair-visual__icon">{s.icon}</span>
-            <span className="repair-visual__label">{s.label}</span>
-          </div>
-          {i < steps.length - 1 && (
-            <div
-              className="repair-visual__connector"
-              style={{ animationDelay: `${i * 0.9 + 0.2}s` }}
-            />
-          )}
-        </Fragment>
-      ))}
-    </div>
+    <svg className="bench-art" viewBox="0 0 560 420" aria-hidden="true" focusable="false">
+      {/* traces running off the laptop into the blueprint */}
+      <g className="bench-art__traces">
+        <path d="M86 300H30V210H0" />
+        <path d="M120 318V372H40V420" />
+        <path d="M470 300H520V240H560" />
+        <path d="M430 318V380H520V420" />
+        <path d="M280 330V420" />
+      </g>
+      <g className="bench-art__signals">
+        <path className={scanning ? "is-live" : ""} d="M86 300H30V210H0" />
+        <path className={scanning ? "is-live is-late" : ""} d="M470 300H520V240H560" />
+        <path className={scanning ? "is-live" : ""} d="M280 330V420" />
+      </g>
+      <g className="bench-art__pads">
+        <circle cx="30" cy="210" r="4" />
+        <circle cx="40" cy="372" r="4" />
+        <circle cx="520" cy="240" r="4" />
+        <circle cx="520" cy="380" r="4" />
+      </g>
+
+      {/* laptop: lid */}
+      <rect className="bench-art__lid" x="110" y="60" width="340" height="220" rx="14" />
+      <rect className="bench-art__screen" x="126" y="76" width="308" height="188" rx="6" />
+      {/* screen content: a tiny board diagram */}
+      <g className="bench-art__board">
+        <rect x="160" y="104" width="86" height="58" rx="6" />
+        <rect x="270" y="104" width="128" height="26" rx="5" />
+        <rect x="270" y="140" width="56" height="22" rx="5" />
+        <rect x="338" y="140" width="60" height="22" rx="5" />
+        <path d="M246 133H270M203 162V200H300V162M368 162V214H190" />
+        <circle cx="190" cy="214" r="5" />
+        <circle cx="300" cy="200" r="4" />
+      </g>
+      <rect className={`bench-art__scanbar ${scanning ? "is-scanning" : ""}`} x="126" y="76" width="308" height="3" />
+
+      {/* laptop: base */}
+      <path className="bench-art__base" d="M70 284H490L470 320H90Z" />
+      <rect className="bench-art__trackpad" x="246" y="294" width="68" height="12" rx="3" />
+    </svg>
   );
 }
-
-const SLIDE_COUNT = 3;
-const AUTOPLAY_MS = 6000;
 
 export default function Hero() {
-  const [diagOpen, setDiagOpen] = useState(false);
-  const [slide, setSlide] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [diag, setDiag] = useState(null); // null | { device, symptom }
+  const [picked, setPicked] = useState(null);
+  const [phase, setPhase] = useState("idle"); // idle | scanning | done
+  const prices = useLivePrices();
 
-  const scrollTo = (id) =>
-    document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
-  const goTo = (i) => setSlide(i);
-  const prev = () => setSlide((s) => (s - 1 + SLIDE_COUNT) % SLIDE_COUNT);
-  const next = () => setSlide((s) => (s + 1) % SLIDE_COUNT);
+  const current = BENCH_SYMPTOMS.find((s) => s.label === picked);
 
-  // Autoplay — pauses on hover and while the diagnosis modal is open
   useEffect(() => {
-    if (paused || diagOpen) return;
-    const id = setInterval(
-      () => setSlide((s) => (s + 1) % SLIDE_COUNT),
-      AUTOPLAY_MS,
-    );
-    return () => clearInterval(id);
-  }, [paused, diagOpen]);
+    if (phase !== "scanning") return undefined;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const id = setTimeout(() => setPhase("done"), reduce ? 0 : 1400);
+    return () => clearTimeout(id);
+  }, [phase, picked]);
+
+  const pick = (label) => {
+    setPicked(label);
+    setPhase("scanning");
+  };
+
+  const scrollTo = (id) => document.querySelector(id)?.scrollIntoView({ behavior: "smooth" });
+  const mood = phase === "scanning" ? "thinking" : phase === "done" ? "happy" : "idle";
 
   return (
-    <section
-      className="hero"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}>
-      <CircuitArt tone="brand" className="hero-circuit" />
-      <div className="hero__slideshow">
-        <div
-          className="hero__track"
-          style={{ transform: `translateX(-${slide * 100}%)` }}>
-          {/* Slide 1 — original hero */}
-          <div className="hero__slide">
-            <div className="hero__inner">
-              <div className="hero__left">
-                <h1 className="hero__title">
-                  Broken devices?{" "}
-                  <span className="hero__title-accent">fixer</span> got you{" "}
-                  <span className="hero__title-underline">covered</span>
-                </h1>
-                <p className="hero__sub">
-                  Access premium repair services, expert guidance and flexible
-                  solutions with fixer —{" "}
-                  <strong>your trusted partner in tech maintenance</strong>
-                </p>
-                <div className="hero__actions">
-                  <button
-                    className="hero__btn hero__btn--primary"
-                    onClick={() => setDiagOpen(true)}>
-                    Run diagnostic →
-                  </button>
-                  <button
-                    className="hero__btn hero__btn--secondary"
-                    onClick={() => scrollTo("#resources")}>
-                    Browse DIY Guides
-                  </button>
-                </div>
-                <div className="hero__stats">
-                  {STATS.map((s) => (
-                    <div className="hero__stat" key={s.label}>
-                      <span className="hero__stat-value">{s.value}</span>
-                      <span className="hero__stat-label">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+    <section className="bench" aria-labelledby="bench-title">
+      <div className="bench__grid" aria-hidden="true" />
 
-              <div className="hero__right">
-                <div className="hero__img-main">
-                  <img
-                    src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=700&q=80"
-                    alt="Laptop repair"
-                  />
-                </div>
-                <div className="hero__img-badge">
-                  <span className="hero__img-badge-icon">🔧</span>
-                  <span>Expert technicians ready</span>
-                </div>
-              </div>
+      <div className="bench__stage">
+        <div className="bench__copy">
+          <h1 id="bench-title" className="bench__title">
+            Broken device? Bring it to the bench.
+          </h1>
+          <p className="bench__lede">
+            Tell FixBot what's wrong and get a likely cause in minutes. Then talk to a
+            technician, or we'll collect it anywhere in Abuja, fix it at our Wuse workshop
+            and bring it back.
+          </p>
+
+          <fieldset className="bench__symptoms">
+            <legend>What's your device doing?</legend>
+            <div className="bench__chips">
+              {BENCH_SYMPTOMS.map((s) => (
+                <button
+                  type="button"
+                  key={s.label}
+                  className={`bench__chip ${picked === s.label ? "is-active" : ""}`}
+                  aria-pressed={picked === s.label}
+                  onClick={() => pick(s.label)}>
+                  {s.label}
+                </button>
+              ))}
             </div>
-          </div>
+          </fieldset>
 
-          {/* Slide 2 — meet FixBot */}
-          <div className="hero__slide">
-            <div className="hero__inner">
-              <div className="hero__left">
-                <h1 className="hero__title">
-                  Meet <span className="hero__title-accent">FixBot</span>{" "}
-                  <span className="hero__title-underline">🤖</span>
-                </h1>
-                <p className="hero__sub">
-                  Describe your symptoms and our AI pinpoints the issue,
-                  estimates cost and repair time —{" "}
-                  <strong>diagnosis in under two minutes</strong>
-                </p>
-                <div className="hero__actions">
-                  <button
-                    className="hero__btn hero__btn--primary"
-                    onClick={() => setDiagOpen(true)}>
-                    Try FixBot →
-                  </button>
-                  <button
-                    className="hero__btn hero__btn--secondary"
-                    onClick={() => scrollTo("#resources")}>
-                    Browse DIY Guides
-                  </button>
-                </div>
-                <div className="hero__stats">
-                  <div className="hero__stat">
-                    <span className="hero__stat-value">2 min</span>
-                    <span className="hero__stat-label">Avg. diagnosis</span>
-                  </div>
-                  <div className="hero__stat">
-                    <span className="hero__stat-value">AI</span>
-                    <span className="hero__stat-label">Powered</span>
-                  </div>
-                  <div className="hero__stat">
-                    <span className="hero__stat-value">24/7</span>
-                    <span className="hero__stat-label">Available</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="hero__right">
-                <FixBotVisual />
-              </div>
-            </div>
-          </div>
-
-          {/* Slide 3 — we fix it */}
-          <div className="hero__slide">
-            <div className="hero__inner">
-              <div className="hero__left">
-                <h1 className="hero__title">
-                  We don't just diagnose{" "}
-                  <span className="hero__title-accent">we fix it</span>
-                </h1>
-                <p className="hero__sub">
-                  Book a remote session or mail in your device — our expert
-                  technicians handle everything from{" "}
-                  <strong>diagnosis to delivery</strong>
-                </p>
-                <div className="hero__actions">
-                  <button
-                    className="hero__btn hero__btn--primary"
-                    onClick={() => setDiagOpen(true)}>
-                    Get started →
-                  </button>
-                  <button
-                    className="hero__btn hero__btn--secondary"
-                    onClick={() => scrollTo("#resources")}>
-                    Browse DIY Guides
-                  </button>
-                </div>
-                <div className="hero__stats">
-                  {STATS.map((s) => (
-                    <div className="hero__stat" key={s.label}>
-                      <span className="hero__stat-value">{s.value}</span>
-                      <span className="hero__stat-label">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="hero__right">
-                <RepairVisual />
-              </div>
-            </div>
+          <div className="bench__actions">
+            <button
+              type="button"
+              className="bench__btn bench__btn--primary"
+              onClick={() => setDiag({ device: current?.device || "", symptom: current?.label || "" })}>
+              {current ? `Diagnose "${current.label}" with FixBot` : "Run a free diagnosis"}
+            </button>
+            <Link className="bench__btn bench__btn--ghost" to="/book">
+              Talk to a technician
+            </Link>
           </div>
         </div>
 
-        <button
-          className="hero__arrow hero__arrow--prev"
-          onClick={prev}
-          aria-label="Previous slide">
-          ‹
-        </button>
-        <button
-          className="hero__arrow hero__arrow--next"
-          onClick={next}
-          aria-label="Next slide">
-          ›
-        </button>
+        <div className="bench__workbench">
+          <BenchIllustration scanning={phase === "scanning"} />
+          <div className="bench__bot">
+            <FixBotMascot mood={mood} size={128} />
+          </div>
+
+          <div className="bench__console" aria-live="polite">
+            <div className="bench__console-bar">
+              <span className={`bench__led bench__led--${phase}`} aria-hidden="true" />
+              <span>FixBot bench</span>
+            </div>
+            {!current && (
+              <p className="bench__console-idle">
+                Pick a symptom and I'll check the usual suspects.
+              </p>
+            )}
+            {current && phase === "scanning" && (
+              <p className="bench__console-line">
+                Scanning {current.device.toLowerCase()} for "{current.label.toLowerCase()}"
+                <span className="bench__dots" aria-hidden="true" />
+              </p>
+            )}
+            {current && phase === "done" && (
+              <>
+                <p className="bench__console-line">Usually one of these:</p>
+                <ul className="bench__causes">
+                  {current.causes.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ul>
+                <button
+                  type="button"
+                  className="bench__console-cta"
+                  onClick={() => setDiag({ device: current.device, symptom: current.label })}>
+                  Get a full diagnosis
+                </button>
+              </>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="hero__dots">
-        {Array.from({ length: SLIDE_COUNT }).map((_, i) => (
-          <button
-            key={i}
-            className={`hero__dot ${slide === i ? "active" : ""}`}
-            onClick={() => goTo(i)}
-            aria-label={`Go to slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      <nav className="bench__routes" aria-label="Ways to get your device fixed">
+        <Link to="/book" className="bench__route">
+          <strong>Talk to a technician</strong>
+          <span>
+            Voice, video or remote session, 8am to 10pm
+            {prices.call ? ` · from ${naira(prices.call)}` : ""}
+          </span>
+        </Link>
+        <Link to="/shipment" className="bench__route">
+          <strong>Send it in for repair</strong>
+          <span>
+            {prices.zones ? `Pickup from ${prices.zones} areas in Abuja` : "Pickup across Abuja"}
+            {prices.pickup ? ` · from ${naira(prices.pickup)}` : ""}
+          </span>
+        </Link>
+        <button type="button" className="bench__route" onClick={() => scrollTo("#resources")}>
+          <strong>Fix it yourself</strong>
+          <span>Free step-by-step guides and videos</span>
+        </button>
+      </nav>
 
-      {/* Diagnosis modal */}
-      {diagOpen && <DiagnosisModal onClose={() => setDiagOpen(false)} />}
+      {diag && (
+        <DiagnosisModal
+          initialDevice={diag.device}
+          initialSymptom={diag.symptom}
+          onClose={() => setDiag(null)}
+        />
+      )}
     </section>
   );
 }

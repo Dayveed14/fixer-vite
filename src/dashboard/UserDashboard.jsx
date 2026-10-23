@@ -4,16 +4,33 @@ import {
   FaLaptop,
   FaRobot,
   FaCalendarAlt,
-  FaComments,
+  FaTruck,
   FaArrowRight,
   FaClock,
   FaStar,
 } from "react-icons/fa";
 import "./UserDashboard.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/client";
 import CircuitArt from "../components/decor/CircuitArt";
+import { rowLink } from "../utils/rowLink";
+import { notificationLink } from "../utils/notificationLink";
+
+const formatDate = (value) => {
+  if (!value) return "";
+  const date = new Date(String(value).length === 10 ? `${value}T00:00:00` : value);
+  return Number.isNaN(date.getTime())
+    ? String(value)
+    : date.toLocaleDateString("en-NG", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+};
+
+const formatTime = (value) => {
+  const [h, m] = String(value || "").split(":").map(Number);
+  if (Number.isNaN(h)) return value || "";
+  const suffix = h >= 12 ? "pm" : "am";
+  return `${((h + 11) % 12) + 1}:${String(m || 0).padStart(2, "0")}${suffix}`;
+};
 
 const SUPPORT_TYPE_LABELS = {
   voice: "Voice Call",
@@ -116,7 +133,6 @@ const [activities, setActivities] = useState([]);
           setTickets(ticketsRes.data);
           setNextAppointment(appointmentRes.data[0] || null);
           setDevice(deviceRes.data[0] || null);
-          console.log(deviceRes.data[0] || null);
           setActivities(activityRes.data.notifications || []);
         }
       } catch (err) {
@@ -169,24 +185,28 @@ const [activities, setActivities] = useState([]);
       value: userStats?.appointmentsCount ?? 0,
       icon: <FaTicketAlt />,
       color: "#0B63CE",
+      to: "/user/appointments",
       },
       {
       title: "Repairs in Progress",
       value: userStats?.repairsInProgress ?? 0,
       icon: <FaTools />,
       color: "#F59E0B",
+      to: "/usershipments",
       },
       {
       title: "Registered Devices",
       value: userStats?.registeredDevices ?? 0,
       icon: <FaLaptop />,
       color: "#16A34A",
+      to: "/registerdevice",
       },
       {
       title: "AI Diagnoses",
       value: userStats?.aiDiagnoses ?? 0,
       icon: <FaRobot />,
       color: "#9333EA",
+      to: "/diagnosis",
       },
       ];
 
@@ -211,8 +231,8 @@ const [activities, setActivities] = useState([]);
 
       {/* Stats */}
       <section className="dashboard-stats">
-        {stats.map((item, index) => (
-          <div className="stat-card" key={index}>
+        {stats.map((item) => (
+          <Link className="stat-card" key={item.title} to={item.to}>
             <div className="icon" style={{ background: item.color }}>
               {item.icon}
             </div>
@@ -220,7 +240,7 @@ const [activities, setActivities] = useState([]);
               <h2>{item.value}</h2>
               <p>{item.title}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </section>
 
@@ -253,7 +273,7 @@ const [activities, setActivities] = useState([]);
                   </thead>
                   <tbody>
                     {tickets.map((ticket) => (
-                      <tr key={ticket.id}>
+                      <tr key={ticket.id} {...rowLink(navigate, `/userjob/${ticket.id}`)}>
                         <td>{ticket.ticket_code}</td>
                         <td>{ticket.issue}</td>
                         <td>{ticket.technician_name || "Pending"}</td>
@@ -272,10 +292,12 @@ const [activities, setActivities] = useState([]);
                                 Rated {ticket.existing_rating}/5
                               </span>
                             ) : (
-                              <StarRating
-                                ticket={ticket}
-                                onSubmitted={handleRatingSubmitted}
-                              />
+                              <span data-no-row-link>
+                                <StarRating
+                                  ticket={ticket}
+                                  onSubmitted={handleRatingSubmitted}
+                                />
+                              </span>
                             ))}
                         </td>
                       </tr>
@@ -296,24 +318,36 @@ const [activities, setActivities] = useState([]);
                 </p>
               ) : (
                 <div className="activity-list">
-                  {activities.map((activity) => (
-                    <div className="activity-item" key={activity.id}>
-                      <FaClock />
+                  {activities.map((activity) => {
+                    const body = (
+                      <>
+                        <FaClock />
 
-                      <div className="activity-content">
-                        <h4>{activity.title}</h4>
+                        <div className="activity-content">
+                          <h4>{activity.title}</h4>
 
-                        <p>{activity.message}</p>
+                          <p>{activity.message}</p>
 
-                        <small>
-                          {new Date(activity.created_at).toLocaleString("en-NG", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })}
-                        </small>
+                          <small>
+                            {new Date(activity.created_at).toLocaleString("en-NG", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            })}
+                          </small>
+                        </div>
+                      </>
+                    );
+                    const to = notificationLink(activity, "user");
+                    return to ? (
+                      <Link className="activity-item dash-link-card" key={activity.id} to={to}>
+                        {body}
+                      </Link>
+                    ) : (
+                      <div className="activity-item" key={activity.id}>
+                        {body}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -329,8 +363,13 @@ const [activities, setActivities] = useState([]);
               onClick={() => navigate("/diagnosis")}>
               <FaRobot /> Smart Diagnosis
             </button>
-            <button className="action-btn">
-              <FaComments /> Live Chat
+            <button className="action-btn" onClick={() => navigate("/book")}>
+              <FaCalendarAlt /> Book a Technician
+            </button>
+            <button
+              className="action-btn"
+              onClick={() => navigate("/shipment")}>
+              <FaTruck /> Send Device for Repair
             </button>
             <button
               className="action-btn"
@@ -344,17 +383,25 @@ const [activities, setActivities] = useState([]);
             <h2>Upcoming Appointment</h2>
 
             {nextAppointment ? (
-              <div className="appointment">
+              <Link
+                className="appointment dash-link-card"
+                to={`/userappointment/${nextAppointment.id}`}>
                 <FaCalendarAlt className="calendar-icon" />
                 <h3>
                   {SUPPORT_TYPE_LABELS[nextAppointment.support_type] ||
                     "Support Call"}
                 </h3>
-                <p>{nextAppointment.booking_date}</p>
-                <span>{nextAppointment.booking_time}</span>
-              </div>
+                <p>{formatDate(nextAppointment.booking_date)}</p>
+                <span>{formatTime(nextAppointment.booking_time)}</span>
+                {nextAppointment.meeting_url && (
+                  <small className="appointment-meeting">Video call link ready</small>
+                )}
+              </Link>
             ) : (
-              <p className="dashboard-empty">No upcoming appointments.</p>
+              <div className="dashboard-empty">
+                <p>No upcoming appointments.</p>
+                <Link to="/book">Book a technician</Link>
+              </div>
             )}
           </div>
 
@@ -369,12 +416,15 @@ const [activities, setActivities] = useState([]);
                 <p>{device.os || device.brand || "—"}</p>
                 <small>
                   {device.last_serviced_at
-                    ? `Last Serviced: ${device.last_serviced_at}`
+                    ? `Last serviced: ${formatDate(device.last_serviced_at)}`
                     : "Not serviced yet"}
                 </small>
               </div>
             ) : (
-              <p className="dashboard-empty">No devices registered yet.</p>
+              <div className="dashboard-empty">
+                <p>No devices registered yet.</p>
+                <Link to="/registerdevice">Register a device</Link>
+              </div>
             )}
           </div>
         </div>

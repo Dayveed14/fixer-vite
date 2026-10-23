@@ -10,9 +10,10 @@ import {
 } from "react-icons/fa";
 import "./AdminDashboard.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/client";
 import CircuitArt from "../components/decor/CircuitArt";
+import { rowLink } from "../utils/rowLink";
 
 
 const AdminDashboard = () => {
@@ -38,7 +39,7 @@ const AdminDashboard = () => {
       setError(null);
 
       try {
-        const [statsRes, ticketsRes, techniciansRes, deviceRes] =
+        const [statsRes, ticketsRes, techniciansRes] =
           await Promise.all([
             api.get(`/api/stats/dashboard`),
             api.get(`/api/tickets`, { params: { limit: 4 } }),
@@ -92,24 +93,28 @@ const AdminDashboard = () => {
       value: statsData.totalUsers,
       icon: <FaUsers />,
       color: "#2563EB",
+      to: "/admin/users",
     },
     {
       title: "Technicians",
       value: statsData.totalTechnicians,
       icon: <FaUserTie />,
       color: "#16A34A",
+      to: "/admin/technicians",
     },
     {
       title: "Open Tickets",
       value: statsData.openTickets,
       icon: <FaTicketAlt />,
       color: "#F59E0B",
+      to: "/admintickets",
     },
     {
       title: "Revenue",
       value: `₦${Number(statsData.revenue).toLocaleString()}`,
       icon: <FaMoneyBillWave />,
       color: "#9333EA",
+      to: "/admin/payments",
     },
   ];
 
@@ -142,8 +147,8 @@ const AdminDashboard = () => {
       {/* Stats */}
 
       <section className="admin-stats">
-        {stats.map((item, index) => (
-          <div className="admin-stat-card" key={index}>
+        {stats.map((item) => (
+          <Link className="admin-stat-card" key={item.title} to={item.to}>
             <div className="admin-icon" style={{ background: item.color }}>
               {item.icon}
             </div>
@@ -152,7 +157,7 @@ const AdminDashboard = () => {
               <h2>{item.value}</h2>
               <p>{item.title}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </section>
 
@@ -191,7 +196,7 @@ const AdminDashboard = () => {
 
                 <tbody>
                   {tickets.map((ticket) => (
-                    <tr key={ticket.id}>
+                    <tr key={ticket.id} {...rowLink(navigate, `/admin/tickets/${ticket.id}`)}>
                       <td>{ticket.ticket_code}</td>
 
                       <td>{ticket.customer_name}</td>
@@ -227,17 +232,17 @@ const AdminDashboard = () => {
               <strong>{statsData.totalDevices}</strong>
             </div>
 
-            <div className="health-item">
+            <Link className="health-item" to="/adminshipments">
               <FaTools />
-              <span>Repairs Today</span>
+              <span>Repairs Delivered Today</span>
               <strong>{statsData.repairsToday ?? 0}</strong>
-            </div>
+            </Link>
 
-            <div className="health-item">
+            <Link className="health-item" to="/admin/bookings">
               <FaExclamationTriangle />
-              <span>Pending Approvals</span>
+              <span>Needs Attention</span>
               <strong>{statsData.pendingApprovals ?? statsData.unassignedCalls ?? 0}</strong>
-            </div>
+            </Link>
           </div>
         </div>
 
@@ -247,17 +252,28 @@ const AdminDashboard = () => {
           {/* Technicians */}
 
           <div className="admin-card">
-            <h2>Technicians</h2>
+            <div className="admin-header">
+              <h2>Technicians</h2>
 
-            {technicians.map((tech, index) => (
-              <div className="tech-card" key={index}>
-                <div>
-                  <h4>
-                    {tech.first_name} {tech.last_name}
-                  </h4>
-                </div>
-              </div>
-            ))}
+              <button onClick={() => navigate("/admin/technicians")}>
+                Manage
+                <FaArrowRight />
+              </button>
+            </div>
+
+            {technicians.length === 0 ? (
+              <p className="admin-empty">No technicians yet. Add one to start assigning jobs.</p>
+            ) : (
+              technicians.map((tech) => (
+                <Link className="admin-tech-row dash-link-card" key={tech.id} to={`/admin/technicians/edit/${tech.id}`}>
+                  <div>
+                    <h4>
+                      {tech.first_name} {tech.last_name}
+                    </h4>
+                  </div>
+                </Link>
+              ))
+            )}
           </div>
 
           {/* Quick Actions */}
@@ -283,16 +299,28 @@ const AdminDashboard = () => {
               Manage Technicians
             </button>
 
-            <button className="admin-btn">View Reports</button>
+            <button
+              className="admin-btn"
+              onClick={() => navigate("/admin/payments")}>
+              Payments & Alerts
+            </button>
 
-            <button className="admin-btn">Payment History</button>
+            <button
+              className="admin-btn"
+              onClick={() => navigate("/adminshipments")}>
+              Mail-In Repairs
+            </button>
 
-            <button className="admin-btn">Mail-In Repairs</button>
+            <button
+              className="admin-btn"
+              onClick={() => navigate("/adminpricing")}>
+              Pricing
+            </button>
           </div>
 
           {/* Revenue */}
 
-          <div className="admin-card">
+          <Link className="admin-card dash-link-card" to="/admin/payments">
             <h2>Monthly Revenue</h2>
 
             <div className="revenue-box">
@@ -300,7 +328,7 @@ const AdminDashboard = () => {
 
               <p>{revenueChangeLabel}</p>
             </div>
-          </div>
+          </Link>
         </div>
       </section>
     </div>

@@ -150,6 +150,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .admin-header button {
@@ -260,7 +262,7 @@ tbody tr:hover {
    TECHNICIANS
 ================================================== */
 
-.tech-card {
+.admin-tech-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -268,15 +270,15 @@ tbody tr:hover {
     border-bottom: 1px solid #EEE;
 }
 
-.tech-card:last-child {
+.admin-tech-row:last-child {
     border-bottom: none;
 }
 
-.tech-card h4 {
+.admin-tech-row h4 {
     margin-bottom: 5px;
 }
 
-.tech-card small {
+.admin-tech-row small {
     color: #888;
 }
 
@@ -450,4 +452,7 @@ tbody tr:hover {
             background: #F9FBFF;
         }
 
+}
+.admin-tech-row.dash-link-card {
+    padding: 14px 12px;
 }

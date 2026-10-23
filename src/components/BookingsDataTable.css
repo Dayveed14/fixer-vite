@@ -1,0 +1,225 @@
+.bookings-datatable {
+    width: 100%;
+    min-width: 0;
+    color: inherit;
+}
+
+.bookings-datatable-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.bookings-datatable-search {
+    flex: 1;
+    min-width: 220px;
+    max-width: 380px;
+}
+
+.bookings-datatable-search input {
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 1px solid #d8dee8;
+    border-radius: 8px;
+    background: #fff;
+    color: #1f2937;
+    font: inherit;
+    outline: none;
+}
+
+.bookings-datatable-search input:focus,
+.bookings-datatable-filters select:focus,
+.bookings-datatable-pagination select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 12%);
+}
+
+.bookings-datatable-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bookings-datatable-filters select,
+.bookings-datatable-pagination select {
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #d8dee8;
+    border-radius: 8px;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+}
+
+.bookings-datatable-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.bookings-datatable-table {
+    width: 100%;
+    min-width: 950px;
+    border-collapse: collapse;
+    text-align: left;
+    background: #fff;
+}
+
+.bookings-datatable-table th,
+.bookings-datatable-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #edf0f4;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.bookings-datatable-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+.bookings-datatable-table tbody td {
+    color: #374151;
+    font-size: 13px;
+}
+
+.bookings-datatable-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.bookings-datatable-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.bookings-sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    cursor: pointer;
+}
+
+.bookings-sort-button:hover {
+    color: #2563eb;
+}
+
+.bookings-sort-indicator {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.bookings-reference {
+    font-weight: 600;
+}
+
+.bookings-datatable-empty {
+    padding: 36px 16px !important;
+    color: #64748b !important;
+    text-align: center;
+}
+
+.bookings-datatable-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 0 4px;
+}
+
+.bookings-datatable-summary {
+    color: #64748b;
+    font-size: 13px;
+}
+
+.bookings-datatable-pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.bookings-datatable-pagination label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+.bookings-datatable-pagination button {
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid #d8dee8;
+    border-radius: 7px;
+    background: #fff;
+    color: #374151;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.bookings-datatable-pagination button:hover:not(:disabled) {
+    border-color: #2563eb;
+    color: #2563eb;
+}
+
+.bookings-datatable-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.bookings-page-number {
+    color: #64748b;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .bookings-datatable-toolbar {
+        align-items: stretch;
+    }
+
+    .bookings-datatable-search {
+        max-width: none;
+    }
+
+    .bookings-datatable-filters {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .bookings-datatable-filters select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .bookings-datatable-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .bookings-datatable-pagination {
+        width: 100%;
+    }
+
+    .bookings-datatable-pagination label {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

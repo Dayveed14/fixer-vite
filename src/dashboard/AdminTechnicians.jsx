@@ -42,7 +42,7 @@ const AdminTechnicians = () => {
       setTechnicians((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
       console.error(err);
-      alert("Unable to delete technician.");
+      alert(err.message || "Unable to delete technician.");
     }
   };
 

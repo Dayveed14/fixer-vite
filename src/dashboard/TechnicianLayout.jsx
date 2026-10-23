@@ -271,9 +271,7 @@ const TechnicianLayout = () => {
 
               {profileMenu && (
                 <div className="dropdown">
-                  <Link to="/profile">My Profile</Link>
-
-                  <Link to="/technician/settings">Settings</Link>
+                  <Link to="/technician/settings">Profile & password</Link>
 
                   <button onClick={logout}>Logout</button>
                 </div>
